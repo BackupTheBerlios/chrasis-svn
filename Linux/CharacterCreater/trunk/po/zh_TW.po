@@ -1,0 +1,108 @@
+# zh_TW translation of Character Creater.
+# Copyright (C) 2006 Victor Tseng <palatis@gentoo.tw>
+# This file is distributed under the same license as the Character Creater package.
+# Victor Tseng <palatis@gentoo.tw>, 2006.
+# , fuzzy
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: Character Creater 0.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-09-18 06:05+0800\n"
+"PO-Revision-Date: 2006-09-18 06:06+0800\n"
+"Last-Translator: Victor Tseng <palatis@gentoo.tw>\n"
+"Language-Team: Chinese/Traditional <zh-l10n@linux.org.tw>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=Big5\n"
+"Content-Transfer-Encoding: 8bit"
+
+#: ../src/version.h:19
+msgid "0.0.1"
+msgstr ""
+
+#: ../src/version.h:21
+msgid ""
+"Character Creater is a tool to create characters for the RAOCHRS -- for "
+"development purpose."
+msgstr ""
+"Character Creater 是個用來幫 RAOCHRS 產生中文字的工具 -- 主要為開發用途。"
+
+#: ../src/version.h:22
+msgid "GPL"
+msgstr ""
+
+#: ../src/version.h:23
+msgid "http://rt.openfoundry.org/Foundry/Project/Wiki/624/"
+msgstr ""
+
+#: ../src/version.h:24
+msgid "RAOCHRS Wiki"
+msgstr ""
+
+#. MainMenu
+#: ../src/creater.cpp:20
+msgid "_File"
+msgstr "檔案(_F)"
+
+#: ../src/creater.cpp:29
+msgid "_Import..."
+msgstr "匯入(_I)..."
+
+#: ../src/creater.cpp:33
+msgid "_Help"
+msgstr "幫助(_H)"
+
+#: ../src/creater.cpp:86
+msgid "Chars"
+msgstr "字"
+
+#: ../src/creater.cpp:118
+msgid "done!"
+msgstr "完成！"
+
+#: ../src/creater.cpp:145
+msgid "Select a file to save..."
+msgstr "選擇要被存的檔案..."
+
+#: ../src/creater.cpp:148
+msgid "Select a file to save as..."
+msgstr "選擇要被另存的檔案..."
+
+#: ../src/creater.cpp:151
+msgid "Select a file to open..."
+msgstr "選擇要被開啟的檔案..."
+
+#: ../src/creater.cpp:169
+msgid "CHML Files (.chml, .xml)"
+msgstr "CHML 檔案 (.chml, .xml)"
+
+#: ../src/creater.cpp:175
+msgid "Text files (.txt)"
+msgstr "純文字檔案 (.txt)"
+
+#: ../src/creater.cpp:180
+msgid "Any files"
+msgstr "所有檔案"
+
+#: ../src/creater.cpp:298 ../src/creater.cpp:412
+msgid "No character selected"
+msgstr "沒有選擇中文字"
+
+#: ../src/creater.cpp:299
+msgid "Add a character before editing it."
+msgstr "在編輯這個字以前，您必須先新增個位置給它！"
+
+#. a dialog to get the character...
+#: ../src/creater.cpp:305 ../src/creater.cpp:344
+msgid "Input a chinese character"
+msgstr "輸入一個中文字"
+
+#: ../src/creater.cpp:311 ../src/creater.cpp:350
+msgid "Input a chinese character."
+msgstr "輸入一個中文字。"
+
+#: ../src/creater.cpp:413
+msgid "Add a character before drawing it."
+msgstr "在寫這個字以前，您必須先新增個位置給它！"
+
