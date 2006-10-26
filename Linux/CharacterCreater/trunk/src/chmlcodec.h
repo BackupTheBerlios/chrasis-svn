@@ -30,7 +30,7 @@
 
 #include "character.h"
 
-character_collection read_chml(Glib::ustring);
-void write_chml(character_collection &, Glib::ustring);
+Character::collection read_chml(Glib::ustring);
+void write_chml(Character::collection &, Glib::ustring);
 
 #endif

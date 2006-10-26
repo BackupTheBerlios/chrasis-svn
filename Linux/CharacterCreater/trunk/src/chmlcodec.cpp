@@ -37,9 +37,9 @@
 
 using namespace std;
 
-character_collection read_chml(Glib::ustring ifilename)
+Character::collection read_chml(Glib::ustring ifilename)
 {
-	character_collection ret_chars;
+	Character::collection ret_chars;
 
 	try {
 		xmlpp::TextReader reader(ifilename);
@@ -74,8 +74,8 @@ character_collection read_chml(Glib::ustring ifilename)
 						continue;
 
 					tmp_stroke.add_point(Point(
-						Glib::Ascii::strtod(reader.get_attribute("x")),
-						Glib::Ascii::strtod(reader.get_attribute("y"))));
+						static_cast<int>(Glib::Ascii::strtod(reader.get_attribute("x"))),
+						static_cast<int>(Glib::Ascii::strtod(reader.get_attribute("y")))));
 					reader.move_to_element();
 				}
 				tmp_char.add_stroke(tmp_stroke);
@@ -91,7 +91,7 @@ character_collection read_chml(Glib::ustring ifilename)
 	return ret_chars;
 }
 
-void write_chml(character_collection & chars, Glib::ustring ofilename)
+void write_chml(Character::collection & chars, Glib::ustring ofilename)
 {
 	try
 	{
@@ -100,7 +100,7 @@ void write_chml(character_collection & chars, Glib::ustring ofilename)
 		// root node (<characters> ... </characters>)
 		xmlpp::Element * charsNode = document.create_root_node("characters");
 
-		for (characters_iterator chars_i = chars.begin();
+		for (Character::iterator chars_i = chars.begin();
 		     chars_i != chars.end();
 		     ++chars_i)
 		{
@@ -108,14 +108,14 @@ void write_chml(character_collection & chars, Glib::ustring ofilename)
 			xmlpp::Element * charNode = charsNode->add_child("character");
 			charNode->set_attribute("name", chars_i->get_name());
 			
-			for (Character::strokes_iterator strokes_i = chars_i->strokes_begin();
+			for (Stroke::iterator strokes_i = chars_i->strokes_begin();
 			     strokes_i != chars_i->strokes_end();
 			     ++strokes_i)
 			{
 				// stroke node (<stroke> ... </stroke>)
 				xmlpp::Element * strokeNode = charNode->add_child("stroke");
 				
-				for (Stroke::points_iterator points_i = strokes_i->points_begin();
+				for (Point::iterator points_i = strokes_i->points_begin();
 				     points_i != strokes_i->points_end();
 				     ++points_i)
 				{

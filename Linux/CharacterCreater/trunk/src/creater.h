@@ -70,8 +70,8 @@ private:
 	bool get_filename(const DialogType, std::string &);
 	bool column_id_fixer(const Gtk::TreeModel::iterator& iter) { (*iter)[col_id_] = column_id_fisrt_; return true; };
 
-	character_collection cur_chars_;
-	character_collection::iterator cur_char_;
+	Character::collection cur_chars_;
+	Character::iterator cur_char_;
 
 	Gtk::TreeModelColumn<Glib::ustring> col_char_;
 	Gtk::TreeModelColumn<unsigned int> col_id_;
@@ -94,7 +94,10 @@ private:
 		Gtk::Statusbar status_;
 	// end hierarchy
 	
-	Gdk::Color colors[3];	// 0: beginning point, 1: ending point, 2: stroke body
+	Gdk::Color colors[4];	// 0: beginning point
+				// 1: ending point
+				// 2: stroke body
+				// 3: simplified stroke
 	int stroke_num;
 	int last_x;
 	int last_y;

@@ -132,7 +132,8 @@ Creater::Creater():
 	// initialize colors...
 	colors[0] = Gdk::Color("Red");		// color of begining point
 	colors[1] = Gdk::Color("Green");	// color of ending point
-	colors[2] = Gdk::Color("Black");	// color of the strke
+	colors[2] = Gdk::Color("Blue");		// color of the stroke
+	colors[3] = Gdk::Color("Black");	// color of normalized stroke
 	
 	// initialize stroke number...
 	stroke_num = 1;
@@ -259,7 +260,7 @@ void Creater::on_menu_file_saveas()
 
 void Creater::on_menu_file_import()
 {
-	character_collection tmp_chars;
+	Character::collection tmp_chars;
 	// read first...
 	if (get_filename(OPEN_DIALOG, current_filename))
 		tmp_chars = read_chml(current_filename);
@@ -404,13 +405,10 @@ bool Creater::on_drawing_motion_notify(GdkEventMotion * event)
 		if (cur_chars_.size() == 0)
 			return false;
 	
-		double x = static_cast<double>(event->x) / drawing_.get_width();
-		double y = static_cast<double>(event->y) / drawing_.get_height();
-
 		// do not process redundent points
 		if (event->x == last_x && event->y == last_y)
 			return false;
-		cur_char_->add_point(x, y);
+		cur_char_->add_point(event->x, event->y);
 
 		Glib::RefPtr<Gdk::Window> win = drawing_.get_window();
 		Glib::RefPtr<Gdk::GC> gc = drawing_.get_style()->get_black_gc();
@@ -418,12 +416,12 @@ bool Creater::on_drawing_motion_notify(GdkEventMotion * event)
 		gc->set_rgb_fg_color(colors[2]);
 		win->draw_line(
 			gc,
-			static_cast<int>(event->x), static_cast<int>(event->y),
+			event->x, event->y,
 			last_x, last_y
 		);
 
-		last_x = static_cast<int>(event->x);
-		last_y = static_cast<int>(event->y);
+		last_x = event->x;
+		last_y = event->y;
 	}
 
 	return false;
@@ -444,9 +442,7 @@ bool Creater::on_drawing_press(GdkEventButton * event)
 
 		cur_char_->new_stroke();
 
-		double x = static_cast<double>(event->x) / drawing_.get_width();
-		double y = static_cast<double>(event->y) / drawing_.get_height();
-		cur_char_->add_point(x, y);
+		cur_char_->add_point(event->x, event->y);
 
 		Glib::RefPtr<Gdk::Window> win = drawing_.get_window();
 		Glib::RefPtr<Gdk::GC> gc = drawing_.get_style()->get_black_gc();
@@ -460,20 +456,20 @@ bool Creater::on_drawing_press(GdkEventButton * event)
 		gc->set_rgb_fg_color(colors[2]);
 		win->draw_layout(
 			gc,
-			static_cast<int>(event->x) - lx / Pango::SCALE - 5,
-			static_cast<int>(event->y) - ly / Pango::SCALE - 5,
+			event->x - lx / Pango::SCALE - 5,
+			event->y - ly / Pango::SCALE - 5,
 			num
 		);
 
 		// draw a dot
 		gc->set_rgb_fg_color(colors[0]);
 		win->draw_arc( gc, true,
-			static_cast<int>(event->x) - 3,
-			static_cast<int>(event->y) - 3,
+			event->x - 3,
+			event->y - 3,
 			5, 5, 0, 23040);
 
-		last_x = static_cast<int>(event->x);
-		last_y = static_cast<int>(event->y);
+		last_x = event->x;
+		last_y = event->y;
 	}
 
 	return false;
@@ -486,21 +482,43 @@ bool Creater::on_drawing_release(GdkEventButton * event)
 		if (cur_chars_.size() == 0)
 			return false;
 
-		double x = static_cast<double>(event->x) / drawing_.get_width();
-		double y = static_cast<double>(event->y) / drawing_.get_height();
-
 		// do not process redundent points
 		if (event->x != last_x || event->y != last_y)
-			cur_char_->add_point(x, y);
+			cur_char_->add_point(event->x, event->y);
 
 		Glib::RefPtr<Gdk::Window> win = drawing_.get_window();
 		Glib::RefPtr<Gdk::GC> gc = drawing_.get_style()->get_black_gc();
 
+		// draw the normalized version of last stroke
+		gc->set_rgb_fg_color(colors[3]);
+		Stroke ns = (cur_char_->strokes_end() - 1)->normalize();
+		for (Point::iterator pi = ns.points_begin();
+		     pi != ns.points_end() - 1;
+		     ++pi)
+		{
+			win->draw_line(
+				gc,
+				pi->x(),
+				pi->y(),
+				(pi+1)->x(),
+				(pi+1)->y()
+			);
+			win->draw_arc( gc, true,
+				pi->x() - 3,
+				pi->y() - 3,
+				5, 5, 0, 23040);
+		}
+		Point::iterator pi = ns.points_end() - 1;
+		win->draw_arc( gc, true,
+			pi->x() - 3,
+			pi->y() - 3,
+			5, 5, 0, 23040);
+
 		// draw a dot
 		gc->set_rgb_fg_color(colors[1]);
 		win->draw_arc( gc, true,
-			static_cast<int>(event->x) - 3,
-			static_cast<int>(event->y) - 3,
+			event->x - 3,
+			event->y - 3,
 			5, 5, 0, 23040);
 	}
 
@@ -548,23 +566,45 @@ void Creater::draw_character()
 	Glib::RefPtr<Gdk::GC> gc = drawing_.get_style()->get_black_gc();
 
 	stroke_num = 1;
-	for (Character::strokes_iterator si = cur_char_->strokes_begin();
+	for (Stroke::iterator si = cur_char_->strokes_begin();
 	     si != cur_char_->strokes_end();
 	     ++si)
 	{
+		// draw the stroke body
 		gc->set_rgb_fg_color(colors[2]);
-		for (Stroke::points_iterator pi = si->points_begin();
+		for (Point::iterator pi = si->points_begin();
 		     pi != si->points_end() - 1;
 		     ++pi)
 		{
 			win->draw_line(
 				gc,
-				static_cast<int>(pi->x() * drawing_.get_width()),
-				static_cast<int>(pi->y() * drawing_.get_height()),
-				static_cast<int>((pi+1)->x() * drawing_.get_width()),
-				static_cast<int>((pi+1)->y() * drawing_.get_height())
+				pi->x(),
+				pi->y(),
+				(pi+1)->x(),
+				(pi+1)->y()
 			);
 		}
+
+		// draw the normalized version
+		gc->set_rgb_fg_color(colors[3]);
+		Stroke ns = si->normalize();
+		for (Point::iterator pi = ns.points_begin();
+		     pi != ns.points_end() - 1;
+		     ++pi)
+		{
+			win->draw_line(
+				gc,
+				pi->x(),
+				pi->y(),
+				(pi+1)->x(),
+				(pi+1)->y()
+			);
+			win->draw_arc( gc, true,
+				pi->x() - 3,
+				pi->y() - 3,
+				5, 5, 0, 23040);
+		}
+
 		// draw a number before each stroke
 		stringstream ss;
 		ss << stroke_num++;
@@ -573,22 +613,21 @@ void Creater::draw_character()
 		num->get_size(lx, ly);
 		win->draw_layout(
 			gc,
-			static_cast<int>(si->points_begin()->x() * drawing_.get_width()) - lx / Pango::SCALE - 5,
-			static_cast<int>(si->points_begin()->y() * drawing_.get_height()) - ly / Pango::SCALE - 5,
+			si->points_begin()->x() - lx / Pango::SCALE - 5,
+			si->points_begin()->y() - ly / Pango::SCALE - 5,
 			num
 		);
 
 		// enchant the beginning and ending points
-		Stroke::points_iterator pi[2];
-		pi[0] = si->points_begin();
-		pi[1] = si->points_end() - 1;
+		Point::iterator pi[2] =
+			{ si->points_begin(), si->points_end() - 1 };
 
 		for (int i=0;i<2;++i)
 		{
 			gc->set_rgb_fg_color(colors[i]);
 			win->draw_arc( gc, true,
-				static_cast<int>(pi[i]->x() * drawing_.get_width()) - 3,
-				static_cast<int>(pi[i]->y() * drawing_.get_height()) - 3,
+				pi[i]->x() - 3,
+				pi[i]->y() - 3,
 				5, 5, 0, 23040);
 		}
 	}
