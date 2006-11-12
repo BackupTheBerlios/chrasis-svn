@@ -52,6 +52,13 @@ public:
 	value_t arg() const { return std::arg(num_); };		//< the argument (angle) of the point
 	value_t norm() const { return std::norm(num_); };	//< the norm of the point
 	value_t abs() const { return std::abs(num_); };		//< the distance between the point and origin
+
+	Point & operator -= (const Point & rhs)
+	{
+		num_.real() -= rhs.x();
+		num_.imag() -= rhs.y();
+		return *this;
+	}
 private:
 	std::complex< value_t > num_;
 };
@@ -77,7 +84,6 @@ public:
 
 	size_t size() { return points_.size(); }
 
-	Stroke normalize();
 private:
 	Point::collection points_;
 };

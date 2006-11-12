@@ -24,6 +24,7 @@
 
 #include "version.h"
 #include "creater.h"
+#include "recognizer.h"
 #include "chmlcodec.h"
 
 #include <iostream>
@@ -489,36 +490,35 @@ bool Creater::on_drawing_release(GdkEventButton * event)
 		Glib::RefPtr<Gdk::Window> win = drawing_.get_window();
 		Glib::RefPtr<Gdk::GC> gc = drawing_.get_style()->get_black_gc();
 
+		// get the recognizer instance
+		Recognizer & rec = Recognizer::Instance();
+
+		// try to recognize the stroke
+		rec.recognize( *(cur_char_->strokes_end() - 1) );
+
 		// draw the normalized version of last stroke
 		gc->set_rgb_fg_color(colors[3]);
-		Stroke ns = (cur_char_->strokes_end() - 1)->normalize();
+		Stroke ns = rec.normalize( *(cur_char_->strokes_end() - 1) );
 		for (Point::iterator pi = ns.points_begin();
 		     pi != ns.points_end() - 1;
 		     ++pi)
 		{
-			win->draw_line(
-				gc,
-				pi->x(),
-				pi->y(),
-				(pi+1)->x(),
-				(pi+1)->y()
-			);
+			win->draw_line( gc,
+				pi->x(), pi->y(),
+				(pi+1)->x(), (pi+1)->y());
 			win->draw_arc( gc, true,
-				pi->x() - 3,
-				pi->y() - 3,
+				pi->x() - 3, pi->y() - 3,
 				5, 5, 0, 23040);
 		}
 		Point::iterator pi = ns.points_end() - 1;
 		win->draw_arc( gc, true,
-			pi->x() - 3,
-			pi->y() - 3,
+			pi->x() - 3, pi->y() - 3,
 			5, 5, 0, 23040);
-
+	
 		// draw a dot
 		gc->set_rgb_fg_color(colors[1]);
 		win->draw_arc( gc, true,
-			event->x - 3,
-			event->y - 3,
+			event->x - 3, event->y - 3,
 			5, 5, 0, 23040);
 	}
 
@@ -576,32 +576,27 @@ void Creater::draw_character()
 		     pi != si->points_end() - 1;
 		     ++pi)
 		{
-			win->draw_line(
-				gc,
-				pi->x(),
-				pi->y(),
-				(pi+1)->x(),
-				(pi+1)->y()
-			);
+			win->draw_line( gc,
+				pi->x(), pi->y(),
+				(pi+1)->x(), (pi+1)->y());
 		}
+
+		// get the recognizer instance
+		Recognizer & rec = Recognizer::Instance();
+		rec.recognize( *si );
 
 		// draw the normalized version
 		gc->set_rgb_fg_color(colors[3]);
-		Stroke ns = si->normalize();
+		Stroke ns = rec.normalize( *si );
 		for (Point::iterator pi = ns.points_begin();
 		     pi != ns.points_end() - 1;
 		     ++pi)
 		{
-			win->draw_line(
-				gc,
-				pi->x(),
-				pi->y(),
-				(pi+1)->x(),
-				(pi+1)->y()
-			);
+			win->draw_line( gc,
+				pi->x(), pi->y(),
+				(pi+1)->x(), (pi+1)->y());
 			win->draw_arc( gc, true,
-				pi->x() - 3,
-				pi->y() - 3,
+				pi->x() - 3, pi->y() - 3,
 				5, 5, 0, 23040);
 		}
 
@@ -626,8 +621,7 @@ void Creater::draw_character()
 		{
 			gc->set_rgb_fg_color(colors[i]);
 			win->draw_arc( gc, true,
-				pi[i]->x() - 3,
-				pi[i]->y() - 3,
+				pi[i]->x() - 3, pi[i]->y() - 3,
 				5, 5, 0, 23040);
 		}
 	}
