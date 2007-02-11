@@ -226,7 +226,7 @@ Recognizer::recognize(Character const & chr, Database & db) const
 	sql += "stroke_count = " + toString(chr.stroke_count());
 	if (chr.get_name() != "")
 		sql += " AND character_name = '" + chr.get_name() + "'";
-	sql += "LIMIT 30;";
+	sql += " LIMIT 30;";
 
 	// collecting results
 	std::map< int, std::string > id_name;

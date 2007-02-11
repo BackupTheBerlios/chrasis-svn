@@ -1,5 +1,5 @@
 ## Makefile.am -- Process this file with automake to produce Makefile.in
-bin_PROGRAMS = charactercreater normalizer
+bin_PROGRAMS = charactercreater learn recognize
 
 noinst_HEADERS = charactercreater.h character.h creater.h chmlcodec.h database.h learner.h recognizer.h version.h
 include_HEADERS = character.h chmlcodec.h database.h learner.h recognizer.h version.h
@@ -18,8 +18,11 @@ charactercreater_SOURCES = main.cpp creater.cpp
 charactercreater_LDADD = @GTKMM_LIBS@ libchmlcodec.la libchrasis.la
 charactercreater_CXXFLAGS = @GTKMM_CFLAGS@
 
-normalizer_SOURCES = normalizer.cpp
-normalizer_LDADD = libchmlcodec.la libchrasis.la
+recognize_SOURCES = recognize.cpp
+recognize_LDADD = libchmlcodec.la libchrasis.la
+
+learn_SOURCES = learn.cpp
+learn_LDADD = libchmlcodec.la libchrasis.la
 
 # tried to use precompiled headers, but failed.
 #pch: common.h.gch

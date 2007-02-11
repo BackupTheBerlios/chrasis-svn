@@ -113,12 +113,6 @@ basic_learner::learn(Character const & chr)
 		remember(chr);
 	else
 		reflect(chr, likely.begin()->second.first);
-
-	CharacterMemories memories = recall(chr.get_name());
-	for (CharacterMemories::const_iterator it = memories.begin();
-	     it != memories.end();
-	     ++it)
-	     std::cout << it->second << std::endl;
 }
 
 basic_learner::CharacterMemories
