@@ -22,36 +22,69 @@
  * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
  */
 
-#ifndef _RECOGNIZER_H
-#define _RECOGNIZER_H
+#ifndef _COMMON_H
+#define _COMMON_H
 
-#include "common.h"
+// standard headers
+#include <complex>
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <list>
+#include <map>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <iterator>
 
-#include "character.h"
-#include "database.h"
+#ifdef USE_EXPORT
+# define EXPORT export
+#else
+# define EXPORT
+#endif
 
-class Recognizer
+EXPORT
+template <typename T>
+static inline
+std::string
+toString(T const & v)
 {
-public:
-	typedef double possibility_t;
-	typedef std::map<
-		possibility_t,
-		std::pair< int, std::string > > character_possibility_t;
+	std::ostringstream oss;
+	oss << v;
+	return oss.str();
+}
 
-	static Recognizer & Instance();
+template <>
+static inline
+std::string
+toString<double>(double const & v)
+{
+	std::ostringstream oss;
+	oss << std::setiosflags(std::ios::scientific)
+	    << std::setprecision(60)
+	    << v;
+	return oss.str();
+}
 
-	Stroke normalize(const Stroke &) const;
-	Character normalize(const Character &) const;
-	character_possibility_t recognize(const Character &, Database &) const;
+EXPORT
+template <typename T>
+static inline
+T
+fromString(std::string const & s)
+{
+	std::istringstream iss(s);
+	T ret;
+	iss >> ret;
+	return ret;
+}
 
-private:
-	double recognize_stroke_segment(const Point &, const Point &) const;
-	double recognize_stroke(const Stroke &, const Stroke &) const;
-
-	Recognizer() {};
-	Recognizer(const Recognizer &) {};
-	Recognizer & operator=(const Recognizer &) { return *this; };
-	~Recognizer() {};
-};
+EXPORT
+template <typename T>
+static inline
+T
+abs(const T v)
+{
+	return (v < T()) ? -v : v;
+}
 
 #endif

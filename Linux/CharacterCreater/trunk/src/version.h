@@ -25,8 +25,7 @@
 #ifndef _VERSION_H
 #define _VERSION_H
 
-#include <vector>
-#include <string>
+#include "common.h"
 
 #include <glibmm/i18n.h>
 

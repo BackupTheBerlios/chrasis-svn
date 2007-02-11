@@ -22,36 +22,23 @@
  * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
  */
 
-#ifndef _RECOGNIZER_H
-#define _RECOGNIZER_H
+#ifndef _ERRORHANDLER_H
+#define _ERRORHANDLER_H
 
 #include "common.h"
 
-#include "character.h"
-#include "database.h"
-
-class Recognizer
+class NullErrorHandler
 {
 public:
-	typedef double possibility_t;
-	typedef std::map<
-		possibility_t,
-		std::pair< int, std::string > > character_possibility_t;
-
-	static Recognizer & Instance();
-
-	Stroke normalize(const Stroke &) const;
-	Character normalize(const Character &) const;
-	character_possibility_t recognize(const Character &, Database &) const;
-
-private:
-	double recognize_stroke_segment(const Point &, const Point &) const;
-	double recognize_stroke(const Stroke &, const Stroke &) const;
-
-	Recognizer() {};
-	Recognizer(const Recognizer &) {};
-	Recognizer & operator=(const Recognizer &) { return *this; };
-	~Recognizer() {};
+	static void error(std::string const &) {};
 };
+
+class StdCerrErrorHandler
+{
+public:
+	static void error(std::string const & err) { std::cerr << err << std::endl; };
+};
+
+typedef StdCerrErrorHandler DefaultErrorHandler;
 
 #endif

@@ -29,17 +29,15 @@
 #include <libxml++/libxml++.h>
 #include <libxml++/parsers/textreader.h>
 
-#include <iostream>
-#include <vector>
-
+#include "common.h"
 #include "character.h"
 #include "chmlcodec.h"
 
 using namespace std;
 
-Character::collection read_chml(Glib::ustring ifilename)
+Character::collection read_chml(std::string ifilename)
 {
-	Character::collection ret_chars;
+	Character::collection ret_chrs;
 
 	try {
 		xmlpp::TextReader reader(ifilename);
@@ -74,13 +72,13 @@ Character::collection read_chml(Glib::ustring ifilename)
 						continue;
 
 					tmp_stroke.add_point(Point(
-						static_cast<int>(Glib::Ascii::strtod(reader.get_attribute("x"))),
-						static_cast<int>(Glib::Ascii::strtod(reader.get_attribute("y")))));
+						fromString<double>(reader.get_attribute("x")),
+						fromString<double>(reader.get_attribute("y"))));
 					reader.move_to_element();
 				}
 				tmp_char.add_stroke(tmp_stroke);
 			}
-			ret_chars.push_back(tmp_char);
+			ret_chrs.push_back(tmp_char);
 		}
 	}
 	catch (const std::exception & ex)
@@ -88,42 +86,42 @@ Character::collection read_chml(Glib::ustring ifilename)
 		std::cout << "Exception caught: " << ex.what() << std::endl;
 	}
 	
-	return ret_chars;
+	return ret_chrs;
 }
 
-void write_chml(Character::collection & chars, Glib::ustring ofilename)
+void write_chml(Character::collection & chrs, std::string ofilename)
 {
 	try
 	{
 		xmlpp::Document document;
 
 		// root node (<characters> ... </characters>)
-		xmlpp::Element * charsNode = document.create_root_node("characters");
+		xmlpp::Element * chrsNode = document.create_root_node("characters");
 
-		for (Character::iterator chars_i = chars.begin();
-		     chars_i != chars.end();
-		     ++chars_i)
+		for (Character::iterator ci = chrs.begin();
+		     ci != chrs.end();
+		     ++ci)
 		{
 			// character node (<character> ... </character>)
-			xmlpp::Element * charNode = charsNode->add_child("character");
-			charNode->set_attribute("name", chars_i->get_name());
+			xmlpp::Element * cNode = chrsNode->add_child("character");
+			cNode->set_attribute("name", ci->get_name());
 			
-			for (Stroke::iterator strokes_i = chars_i->strokes_begin();
-			     strokes_i != chars_i->strokes_end();
-			     ++strokes_i)
+			for (Stroke::iterator si = ci->strokes_begin();
+			     si != ci->strokes_end();
+			     ++si)
 			{
 				// stroke node (<stroke> ... </stroke>)
-				xmlpp::Element * strokeNode = charNode->add_child("stroke");
+				xmlpp::Element * sNode = cNode->add_child("stroke");
 				
-				for (Point::iterator points_i = strokes_i->points_begin();
-				     points_i != strokes_i->points_end();
-				     ++points_i)
+				for (Point::iterator pi = si->points_begin();
+				     pi != si->points_end();
+				     ++pi)
 				{
 					// point node (<point x="..." y="..." />)
-					xmlpp::Element * pointNode = strokeNode->add_child("point");
+					xmlpp::Element * pNode = sNode->add_child("point");
 
-					pointNode->set_attribute("x", Glib::Ascii::dtostr(points_i->x()));
-					pointNode->set_attribute("y", Glib::Ascii::dtostr(points_i->y()));
+					pNode->set_attribute("x", toString(pi->x()));
+					pNode->set_attribute("y", toString(pi->y()));
 				}
 			}
 		}

@@ -22,36 +22,35 @@
  * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
  */
 
-#ifndef _RECOGNIZER_H
-#define _RECOGNIZER_H
+#ifndef _LEANER_H
+#define _LEANER_H
 
 #include "common.h"
-
 #include "character.h"
 #include "database.h"
 
-class Recognizer
+class basic_learner
 {
 public:
-	typedef double possibility_t;
-	typedef std::map<
-		possibility_t,
-		std::pair< int, std::string > > character_possibility_t;
+	typedef std::map< int, Character >	CharacterMemories;
 
-	static Recognizer & Instance();
+	basic_learner(Database & db): db_(db) { prepare_database(); };
 
-	Stroke normalize(const Stroke &) const;
-	Character normalize(const Character &) const;
-	character_possibility_t recognize(const Character &, Database &) const;
+	void learn(Character const &);
 
 private:
-	double recognize_stroke_segment(const Point &, const Point &) const;
-	double recognize_stroke(const Stroke &, const Stroke &) const;
+	void prepare_database();
+	void remember(Character const &);
+	void reflect(Character const &, int const);
+	CharacterMemories recall(std::string const &);
 
-	Recognizer() {};
-	Recognizer(const Recognizer &) {};
-	Recognizer & operator=(const Recognizer &) { return *this; };
-	~Recognizer() {};
+	Database & db_;
 };
+
+typedef basic_learner Learner;
+
+#ifndef USE_EXPORT
+//# include "learner.hpp"
+#endif
 
 #endif

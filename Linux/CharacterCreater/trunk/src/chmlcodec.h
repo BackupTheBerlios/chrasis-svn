@@ -25,12 +25,10 @@
 #ifndef _CHMLCODEC_H
 #define _CHMLCODEC_H
 
-#include <vector>
-#include <glibmm.h>
-
+#include "common.h"
 #include "character.h"
 
-Character::collection read_chml(Glib::ustring);
-void write_chml(Character::collection &, Glib::ustring);
+Character::collection read_chml(std::string);
+void write_chml(Character::collection &, std::string);
 
 #endif

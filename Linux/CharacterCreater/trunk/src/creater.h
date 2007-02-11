@@ -25,12 +25,11 @@
 #ifndef _CREATER_H
 #define _CREATER_H
 
-#include <string>
-
 #include <gtkmm.h>
 #include <gdkmm.h>
 #include <glibmm.h>
 
+#include "common.h"
 #include "character.h"
 
 class Creater: public Gtk::Window

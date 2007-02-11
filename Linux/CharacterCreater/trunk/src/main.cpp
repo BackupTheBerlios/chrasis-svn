@@ -28,6 +28,7 @@
 
 #include <gtkmm.h>
 
+#include "common.h"
 #include "creater.h"
 #include "character.h"
 #include "chmlcodec.h"
