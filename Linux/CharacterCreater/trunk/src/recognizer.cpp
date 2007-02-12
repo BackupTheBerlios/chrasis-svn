@@ -200,33 +200,22 @@ Recognizer::recognize(Character const & chr, Database & db) const
 	Query q(db);
 
 	// find character
-	std::string sql("SELECT character_name, character_id FROM characters WHERE ");
+	std::string sql(
+		"SELECT character_name, character_id FROM characters WHERE"
+		"	stroke_count IN (" + toString(chr.stroke_count())
+	);
+	if (chr.get_name() != "")
+		sql += ") AND character_name IN ('" + chr.get_name() + "'";
 	for (Stroke::const_iterator si = chr.strokes_begin();
 	     si != chr.strokes_end();
 	     ++si)
 	{
-		sql += "character_id IN ( SELECT character_id FROM strokes WHERE ";
-		for (Point::const_iterator pi = si->points_begin();
-		     pi != si->points_end();
-		     ++pi)
-		{
-			std::string s_pt_x = toString(pi->x());
-			std::string s_pt_y = toString(pi->y());
-
-			sql += "stroke_id IN ( SELECT stroke_id FROM points WHERE "
-			       "	sequence = " + toString(pi - si->points_begin()) + " "
-			       "ORDER BY "
-			       "	(x - " + s_pt_x + ") * (x - " + s_pt_x + ") +"
-			       "	(y - " + s_pt_y + ") * (y - " + s_pt_y + ") "
-			       "ASC) AND ";
-		}
-		sql += "pt_count = " + toString(si->point_count()) + " AND "
-		       "sequence = " + toString(si - chr.strokes_begin()) + ") AND ";
+		sql += ") AND character_id IN ("
+		       "	SELECT character_id FROM strokes WHERE "
+		       "		pt_count IN (" + toString(si->point_count()) + ") AND "
+		       "		sequence IN (" + toString(si - chr.strokes_begin()) + ")";
 	}
-	sql += "stroke_count = " + toString(chr.stroke_count());
-	if (chr.get_name() != "")
-		sql += " AND character_name = '" + chr.get_name() + "'";
-	sql += " LIMIT 30;";
+	sql += ");";
 
 	// collecting results
 	std::map< int, std::string > id_name;

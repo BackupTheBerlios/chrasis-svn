@@ -61,7 +61,7 @@ toString<double>(double const & v)
 {
 	std::ostringstream oss;
 	oss << std::setiosflags(std::ios::scientific)
-	    << std::setprecision(60)
+	    << std::setprecision(55)
 	    << v;
 	return oss.str();
 }

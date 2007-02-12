@@ -89,6 +89,21 @@ basic_learner::prepare_database()
 		"		strokes.sequence ASC,"
 		"		points.sequence ASC;"
 	);
+	q.execute(
+		"CREATE INDEX IF NOT EXISTS stroke_seq ON strokes (sequence);"
+	);
+	q.execute(
+		"CREATE INDEX IF NOT EXISTS stroke_pcnt ON strokes (pt_count);"
+	);
+	q.execute(
+		"CREATE INDEX IF NOT EXISTS pt_seq ON points (sequence);"
+	);
+	q.execute(
+		"CREATE INDEX IF NOT EXISTS chr_scnt ON characters (stroke_count);"
+	);
+	q.execute(
+		"CREATE INDEX IF NOT EXISTS chr_name ON characters (character_name);"
+	);
 	q.execute("END TRANSACTION;");
 }
 
@@ -98,18 +113,9 @@ basic_learner::learn(Character const & chr)
 	Recognizer &rec = Recognizer::Instance();
 	Recognizer::character_possibility_t likely = rec.recognize(chr, db_);
 
-	std::cout << "likely:" << std::endl;
-	for (Recognizer::character_possibility_t::iterator it = likely.begin();
-	     it != likely.end();
-	     ++it)
-	{
-		std::cout << "\t" 
-			  << it->second.second << " (" 
-			  << it->second.first << ") [" 
-			  << it->first << "]" << std::endl;
-	}
-
-	if (likely.size() == 0)
+	if (likely.size() == 0 ||
+	    likely.begin()->first > 0.15) // the 0.1 is a magic number.
+	    				 // i'm still testing for a good enough threshold.
 		remember(chr);
 	else
 		reflect(chr, likely.begin()->second.first);

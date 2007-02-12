@@ -33,10 +33,11 @@ int main(int argc, char* argv[])
 		     it != likely.end();
 		     ++it)
 		{
-			std::cout << "\t" 
-				  << it->second.second << " (" 
-				  << it->second.first << ") [" 
-				  << it->first << "]" << std::endl;
+			std::cout << "\t(" << it->second.first << ") " 
+				  << it->second.second << " [" 
+				  << it->first;
+			std::cout << ((it->second.second == ci->get_name()) ? "] *" : "]") ;
+			std::cout << std::endl;
 		}
 	}
 
