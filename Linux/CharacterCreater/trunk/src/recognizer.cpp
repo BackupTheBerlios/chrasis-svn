@@ -40,15 +40,12 @@ Recognizer & Recognizer::Instance()
 // !!! FIXME !!! 
 // !!! Magic Numbers !!!
 static const double ANGLE_THRESHOLD = 30.0 / 180.0 * M_PI;	//< 30 deg
-static const double DIST_THRESHOLD = 1.0 / 10.0;		//< 1/10 of the total length
+static const double DIST_THRESHOLD = 1.0 / 10.0;		//< 1/10 of diagonal line
 Stroke
-Recognizer::normalize( const Stroke & orig_stroke ) const
+Recognizer::normalize( const Stroke & orig_stroke, Point::value_t const dist_threshold ) const
 {
 	Point::collection normalized;
 	copy(orig_stroke.points_begin(), orig_stroke.points_end(), back_inserter(normalized));
-
-	// find threshold;
-	Point::value_t dist_threshold = orig_stroke.length() * DIST_THRESHOLD;
 
 	// get rid of useless points
 	bool erased_something = true;
@@ -98,6 +95,8 @@ Recognizer::normalize( const Stroke & orig_stroke ) const
 			else
 				++pi;
 		}
+
+		/*
 		// snap to origional stroke
 		for (Point::iterator pi = normalized.begin();
 		     pi != normalized.end();
@@ -116,6 +115,7 @@ Recognizer::normalize( const Stroke & orig_stroke ) const
 				}
 			}
 		}
+		*/
 	}
 
 	Stroke ret;
@@ -127,26 +127,19 @@ Recognizer::normalize( const Stroke & orig_stroke ) const
 }
 
 Character
-Recognizer::normalize(const Character & character) const
+Recognizer::normalize(const Character & chr) const
 {
-	if (character.stroke_count() == 0 ||
-	    character.strokes_begin()->point_count() == 0)
-		return character;
+	if (chr.stroke_count() == 0 ||
+	    chr.strokes_begin()->point_count() == 0)
+		return chr;
 
-	Character ret(character.get_name());
-
-	for (Stroke::const_iterator si = character.strokes_begin();
-	     si != character.strokes_end();
-	     ++si)
-	{
-		ret.add_stroke(normalize(*si));
-	}
+	Character ret(chr.get_name());
 
 	// find left-top and right-bottom point
-	Point lt = *(ret.strokes_begin()->points_begin()),
-	      rb = *(ret.strokes_begin()->points_begin());
-	for (Stroke::const_iterator si = ret.strokes_begin();
-	     si != ret.strokes_end();
+	Point lt = *(chr.strokes_begin()->points_begin()),
+	      rb = *(chr.strokes_begin()->points_begin());
+	for (Stroke::const_iterator si = chr.strokes_begin();
+	     si != chr.strokes_end();
 	     ++si)
 	{
 		for (Point::const_iterator pi = si->points_begin();
@@ -164,7 +157,7 @@ Recognizer::normalize(const Character & character) const
 		}
 	}
 
-	// okay, find our need info:
+	// okay, find our needed info:
 	//   adjusted left-top point
 	//   distance
 	Point::value_t const distance = std::max(
@@ -174,7 +167,15 @@ Recognizer::normalize(const Character & character) const
 	lt.x() = (lt.x() + rb.x() - distance) / 2;
 	lt.y() = (lt.y() + rb.y() - distance) / 2;
 
-	// walk through the character
+	// walk through each strokes, simplize each strokes
+	for (Stroke::const_iterator si = chr.strokes_begin();
+	     si != chr.strokes_end();
+	     ++si)
+	{
+		ret.add_stroke(normalize(*si, std::sqrt(distance*distance*2) * DIST_THRESHOLD));
+	}
+
+	// walk through the character and adjust the point to range [0...1)
 	for (Stroke::iterator si = ret.strokes_begin();
 	     si != ret.strokes_end();
 	     ++si)

@@ -37,6 +37,9 @@
 #include <vector>
 #include <iterator>
 
+// platform dependent header
+#include <sys/stat.h>
+
 #ifdef USE_EXPORT
 # define EXPORT export
 #else
@@ -85,6 +88,16 @@ T
 abs(const T v)
 {
 	return (v < T()) ? -v : v;
+}
+
+bool
+static inline
+fexist( std::string const & filename )
+{
+	struct stat buffer;
+	if ( stat( filename.c_str(), &buffer ) )
+		return false;
+	return true;
 }
 
 #endif

@@ -254,8 +254,22 @@ void Creater::on_menu_file_save()
 
 void Creater::on_menu_file_saveas()
 {
-	if (get_filename(SAVEAS_DIALOG, current_filename))
-		write_chml(cur_chars_, current_filename);
+	if (!get_filename(SAVEAS_DIALOG, current_filename))
+		return;
+
+	if (fexist(current_filename))
+	{
+		Gtk::MessageDialog md(
+			_("File already exists!\nOverwrite?"),
+			false,
+			Gtk::MESSAGE_QUESTION,
+			Gtk::BUTTONS_YES_NO);
+
+		if (md.run() != Gtk::RESPONSE_YES);
+			return;
+	}
+
+	write_chml(cur_chars_, current_filename);
 }
 
 void Creater::on_menu_file_import()
@@ -356,7 +370,6 @@ void Creater::on_popup_delete()
 		     iter;
 		     ++iter)
 			(*iter)[col_id_] = (*iter)[col_id_] - 1;
-
 	}
 }
 
@@ -440,9 +453,7 @@ bool Creater::on_drawing_press(GdkEventButton * event)
 		Glib::RefPtr<Gdk::GC> gc = drawing_.get_style()->get_black_gc();
 
 		// draw a number before each stroke
-		stringstream ss;
-		ss << ++stroke_num;
-		Glib::RefPtr<Pango::Layout> num = create_pango_layout(ss.str());
+		Glib::RefPtr<Pango::Layout> num = create_pango_layout(toString(++stroke_num));
 		int lx, ly;
 		num->get_size(lx, ly);
 		gc->set_rgb_fg_color(colors[2]);
@@ -480,26 +491,6 @@ bool Creater::on_drawing_release(GdkEventButton * event)
 
 		Glib::RefPtr<Gdk::Window> win = drawing_.get_window();
 		Glib::RefPtr<Gdk::GC> gc = drawing_.get_style()->get_black_gc();
-
-		// get the recognizer instance
-		Recognizer & rec = Recognizer::Instance();
-		gc->set_rgb_fg_color(colors[3]);
-		Stroke ns = rec.normalize( *(cur_char_->strokes_end() - 1) );
-		for (Point::iterator pi = ns.points_begin();
-		     pi != ns.points_end() - 1;
-		     ++pi)
-		{
-			win->draw_line( gc,
-				pi->x(), pi->y(),
-				(pi+1)->x(), (pi+1)->y());
-			win->draw_arc( gc, true,
-				pi->x() - 3, pi->y() - 3,
-				5, 5, 0, 23040);
-		}
-		Point::iterator pi = ns.points_end() - 1;
-		win->draw_arc( gc, true,
-			pi->x() - 3, pi->y() - 3,
-			5, 5, 0, 23040);
 
 		// draw a dot
 		gc->set_rgb_fg_color(colors[1]);
@@ -598,6 +589,7 @@ void Creater::draw_character()
 
 	stroke_num = 0;
 	// draw the normalized version
+	int scale = 100;
 	Character nc = rec.normalize( *cur_char_ );
 	for (Stroke::iterator si = nc.strokes_begin();
 	     si != nc.strokes_end();
@@ -609,23 +601,21 @@ void Creater::draw_character()
 		     ++pi)
 		{
 			win->draw_line( gc,
-				pi->x() * 200, pi->y() * 200,
-				(pi+1)->x() * 200, (pi+1)->y() * 200);
+				pi->x() * scale, pi->y() * scale,
+				(pi+1)->x() * scale, (pi+1)->y() * scale);
 			win->draw_arc( gc, true,
-				pi->x() * 200 - 3, pi->y() * 200 - 3,
+				pi->x() * scale - 3, pi->y() * scale - 3,
 				5, 5, 0, 23040);
 		}
 
 		// draw a number before each stroke
-		stringstream ss;
-		ss << ++stroke_num;
-		Glib::RefPtr<Pango::Layout> num = create_pango_layout(ss.str());
+		Glib::RefPtr<Pango::Layout> num = create_pango_layout(toString(++stroke_num));
 		int lx, ly;
 		num->get_size(lx, ly);
 		win->draw_layout(
 			gc,
-			si->points_begin()->x() * 200 - lx / Pango::SCALE - 5,
-			si->points_begin()->y() * 200 - ly / Pango::SCALE - 5,
+			si->points_begin()->x() * scale - lx / Pango::SCALE - 5,
+			si->points_begin()->y() * scale - ly / Pango::SCALE - 5,
 			num
 		);
 
@@ -637,7 +627,7 @@ void Creater::draw_character()
 		{
 			gc->set_rgb_fg_color(colors[i]);
 			win->draw_arc( gc, true,
-				pi[i]->x() * 200 - 3, pi[i]->y() * 200 - 3,
+				pi[i]->x() * scale - 3, pi[i]->y() * scale - 3,
 				5, 5, 0, 23040);
 		}
 	}

@@ -40,14 +40,11 @@ public:
 
 	static Recognizer & Instance();
 
-	Stroke normalize(const Stroke &) const;
+	Stroke normalize(const Stroke &, const Point::value_t) const;
 	Character normalize(const Character &) const;
 	character_possibility_t recognize(const Character &, Database &) const;
 
 private:
-	double recognize_stroke_segment(const Point &, const Point &) const;
-	double recognize_stroke(const Stroke &, const Stroke &) const;
-
 	Recognizer() {};
 	Recognizer(const Recognizer &) {};
 	Recognizer & operator=(const Recognizer &) { return *this; };
