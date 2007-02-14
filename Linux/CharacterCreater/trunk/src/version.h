@@ -41,10 +41,10 @@ public:
 		PROGRAM_NAME_("Character Creater"),
 		PROGRAM_VERSION_(_("0.0.1")),
 		PROGRAM_COPYRIGHT_("Victor Tseng"),
-		PROGRAM_COMMENTS_(_("Character Creater is a tool to create characters for the RAOCHRS -- for development purpose.")),
+		PROGRAM_COMMENTS_(_("Character Creater is a tool to create characters for the CHRASIS -- for development purpose.")),
 		PROGRAM_LICENSE_(_("GPL")),
-		PROGRAM_WEBSITE_(_("http://rt.openfoundry.org/Foundry/Project/Wiki/624/")),
-		PROGRAM_WEBSITE_LABEL_(_("RAOCHRS Wiki"))
+		PROGRAM_WEBSITE_(_("http://chrasis.berlios.de/")),
+		PROGRAM_WEBSITE_LABEL_(_("CHRASIS"))
 	{
 		PROGRAM_AUTHORS_.push_back("Victor Tseng <palatis@gentoo.tw>");
 	};

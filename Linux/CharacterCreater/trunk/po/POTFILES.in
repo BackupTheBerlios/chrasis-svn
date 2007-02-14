@@ -1,5 +1,2 @@
 src/version.h
-src/character.cpp
-src/chmlcodec.cpp
 src/creater.cpp
-src/main.cpp
