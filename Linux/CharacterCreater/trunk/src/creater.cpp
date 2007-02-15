@@ -111,12 +111,18 @@ Creater::Creater():
 	//treeview_.append_column("ID", col_id_);
 	treeview_.get_column(0)->set_reorderable();
 
-	drawing_.signal_expose_event().connect( sigc::mem_fun(*this, &Creater::on_drawing_expose) );
-	eventbox_drawing_.signal_button_press_event().connect( sigc::mem_fun(*this, &Creater::on_drawing_press) );
-	eventbox_drawing_.signal_button_release_event().connect( sigc::mem_fun(*this, &Creater::on_drawing_release) );
-	eventbox_drawing_.signal_motion_notify_event().connect( sigc::mem_fun(*this, &Creater::on_drawing_motion_notify) );
-	treeview_.signal_button_press_event().connect_notify( sigc::mem_fun(*this, &Creater::on_treeview_button_press) );
-	treeview_.signal_row_activated().connect( sigc::mem_fun(*this, &Creater::on_treeview_row_activated) );
+	drawing_.signal_expose_event().connect( 
+		sigc::mem_fun(*this, &Creater::on_drawing_expose) );
+	eventbox_drawing_.signal_button_press_event().connect( 
+		sigc::mem_fun(*this, &Creater::on_drawing_press) );
+	eventbox_drawing_.signal_button_release_event().connect( 
+		sigc::mem_fun(*this, &Creater::on_drawing_release) );
+	eventbox_drawing_.signal_motion_notify_event().connect( 
+		sigc::mem_fun(*this, &Creater::on_drawing_motion_notify) );
+	treeview_.signal_button_press_event().connect_notify( 
+		sigc::mem_fun(*this, &Creater::on_treeview_button_press) );
+	treeview_.signal_row_activated().connect( 
+		sigc::mem_fun(*this, &Creater::on_treeview_row_activated) );
 
 	// hierarchy
 	add(vbox1_);

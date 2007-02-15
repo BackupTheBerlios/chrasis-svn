@@ -90,6 +90,13 @@ basic_learner::prepare_database()
 		"		points.sequence ASC;"
 	);
 	q.execute(
+		"CREATE VIEW IF NOT EXISTS stats AS"
+		"	SELECT"
+		"		SUM(sample_count)		 AS total_sample_count,"
+		"		COUNT(DISTINCT character_name)	 AS total_different_characters"
+		"	FROM characters;"
+	);
+	q.execute(
 		"CREATE INDEX IF NOT EXISTS stroke_seq ON strokes (sequence);"
 	);
 	q.execute(
@@ -114,7 +121,7 @@ basic_learner::learn(Character const & chr)
 	Recognizer::character_possibility_t likely = rec.recognize(chr, db_);
 
 	if (likely.size() == 0 ||
-	    likely.begin()->first > 0.15) // the 0.1 is a magic number.
+	    likely.begin()->first > 0.15) // the number (0.15) is a magic number.
 	    				 // i'm still testing for a good enough threshold.
 		remember(chr);
 	else
