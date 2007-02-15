@@ -40,7 +40,7 @@ Recognizer & Recognizer::Instance()
 // !!! FIXME !!! 
 // !!! Magic Numbers !!!
 static const double ANGLE_THRESHOLD = 30.0 / 180.0 * M_PI;	//< 30 deg
-static const double DIST_THRESHOLD = 1.0 / 10.0;		//< 1/10 of diagonal line
+static const double DIST_THRESHOLD = 1.0 / 15.0;		//< 1/15 of diagonal line
 Stroke
 Recognizer::normalize( const Stroke & orig_stroke, Point::value_t const dist_threshold ) const
 {
@@ -48,14 +48,12 @@ Recognizer::normalize( const Stroke & orig_stroke, Point::value_t const dist_thr
 	copy(orig_stroke.points_begin(), orig_stroke.points_end(), back_inserter(normalized));
 
 	// get rid of useless points
-	bool erased_something = true;
-	while (erased_something)
+	bool erased_something;
+	do
 	{
-		erased_something = false;
-
 		// erase segment with too-close angles
-		bool erased_angle = true;
-		while (erased_angle)
+		bool erased_angle;
+		do
 		{
 			erased_angle = false;
 			for (Point::iterator pi = normalized.begin();
@@ -66,16 +64,19 @@ Recognizer::normalize( const Stroke & orig_stroke, Point::value_t const dist_thr
 					break;
 				double angle = std::min(
 					abs((*pf - *pm).arg() - (*pm - *pl).arg()),
-					abs((*pf - *pm).arg() + (*pm - *pl).arg()));
+					abs((*pf - *pm).arg() + (*pm - *pl).arg())
+				);
 				if (angle < ANGLE_THRESHOLD)
 				{
-					erased_something = erased_angle = true;
+					erased_angle = true;
 					pi = normalized.erase(pm);
 				}
 				else
 					++pi;
 			}
 		}
+		while (erased_angle);
+		erased_something = erased_angle;
 
 		// erase segment with too-short distance
 		int norm_size = normalized.size();
@@ -95,28 +96,8 @@ Recognizer::normalize( const Stroke & orig_stroke, Point::value_t const dist_thr
 			else
 				++pi;
 		}
-
-		/*
-		// snap to origional stroke
-		for (Point::iterator pi = normalized.begin();
-		     pi != normalized.end();
-		     ++pi)
-		{
-			Point p(*pi);
-			double min_distance = (p - *(orig_stroke.points_begin())).abs();
-			for (Point::const_iterator ppi = orig_stroke.points_begin();
-			     ppi != orig_stroke.points_end();
-			     ++ppi)
-			{
-				if ((p - *ppi).abs() < min_distance)
-				{
-					min_distance = (p - *ppi).abs();
-					*pi = *ppi;
-				}
-			}
-		}
-		*/
 	}
+	while (erased_something);
 
 	Stroke ret;
 	for (Point::iterator pi = normalized.begin();

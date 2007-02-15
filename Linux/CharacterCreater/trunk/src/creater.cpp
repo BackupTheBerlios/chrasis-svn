@@ -352,7 +352,6 @@ void Creater::on_popup_edit()
 
 	Gtk::Label dlg_label(_("Input a chinese character."));
 	Gtk::Entry dlg_entry;
-	dlg_entry.set_max_length(1);
 	dlg.get_vbox()->pack_start(dlg_label);
 	dlg.get_vbox()->pack_start(dlg_entry);
 	dlg.get_vbox()->show_all();
