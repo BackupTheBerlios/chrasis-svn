@@ -1,14 +1,23 @@
 #!/bin/bash
 
-mkdir -p good_chml
+mkdir -p processed
+mkdir -p organized
+
+# learn each chml
 for I in `find . -maxdepth 1 -type f -name \*.chml`
 do
 	../learn "${I}" result.db
-	fn=good_chml/${I}
+done
+sqlite3 result.db 'ANALYZE;VACUUM;'
+
+../chml_organizer . ./organized/
+
+for I in `find . -maxdepth 1 -type f -name \*.chml`
+do
+	fn=processed/${I}
 	while [ -e ${fn} ]
 	do
-		fn=good_chml/${I/.chml/_$(uuidgen).chml}
+		fn=processed/${I/.chml/_$(uuidgen).chml}
 	done
 	mv -i ${I} $fn
 done
-sqlite3 result.db 'ANALYZE;VACUUM;'
