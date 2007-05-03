@@ -458,7 +458,8 @@ bool Creater::on_drawing_press(GdkEventButton * event)
 		Glib::RefPtr<Gdk::GC> gc = drawing_.get_style()->get_black_gc();
 
 		// draw a number before each stroke
-		Glib::RefPtr<Pango::Layout> num = create_pango_layout(toString(++stroke_num));
+		Glib::RefPtr<Pango::Layout> num =
+			create_pango_layout(boost::lexical_cast<std::string>(++stroke_num));
 		int lx, ly;
 		num->get_size(lx, ly);
 		gc->set_rgb_fg_color(colors[2]);
@@ -614,7 +615,8 @@ void Creater::draw_character()
 		}
 
 		// draw a number before each stroke
-		Glib::RefPtr<Pango::Layout> num = create_pango_layout(toString(++stroke_num));
+		Glib::RefPtr<Pango::Layout> num =
+			create_pango_layout(boost::lexical_cast<std::string>(++stroke_num));
 		int lx, ly;
 		num->get_size(lx, ly);
 		win->draw_layout(

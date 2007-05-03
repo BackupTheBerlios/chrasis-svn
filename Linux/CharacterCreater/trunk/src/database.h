@@ -30,22 +30,8 @@
 
 #include "errorhandler.h"
 
-// sqlite3 callbacks
-void sqlite3_callback_norm(sqlite3_context*,int,sqlite3_value**);
-void sqlite3_callback_sqrt(sqlite3_context*,int,sqlite3_value**);
-
-template <typename EH = DefaultErrorHandler> class basic_database;
-template <typename EH = DefaultErrorHandler> class basic_resultrow;
-template <typename DATABASE_T > class basic_query;
-
-typedef basic_database< > Database;
-typedef basic_resultrow< > ResultRow;
-typedef basic_query< Database > Query;
-
-template <typename EH>
-class basic_database {
+class Database {
 public:
-	typedef EH errorhandler_t;
 
 	struct OPENDB {
 		typedef std::list<OPENDB *> collection;
@@ -55,15 +41,15 @@ public:
 		bool busy;
 	};
 
-	basic_database(std::string const &);
-	virtual ~basic_database();
+	Database(std::string const &);
+	virtual ~Database();
 
 	bool Connected();
 
 	void error(std::string const & err) {
 		std::ostringstream serr;
-		serr << "basic_database: " << err;
-		EH::error(serr.str());
+		serr << "Database: " << err;
+		DefaultErrorHandler::error(serr.str());
 	};
 
 	OPENDB *grabdb();
@@ -76,54 +62,73 @@ public:
 	static uint64_t a2ubigint(std::string const &);
 
 private:
-	basic_database(const basic_database &) {};
-	basic_database& operator=(const basic_database &) { return *this; };
+	Database(const Database &) {};
+	Database& operator=(const Database &) { return *this; };
 
 	std::string database_;
-	typename OPENDB::collection opendbs_;
+	OPENDB::collection opendbs_;
 };
 
-template <typename EH>
-class basic_resultrow
+class ResultRow
 {
 public:
-	typedef EH errorhandler_t;
+	typedef Database		database_t;
+	typedef boost::variant <
+		long long,
+		double,
+		std::string >		value_t;
 
-	const long long get_int(std::string const & idx)
-	{ return storage_int_[ nmap_[idx] ]; }
-	const double get_real(std::string const & idx)
-	{ return storage_real_[ nmap_[idx] ]; }
-	const std::string get_text(std::string const & idx)
-	{ return storage_text_[ nmap_[idx] ]; }
+	ResultRow (sqlite3_stmt *res)
+	{
+		if (res == NULL)
+			return;
 
-	void push_back(const std::string & idx, const long long v)
-	{ nmap_[idx] = storage_int_.size(); storage_int_.push_back(v); }
-	void push_back(const std::string & idx, const double v)
-	{ nmap_[idx] = storage_real_.size(); storage_real_.push_back(v); };
-	void push_back(const std::string & idx, const std::string v)
-	{ nmap_[idx] = storage_text_.size(); storage_text_.push_back(v); };
+		int i = 0;
+		const char *p;
+		while (p = sqlite3_column_name(res, i))
+		{
+			const char *tmp;
+			switch ( sqlite3_column_type(res, i) )
+			{
+			case SQLITE_INTEGER:
+				values_[ p ] = sqlite3_column_int64(res, i);
+				break;
+			case SQLITE_FLOAT:
+				values_[ p ] = sqlite3_column_double(res, i);
+				break;
+			case SQLITE_TEXT:
+				tmp = (const char *)sqlite3_column_text(res, i);
+				values_[ p ] = tmp ? tmp : "";
+				break;
+			default:
+				error(
+					"c-tor: unhandled type [" + 
+					std::string(sqlite3_column_decltype(res, i)) + 
+					"]."
+				);
+			}
+			++i;
+		}
+	}
 
+	template <typename T>
+	T get(std::string const & idx)
+	{ return boost::get<T>(values_[idx]); }
 private:
-	std::map< std::string, int > nmap_;
-	std::vector< long long > storage_int_;
-	std::vector< double > storage_real_;
-	std::vector< std::string > storage_text_;
+	std::map< std::string, value_t > values_;
 
-	void error(std::string const & errmsg) { errorhandler_t::error("basic_resultrow: " + errmsg); };
+	void error(std::string const & errmsg) { DefaultErrorHandler::error("Resultrow: " + errmsg); };
 };
 
-template < typename DB_T >
-class basic_query {
+class Query {
 public:
-	typedef DB_T	database_t;
+	typedef Database database_t;
 
-	basic_query(database_t &);
-	basic_query(database_t &, const std::string &);
-	~basic_query();
+	Query(database_t &);
+	Query(database_t &, const std::string &);
+	~Query();
 
-	void error(const std::string & errstr) {
-		db_.error(std::string("basic_query: ") + errstr);
-	};
+	void error(const std::string & errstr) { db_.error(std::string("Query: ") + errstr); };
 
 	bool Connected();
 	database_t & GetDatabase() const { return db_; };
@@ -144,18 +149,14 @@ public:
 	int GetErrNo();
 
 private:
-	basic_query(const basic_query & q): db_(q.GetDatabase()) {}
-	basic_query & operator=(const basic_query&) { return *this; }
+	Query(const Query & q): db_(q.GetDatabase()) {}
+	Query & operator=(const Query&) { return *this; }
 
 	database_t& db_;			//< Reference to database object
-	typename database_t::OPENDB *odb_;	//< Connection pool handle
+	database_t::OPENDB *odb_;	//< Connection pool handle
 	sqlite3_stmt *res_;			//< Stored result
 	std::string last_query_;		//< Last query
 	bool more_rows_;			//< true for more results
 };
-
-#ifndef USE_EXPORT
-//# include "database.hpp"
-#endif
 
 #endif

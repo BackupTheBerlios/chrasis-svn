@@ -142,7 +142,8 @@ basic_learner::recall(std::string const & n)
 		Character chr(n);
 		qs.get_result(
 			"SELECT stroke_id FROM strokes WHERE"
-			"	character_id = " + toString(rc.get_int("character_id")) + " "
+			"	character_id = " +
+					boost::lexical_cast<std::string>(rc.get<long long>("character_id")) + " "
 			"ORDER BY sequence ASC;"
 		);
 		while (qs.more_rows())
@@ -152,13 +153,14 @@ basic_learner::recall(std::string const & n)
 			Stroke s;
 			qp.get_result(
 				"SELECT x, y FROM points WHERE"
-				"	stroke_id = " + toString(rs.get_int("stroke_id")) + " "
+				"	stroke_id = " +
+						boost::lexical_cast<std::string>(rs.get<long long>("stroke_id")) + " "
 				"ORDER BY sequence ASC;"
 			);
 			while (qp.more_rows())
 			{
 				ResultRow rp = qp.fetch_row();
-				s.add_point(rp.get_real("x"), rp.get_real("y"));
+				s.add_point(rp.get<double>("x"), rp.get<double>("y"));
 			}
 			qp.free_result();
 
@@ -166,7 +168,7 @@ basic_learner::recall(std::string const & n)
 		}
 		qs.free_result();
 
-		ret[rc.get_int("character_id")] = chr;
+		ret[rc.get<long long>("character_id")] = chr;
 	}
 	qc.free_result();
 
@@ -183,30 +185,30 @@ Learner::remember(Character const & chr)
 	q.execute(
 		"INSERT INTO characters (character_name, stroke_count) VALUES ("
 		"	'" + chr.get_name() + "', "
-		"	" + toString(chr.stroke_count()) + ");"
+		"	" + boost::lexical_cast<std::string>(chr.stroke_count()) + ");"
 	);
-	std::string chr_id = toString(q.last_insert_rowid());
+	std::string chr_id = boost::lexical_cast<std::string>(q.last_insert_rowid());
 	for (Stroke::const_iterator si = chr.strokes_begin();
 	     si != chr.strokes_end();
 	     ++si)
 	{
 		q.execute(
 			"INSERT INTO strokes (sequence, character_id, pt_count) VALUES ("
-			"	" + toString(si - chr.strokes_begin()) + ", "
+			"	" + boost::lexical_cast<std::string>(si - chr.strokes_begin()) + ", "
 			"	" + chr_id + ", "
-			"	" + toString(si->point_count()) + ");"
+			"	" + boost::lexical_cast<std::string>(si->point_count()) + ");"
 		);
-		std::string stroke_id = toString(q.last_insert_rowid());
+		std::string stroke_id = boost::lexical_cast<std::string>(q.last_insert_rowid());
 		for (Point::const_iterator pi = si->points_begin();
 		     pi != si->points_end();
 		     ++pi)
 		{
 			q.execute(
 				"INSERT INTO points (sequence, stroke_id, x, y) VALUES ("
-				"	" + toString(pi - si->points_begin()) + ", "
+				"	" + boost::lexical_cast<std::string>(pi - si->points_begin()) + ", "
 				"	" + stroke_id + ", "
-				"	" + toString(pi->x()) + ", "
-				"	" + toString(pi->y()) +	");"
+				"	" + boost::lexical_cast<std::string>(pi->x()) + ", "
+				"	" + boost::lexical_cast<std::string>(pi->y()) +	");"
 			);
 		}
 	}
@@ -218,12 +220,12 @@ void
 basic_learner::reflect(Character const & chr, int const chr_id)
 {
 	Query q(db_);
-	std::string s_chr_id = toString(chr_id);
+	std::string s_chr_id = boost::lexical_cast<std::string>(chr_id);
 
 	q.get_result("SELECT sample_count FROM characters WHERE character_id = " + s_chr_id + ";");
 	std::string sample_cnt;
 	if (q.more_rows())
-		sample_cnt = toString(q.fetch_row().get_int("sample_count") + 1);
+		sample_cnt = boost::lexical_cast<std::string>(q.fetch_row().get<long long>("sample_count") + 1);
 	else
 		return;
 	q.free_result();
@@ -232,7 +234,9 @@ basic_learner::reflect(Character const & chr, int const chr_id)
 	std::vector< std::string > s_stroke_ids;
 	if (q.more_rows())
 		do
-			s_stroke_ids.push_back(toString(q.fetch_row().get_int("stroke_id")));
+			s_stroke_ids.push_back(
+				boost::lexical_cast<std::string>(q.fetch_row().get<long long>("stroke_id"))
+			);
 		while (q.more_rows());
 	else
 		return;
@@ -250,11 +254,11 @@ basic_learner::reflect(Character const & chr, int const chr_id)
 		{
 			q.execute(
 				"UPDATE points SET"
-				"	x = x + ( " + toString(pi->x()) + " - x ) / " + sample_cnt + ", "
-				"	y = y + ( " + toString(pi->y()) + " - y ) / " + sample_cnt + " "
+				"	x = x + ( " + boost::lexical_cast<std::string>(pi->x()) + " - x ) / " + sample_cnt + ", "
+				"	y = y + ( " + boost::lexical_cast<std::string>(pi->y()) + " - y ) / " + sample_cnt + " "
 				"WHERE"
 				"	stroke_id = " + s_stroke_ids[si - chr.strokes_begin()] + " AND"
-				"	sequence = " + toString(pi - si->points_begin()) + ";"
+				"	sequence = " + boost::lexical_cast<std::string>(pi - si->points_begin()) + ";"
 			);
 		}
 	}

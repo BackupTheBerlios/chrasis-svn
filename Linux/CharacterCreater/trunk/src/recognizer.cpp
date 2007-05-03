@@ -23,9 +23,6 @@
  */
 
 #include "common.h"
-
-
-#include "common.h"
 #include "recognizer.h"
 
 #include <iterator>
@@ -184,7 +181,7 @@ Recognizer::recognize(Character const & chr, Database & db) const
 	// find character
 	std::string sql(
 		"SELECT character_name, character_id FROM characters WHERE"
-		"	stroke_count IN (" + toString(chr.stroke_count())
+		"	stroke_count IN (" + boost::lexical_cast<std::string>(chr.stroke_count())
 	);
 	if (chr.get_name() != "")
 		sql += ") AND character_name IN ('" + chr.get_name() + "'";
@@ -194,27 +191,27 @@ Recognizer::recognize(Character const & chr, Database & db) const
 	{
 		sql += ") AND character_id IN ("
 		       "	SELECT character_id FROM strokes WHERE "
-		       "		pt_count IN (" + toString(si->point_count()) + ") AND "
-		       "		sequence IN (" + toString(si - chr.strokes_begin()) + ")";
+		       "		pt_count IN (" +
+		       				boost::lexical_cast<std::string>(si->point_count()) + ") AND "
+		       "		sequence IN (" +
+		       				boost::lexical_cast<std::string>(si - chr.strokes_begin()) + ")";
 	}
 	sql += ");";
 
-	// collecting results
-	std::map< int, std::string > id_name;
+	// retrieving points for possibility
+	std::vector< std::pair< long long, std::string > > id_name;
+	std::string ids;
 	q.get_result(sql);
 	while (q.more_rows())
 	{
 		ResultRow r(q.fetch_row());
-		id_name[r.get_int("character_id")] = r.get_text("character_name");
+		id_name.push_back( std::make_pair(
+			r.get<long long>("character_id"),
+			r.get<std::string>("character_name")
+		) );
+		ids += boost::lexical_cast<std::string>(r.get<long long>("character_id")) + ", ";
 	}
 	q.free_result();
-
-	// retrieving points for possibility
-	std::string ids;
-	for(std::map< int, std::string >::iterator it = id_name.begin();
-	    it != id_name.end();
-	    ++it)
-		ids += toString(it->first) + ", ";
 	ids = ids.substr(0, ids.size() - 2);
 	sql =	"SELECT points.x, points.y FROM points, strokes, characters WHERE"
 		"	points.stroke_id = strokes.stroke_id AND"
@@ -225,7 +222,7 @@ Recognizer::recognize(Character const & chr, Database & db) const
 
 	// calculate possibility and return the result
 	q.get_result(sql);
-	for(std::map< int, std::string >::iterator it = id_name.begin();
+	for(std::vector< std::pair< long long, std::string > >::iterator it = id_name.begin();
 	    it != id_name.end();
 	    ++it)
 	{
@@ -242,13 +239,13 @@ Recognizer::recognize(Character const & chr, Database & db) const
 				if (!q.more_rows())
 					return ret;
 				ResultRow r(q.fetch_row());
-				double xd = r.get_real("x") - pi->x(),
-				       yd = r.get_real("y") - pi->y();
+				double xd = r.get<double>("x") - pi->x(),
+				       yd = r.get<double>("y") - pi->y();
 				s_possib += std::sqrt(xd * xd + yd * yd);
 			}
 			c_possib += s_possib / si->point_count();
 		}
-		ret[ c_possib / chr.stroke_count() ] = std::make_pair(it->first, it->second);
+		ret[ c_possib / chr.stroke_count() ] = *it;
 	}
 	q.free_result();
 

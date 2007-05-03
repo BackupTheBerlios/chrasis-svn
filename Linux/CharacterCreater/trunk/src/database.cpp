@@ -22,53 +22,325 @@
  * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
  */
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#include <sqlite3.h>
+
 #include "common.h"
 
 #include "database.h"
-#include "database.hpp"
 
-void
-sqlite3_callback_norm(sqlite3_context* context, int argc, sqlite3_value** argv)
+Database::OPENDB::OPENDB():
+	busy(false)
 {
-	double v[2];
-	for (int i = 0;i < 2;++i)
+}
+
+Database::Database(std::string const & d):
+	database_(d)
+{
+}
+
+Database::~Database()
+{
+	for (OPENDB::collection::iterator it = opendbs_.begin();
+	     it != opendbs_.end();
+	     ++it)
 	{
-		switch ( sqlite3_value_type(argv[i]) )
+		OPENDB *p = *it;
+		sqlite3_close(p -> db);
+	}
+	while(opendbs_.size())
+	{
+		OPENDB::collection::iterator it = opendbs_.begin();
+		OPENDB *p = *it;
+		if (p -> busy)
+			error("destroying Database object before Query object");
+		delete p;
+		opendbs_.erase(it);
+	}
+}
+
+Database::OPENDB*
+Database::grabdb()
+{
+	OPENDB *odb = NULL;
+
+	for (OPENDB::collection::iterator it = opendbs_.begin();
+	     it != opendbs_.end();
+	     ++it)
+	{
+		if ((*it)->busy)
 		{
-		case SQLITE_INTEGER:
-			v[i] = sqlite3_value_int64(argv[i]);
+			odb = *it;
 			break;
-		case SQLITE_FLOAT:
-			v[i] = sqlite3_value_double(argv[i]);
-			break;
-		default:
-			std::string errmsg("NORM: argument " + toString(i+1) + " is neither REAL or INTEGER.");
-			sqlite3_result_error(context, errmsg.c_str(), errmsg.size());
-			return;
 		}
 	}
-	sqlite3_result_double(context, v[0] * v[0] + v[1] * v[1]);
+
+	if (!odb)
+	{
+		odb = new OPENDB;
+		if (!odb)
+		{
+			error("grabdb: OPENDB struct couldn't be created.");
+			return NULL;
+		}
+		if (sqlite3_open(database_.c_str(), &odb->db))
+		{
+			error(std::string("Couldn't open database: ") + sqlite3_errmsg(odb->db));
+			sqlite3_close(odb->db);
+			delete odb;
+			return NULL;
+		}
+		opendbs_.push_back(odb);
+	}
+	odb->busy = true;
+	return odb;
 }
 
 void
-sqlite3_callback_sqrt(sqlite3_context* context, int argc, sqlite3_value** argv)
+Database::freedb(Database::OPENDB *odb)
 {
-	switch ( sqlite3_value_type(argv[0]) )
-	{
-	case SQLITE_INTEGER:
-		sqlite3_result_double(context, std::sqrt(sqlite3_value_int64(argv[0])));
-		return;
-	case SQLITE_FLOAT:
-		sqlite3_result_double(context, std::sqrt(sqlite3_value_double(argv[0])));
-		return;
-	default:
-		std::string errmsg("SQRT: argument 1 is neither REAL or INTEGER.");
-		sqlite3_result_error(context, errmsg.c_str(), errmsg.size());
-		return;
-	}
-	sqlite3_result_error(context, "SQRT: shouldn't get here!", 26);
+	if (odb)
+		odb->busy = false;
 }
 
-template class basic_database< >;
-template class basic_resultrow< >;
-template class basic_query< Database >;
+bool
+Database::Connected()
+{
+	OPENDB *odb = grabdb();
+	if (!odb)
+		return false;
+	freedb(odb);
+	return true;
+}
+
+std::string
+Database::safestr(std::string const & u_str)
+{
+	std::string s_str;
+	for (size_t i = 0;
+	     i < u_str.size();
+	     ++i)
+	{
+		switch (u_str[i])
+		{
+		case '\'':
+		case '\\':
+		case 34:
+			s_str += '\'';
+		default:
+			s_str += u_str[i];
+		}
+	}
+	return s_str;
+}
+
+std::string
+Database::xmlsafestr(std::string const & u_str)
+{
+	std::string s_str;
+	for (size_t i = 0;
+	     i < u_str.size();
+	     ++i)
+	{
+		switch (u_str[i])
+		{
+		case '&':
+			s_str += "&amp;";
+			break;
+		case '<':
+			s_str += "&lt;";
+			break;
+		case '>':
+			s_str += "&gt;";
+			break;
+		case '"':
+			s_str += "&quot;";
+			break;
+		case '\'':
+			s_str += "&apos;";
+			break;
+		default:
+			s_str += u_str[i];
+		}
+	}
+	return s_str;
+}
+
+int64_t
+Database::a2bigint(std::string const & str)
+{
+	int64_t val = 0;
+	bool sign = false;
+	size_t i = 0;
+	if (str[i] == '-')
+	{
+		sign = true;
+		++i;
+	}
+	for (;i < str.size(); ++i)
+	{
+		val = val * 10 + (str[i] - 48);
+	}
+	return sign ? -val : val;
+}
+
+uint64_t
+Database::a2ubigint(std::string const & str)
+{
+	uint64_t val = 0;
+	for (size_t i = 0;
+	     i < str.size();
+	     ++i)
+	{
+		val = val * 10 + (str[i] - 48);
+	}
+	return val;
+}
+
+Query::Query(Database & db):
+	db_(db),
+	odb_(db.grabdb()),
+	res_(NULL)
+{
+}
+
+Query::Query(database_t & db, std::string const & sql):
+	db_(db),
+	odb_(db.grabdb()),
+	res_(NULL)
+{
+	execute(sql);
+}
+
+Query::~Query()
+{
+	if (res_)
+	{
+		error("sqlite3_finalize in destructor.");
+		error("last sql = [" + last_query_ + "]");
+		sqlite3_finalize(res_);
+	}
+	if (odb_)
+		db_.freedb(odb_);
+}
+
+bool
+Query::execute(std::string const & sql)
+{
+	last_query_ = sql;
+	if (odb_ && res_)
+		error("execute: query busy.");
+	if (odb_ && !res_)
+	{
+		const char *s = NULL;
+		int rc = sqlite3_prepare(odb_->db, sql.c_str(), sql.size(), &res_, &s);
+		if (rc != SQLITE_OK)
+		{
+			error("execute: prepare query failed.");
+			error("         sql = [" + sql + "]");
+			return false;
+		}
+		if (!res_)
+		{
+			error("execute: query failed.");
+			return false;
+		}
+		rc = sqlite3_step(res_);	// execute
+		sqlite3_finalize(res_);		// free statement
+		res_ = NULL;
+		switch (rc)
+		{
+		case SQLITE_BUSY:
+			error("execute: database busy.");
+			break;
+		case SQLITE_DONE:
+		case SQLITE_ROW:
+			more_rows_ = true;
+			return true;
+		case SQLITE_ERROR:
+			error(sqlite3_errmsg(odb_->db));
+			break;
+		case SQLITE_MISUSE:
+			error("execute: database misuse.");
+			break;
+		default:
+			error("execute: unknow result code.");
+		}
+	}
+	return false;
+}
+
+bool
+Query::get_result(std::string const & sql)
+{
+	last_query_ = sql;
+	if (odb_ && res_)
+		error("get_result: query busy.");
+	if (odb_ && !res_)
+	{
+		const char *s = NULL;
+		int rc = sqlite3_prepare(odb_->db, sql.c_str(), sql.size(), &res_, &s);
+		if (rc != SQLITE_OK)
+		{
+			error("get_result: prepare query failed.");
+			error("            sql = [" + sql + "]");
+			return false;
+		}
+		if (!res_)
+		{
+			error("get_result: query failed");
+			return false;
+		}
+		more_rows_ = (sqlite3_step(res_) == SQLITE_ROW);
+	}
+	return true;
+}
+
+void
+Query::free_result()
+{
+	if (odb_ && res_)
+	{
+		sqlite3_finalize(res_);
+		res_ = NULL;
+	}
+}
+
+sqlite_int64
+Query::insert_id()
+{
+	return (odb_) ? sqlite3_last_insert_rowid(odb_->db) : 0;
+}
+
+bool
+Query::more_rows()
+{
+	return (odb_ && res_) ? more_rows_ : false;
+}
+
+ResultRow
+Query::fetch_row()
+{
+	if (odb_ && res_)
+	{
+		ResultRow ret(res_);
+		more_rows_ = (sqlite3_step(res_) == SQLITE_ROW);
+		return ret;
+	}
+	return ResultRow (NULL);
+}
+
+std::string
+Query::GetError()
+{
+	return odb_ ? sqlite3_errmsg(odb_->db) : std::string();
+}
+
+int
+Query::GetErrNo()
+{
+	return odb_ ? sqlite3_errcode(odb_->db) : 0;
+}

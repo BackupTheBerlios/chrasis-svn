@@ -1,5 +1,7 @@
 ## Makefile.am -- Process this file with automake to produce Makefile.in
-bin_PROGRAMS = charactercreater learn recognize chml_organizer
+SUBDIRS = . tools
+
+bin_PROGRAMS = charactercreater
 
 noinst_HEADERS = charactercreater.h character.h creater.h chmlcodec.h database.h learner.h recognizer.h version.h
 include_HEADERS = character.h chmlcodec.h database.h learner.h recognizer.h version.h
@@ -17,16 +19,6 @@ libdatabase_la_CXXFLAGS = @SQLITE3_CFLAGS@
 charactercreater_SOURCES = main.cpp creater.cpp
 charactercreater_LDADD = @GTKMM_LIBS@ libchmlcodec.la libchrasis.la
 charactercreater_CXXFLAGS = @GTKMM_CFLAGS@
-
-recognize_SOURCES = recognize.cpp
-recognize_LDADD = libchmlcodec.la libchrasis.la
-
-learn_SOURCES = learn.cpp
-learn_LDADD = libchmlcodec.la libchrasis.la
-
-chml_organizer_SOURCES = chml_organizer.cpp
-chml_organizer_LDADD = @GTKMM_LIBS@ libchmlcodec.la
-chml_organizer_CXXFLAGS = @GTKMM_CFLAGS@
 
 # tried to use precompiled headers, but failed.
 #pch: common.h.gch

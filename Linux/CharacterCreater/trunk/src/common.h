@@ -37,6 +37,9 @@
 #include <vector>
 #include <iterator>
 
+#include <boost/variant.hpp>
+#include <boost/lexical_cast.hpp>
+
 // platform dependent header
 #include <sys/stat.h>
 
@@ -45,41 +48,6 @@
 #else
 # define EXPORT
 #endif
-
-EXPORT
-template <typename T>
-static inline
-std::string
-toString(T const & v)
-{
-	std::ostringstream oss;
-	oss << v;
-	return oss.str();
-}
-
-template <>
-static inline
-std::string
-toString<double>(double const & v)
-{
-	std::ostringstream oss;
-	oss << std::setiosflags(std::ios::scientific)
-	    << std::setprecision(55)
-	    << v;
-	return oss.str();
-}
-
-EXPORT
-template <typename T>
-static inline
-T
-fromString(std::string const & s)
-{
-	std::istringstream iss(s);
-	T ret;
-	iss >> ret;
-	return ret;
-}
 
 EXPORT
 template <typename T>
