@@ -35,20 +35,16 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = chrasis.pc
 
 chrasis_headers_hidden = \
-	include/chrasis/chmlcodec.h \
+	include/chrasis/internal.h \
 	include/chrasis/character.h \
-	include/chrasis/learner.h \
-	include/chrasis/recognizer.h \
-	include/chrasis/common.h \
-	include/chrasis/database.h \
-	include/chrasis/errorhandler.h
+	include/chrasis/database.h
 chrasis_headers = \
 	include/chrasis.h
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)/$(prefix)/include/chrasis/chrasis
 	$(INSTALL_DATA) $(chrasis_headers) $(DESTDIR)/$(prefix)/include/chrasis
-	$(INSTALL_DATA) $(chrasis_headers_hidden) $(DESTDIR)/$(prefix)/include/chrasis
+	$(INSTALL_DATA) $(chrasis_headers_hidden) $(DESTDIR)/$(prefix)/include/chrasis/chrasis
 
 docs:
 	if [ -x "@DOXYGEN@" ]; then \
