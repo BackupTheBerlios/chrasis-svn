@@ -1,7 +1,7 @@
 /*
- * Character Creater
+ * libchrasis
  *
- * Copyright (c) 2006 Victor Tseng <palatis@gentoo.tw>
+ * Copyright (c) 2006 Victor Tseng <palatis@gmail.com>
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -21,85 +21,25 @@
  *
  * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
  */
-
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#include "chrasis/common.h"
-#include "chrasis/database.h"
-
-#include <sqlite3.h>
+ 
+#include <chrasis.h>
 
 namespace chrasis
 {
 
-void
-sqlite3_callback_norm(sqlite3_context* context, int argc, sqlite3_value** argv)
-{
-	double v[2];
-	for (int i = 0;i < 2;++i)
-	{
-		switch ( sqlite3_value_type(argv[i]) )
-		{
-		case SQLITE_INTEGER:
-			v[i] = sqlite3_value_int64(argv[i]);
-			break;
-		case SQLITE_FLOAT:
-			v[i] = sqlite3_value_double(argv[i]);
-			break;
-		default:
-			std::string errmsg("NORM: argument " + toString(i+1) + " is neither REAL or INTEGER.");
-			sqlite3_result_error(context, errmsg.c_str(), errmsg.size());
-			return;
-		}
-	}
-	sqlite3_result_double(context, v[0] * v[0] + v[1] * v[1]);
-}
-
-void
-sqlite3_callback_sqrt(sqlite3_context* context, int argc, sqlite3_value** argv)
-{
-	switch ( sqlite3_value_type(argv[0]) )
-	{
-	case SQLITE_INTEGER:
-		sqlite3_result_double(context, std::sqrt(sqlite3_value_int64(argv[0])));
-		return;
-	case SQLITE_FLOAT:
-		sqlite3_result_double(context, std::sqrt(sqlite3_value_double(argv[0])));
-		return;
-	default:
-		std::string errmsg("SQRT: argument 1 is neither REAL or INTEGER.");
-		sqlite3_result_error(context, errmsg.c_str(), errmsg.size());
-		return;
-	}
-	sqlite3_result_error(context, "SQRT: shouldn't get here!", 26);
-}
-
-template <typename EH>
-basic_database<EH>::OPENDB::OPENDB():
+Database::OPENDB::OPENDB():
 	busy(false)
 {
-	sqlite3_create_function(
-		db, "NORM", 2, SQLITE_UTF8, NULL,
-		&sqlite3_callback_norm, NULL, NULL
-	);
-	sqlite3_create_function(
-		db, "SQRT", 1, SQLITE_UTF8, NULL,
-		&sqlite3_callback_sqrt, NULL, NULL
-	);
 }
 
-template <typename EH>
-basic_database<EH>::basic_database(std::string const & d):
+Database::Database(std::string const & d):
 	database_(d)
 {
 }
 
-template <typename EH>
-basic_database<EH>::~basic_database()
+Database::~Database()
 {
-	for (typename OPENDB::collection::iterator it = opendbs_.begin();
+	for (OPENDB::collection::iterator it = opendbs_.begin();
 	     it != opendbs_.end();
 	     ++it)
 	{
@@ -108,22 +48,21 @@ basic_database<EH>::~basic_database()
 	}
 	while(opendbs_.size())
 	{
-		typename OPENDB::collection::iterator it = opendbs_.begin();
+		OPENDB::collection::iterator it = opendbs_.begin();
 		OPENDB *p = *it;
 		if (p -> busy)
-			error("destroying basic_database object before Query object");
+			error("destroying Database object before Query object");
 		delete p;
 		opendbs_.erase(it);
 	}
 }
 
-template <typename EH>
-typename basic_database<EH>::OPENDB*
-basic_database<EH>::grabdb()
+Database::OPENDB*
+Database::grabdb()
 {
 	OPENDB *odb = NULL;
 
-	for (typename OPENDB::collection::iterator it = opendbs_.begin();
+	for (OPENDB::collection::iterator it = opendbs_.begin();
 	     it != opendbs_.end();
 	     ++it)
 	{
@@ -155,17 +94,15 @@ basic_database<EH>::grabdb()
 	return odb;
 }
 
-template <typename EH>
 void
-basic_database<EH>::freedb(basic_database::OPENDB *odb)
+Database::freedb(Database::OPENDB *odb)
 {
 	if (odb)
 		odb->busy = false;
 }
 
-template <typename EH>
 bool
-basic_database<EH>::Connected()
+Database::Connected()
 {
 	OPENDB *odb = grabdb();
 	if (!odb)
@@ -174,9 +111,8 @@ basic_database<EH>::Connected()
 	return true;
 }
 
-template <typename EH>
 std::string
-basic_database<EH>::safestr(std::string const & u_str)
+Database::safestr(std::string const & u_str)
 {
 	std::string s_str;
 	for (size_t i = 0;
@@ -196,9 +132,8 @@ basic_database<EH>::safestr(std::string const & u_str)
 	return s_str;
 }
 
-template <typename EH>
 std::string
-basic_database<EH>::xmlsafestr(std::string const & u_str)
+Database::xmlsafestr(std::string const & u_str)
 {
 	std::string s_str;
 	for (size_t i = 0;
@@ -229,9 +164,8 @@ basic_database<EH>::xmlsafestr(std::string const & u_str)
 	return s_str;
 }
 
-template <typename EH>
 int64_t
-basic_database<EH>::a2bigint(std::string const & str)
+Database::a2bigint(std::string const & str)
 {
 	int64_t val = 0;
 	bool sign = false;
@@ -248,9 +182,8 @@ basic_database<EH>::a2bigint(std::string const & str)
 	return sign ? -val : val;
 }
 
-template <typename EH>
 uint64_t
-basic_database<EH>::a2ubigint(std::string const & str)
+Database::a2ubigint(std::string const & str)
 {
 	uint64_t val = 0;
 	for (size_t i = 0;
@@ -262,16 +195,14 @@ basic_database<EH>::a2ubigint(std::string const & str)
 	return val;
 }
 
-template <typename DB_T>
-basic_query<DB_T>::basic_query(DB_T & db):
+Query::Query(Database & db):
 	db_(db),
 	odb_(db.grabdb()),
 	res_(NULL)
 {
 }
 
-template <typename DB_T>
-basic_query<DB_T>::basic_query(DB_T & db, std::string const & sql):
+Query::Query(database_t & db, std::string const & sql):
 	db_(db),
 	odb_(db.grabdb()),
 	res_(NULL)
@@ -279,8 +210,7 @@ basic_query<DB_T>::basic_query(DB_T & db, std::string const & sql):
 	execute(sql);
 }
 
-template <typename DB_T>
-basic_query<DB_T>::~basic_query()
+Query::~Query()
 {
 	if (res_)
 	{
@@ -292,9 +222,8 @@ basic_query<DB_T>::~basic_query()
 		db_.freedb(odb_);
 }
 
-template <typename DB_T>
 bool
-basic_query<DB_T>::execute(std::string const & sql)
+Query::execute(std::string const & sql)
 {
 	last_query_ = sql;
 	if (odb_ && res_)
@@ -339,9 +268,8 @@ basic_query<DB_T>::execute(std::string const & sql)
 	return false;
 }
 
-template <typename DB_T>
 bool
-basic_query<DB_T>::get_result(std::string const & sql)
+Query::get_result(std::string const & sql)
 {
 	last_query_ = sql;
 	if (odb_ && res_)
@@ -366,9 +294,8 @@ basic_query<DB_T>::get_result(std::string const & sql)
 	return true;
 }
 
-template <typename DB_T>
 void
-basic_query<DB_T>::free_result()
+Query::free_result()
 {
 	if (odb_ && res_)
 	{
@@ -377,75 +304,40 @@ basic_query<DB_T>::free_result()
 	}
 }
 
-template <typename DB_T>
 sqlite_int64
-basic_query<DB_T>::insert_id()
+Query::insert_id()
 {
 	return (odb_) ? sqlite3_last_insert_rowid(odb_->db) : 0;
 }
 
-template <typename DB_T>
 bool
-basic_query<DB_T>::more_rows()
+Query::more_rows()
 {
 	return (odb_ && res_) ? more_rows_ : false;
 }
 
-
-template <typename DB_T>
 ResultRow
-basic_query<DB_T>::fetch_row()
+Query::fetch_row()
 {
-	ResultRow ret;
 	if (odb_ && res_)
 	{
-		int i = 0;
-		const char *p;
-		while (p = sqlite3_column_name(res_, i))
-		{
-			const char *tmp;
-			switch ( sqlite3_column_type(res_, i) )
-			{
-			case SQLITE_INTEGER:
-				ret.push_back( p, sqlite3_column_int64(res_, i) );
-				break;
-			case SQLITE_FLOAT:
-				ret.push_back( p, sqlite3_column_double(res_, i) );
-				break;
-			case SQLITE_TEXT:
-				tmp = (const char *)sqlite3_column_text(res_, i);
-				ret.push_back( p, tmp ? tmp : "" );
-				break;
-			default:
-				error(
-					"fetch_row: unhandled type [" + 
-					toString(sqlite3_column_decltype(res_, i)) + 
-					"]."
-				);
-			}
-			++i;
-		}
+		ResultRow ret(res_);
 		more_rows_ = (sqlite3_step(res_) == SQLITE_ROW);
+		return ret;
 	}
-	return ret;
+	return ResultRow (NULL);
 }
 
-template <typename DB_T>
 std::string
-basic_query<DB_T>::GetError()
+Query::GetError()
 {
 	return odb_ ? sqlite3_errmsg(odb_->db) : std::string();
 }
 
-template <typename DB_T>
 int
-basic_query<DB_T>::GetErrNo()
+Query::GetErrNo()
 {
 	return odb_ ? sqlite3_errcode(odb_->db) : 0;
 }
-
-template class basic_database< >;
-template class basic_resultrow< >;
-template class basic_query< Database >;
 
 } // namespace chrasis

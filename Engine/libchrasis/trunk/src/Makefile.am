@@ -1,18 +1,18 @@
 lib_LTLIBRARIES = libchrasis.la
 
+SUBDIRS = . @TOOLS_SUBDIRS@
+DIST_SUBDIRS = . tools
+
 libchrasis_la_SOURCES = \
-	chmlcodec.cpp \
 	database.cpp \
-	learner.cpp \
-	recognizer.cpp \
+	learn.cpp \
+	recognize.cpp \
 	chrasisio.cpp
 
 libchrasis_la_LIBADD = \
-	@LIBXMLPP_LIBS@ \
 	@SQLITE3_LIBS@
 
 libchrasis_la_CXXFLAGS = \
-	@LIBXMLPP_CFLAGS@ \
 	@SQLITE3_CFLAGS@ \
 	-DCHRASIS_DATADIR=\"$(datadir)/chrasis\"
 

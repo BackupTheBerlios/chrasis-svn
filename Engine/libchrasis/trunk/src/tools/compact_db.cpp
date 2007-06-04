@@ -1,5 +1,4 @@
-#include "chrasis/common.h"
-#include "chrasis/database.h"
+#include <chrasis.h>
 
 using namespace chrasis;
 
@@ -18,7 +17,7 @@ int main(int argc, char* argv[])
 	Database db(argv[1]);
 	Query q(db);
 
-	std::cout << "compact not implemented!" << std::endl;
+	std::cout << "compact not implemented (yet)!" << std::endl;
 
 	std::cout << "rebuilding index..." << std::endl;
 	q.execute("ANALYZE;");

@@ -9,8 +9,6 @@ int main(int argc, char* argv[])
 {
 	Database db(argv[2]);
 
-	initialize_database(db);
-
 	Character::collection chars = read_chml(argv[1]);
 
 	cout << "Characters in \"" << argv[1] << "\":" << endl;
@@ -20,8 +18,23 @@ int main(int argc, char* argv[])
 	{
 		cout << "Processing char #" << ci - chars.begin()
 		     << " (" << ci->get_name() << ")..." << endl;
+
+		Character chr(*ci);
+		chr.set_name("");
 	
-		learn(*ci, db);
+		character_possibility_t likely(recognize(chr, db));
+
+		std::cout << "likely:" << std::endl;
+		for (character_possibility_t::iterator it = likely.begin();
+		     it != likely.end();
+		     ++it)
+		{
+			std::cout << "\t(" << it->second.first << ") " 
+				  << it->second.second << " [" 
+				  << it->first;
+			std::cout << ((it->second.second == ci->get_name()) ? "] *" : "]") ;
+			std::cout << std::endl;
+		}
 	}
 
 	return 0;

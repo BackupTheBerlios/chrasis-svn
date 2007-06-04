@@ -15,10 +15,9 @@ EXTRA_DIST = \
 	Doxyfile
 
 AUTOMAKE_OPTIONS = gnu
-SUBDIRS = \
-	src \
-	src/tools \
-	data
+
+SUBDIRS = src @DATA_SUBDIRS@
+DIST_SUBDIRS = src data
 
 MAINTAINERCLEANFILES = \
 	Makefile.in \
@@ -50,6 +49,7 @@ install-data-local:
 	$(mkinstalldirs) $(DESTDIR)/$(prefix)/include/chrasis/chrasis
 	$(INSTALL_DATA) $(chrasis_headers) $(DESTDIR)/$(prefix)/include/chrasis
 	$(INSTALL_DATA) $(chrasis_headers_hidden) $(DESTDIR)/$(prefix)/include/chrasis
+
 docs:
 	if [ -x "@DOXYGEN@" ]; then \
 		@DOXYGEN@ Doxyfile; \

@@ -1,7 +1,7 @@
 /*
- * Character Creater
+ * libchrasis
  *
- * Copyright (c) 2006 Victor Tseng <palatis@gentoo.tw>
+ * Copyright (c) 2006 Victor Tseng <palatis@gmail.com>
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -22,18 +22,19 @@
  * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
  */
 
-#include "chrasis/common.h"
-#include "chrasis/recognizer.h"
+#include <chrasis.h>
+#include <chrasis/internal.h>
 
 namespace chrasis
 {
 
 // !!! FIXME !!! 
 // !!! Magic Numbers !!!
-static const double ANGLE_THRESHOLD = 30.0 / 180.0 * M_PI;	//< 30 deg
-static const double DIST_THRESHOLD = 1.0 / 15.0;		//< 1/15 of diagonal line
+static const double ANGLE_THRESHOLD		= 30.0 / 180.0 * M_PI;	//< 30 deg
+static const double DIST_THRESHOLD_RATIO	= 1.0 / 15.0;		//< 1/15 of diagonal line
+
 Stroke
-Recognizer::normalize( const Stroke & orig_stroke, Point::value_t const dist_threshold ) const
+_normalize( const Stroke & orig_stroke, Point::value_t const dist_threshold )
 {
 	Point::collection normalized;
 	copy(orig_stroke.points_begin(), orig_stroke.points_end(), back_inserter(normalized));
@@ -99,7 +100,7 @@ Recognizer::normalize( const Stroke & orig_stroke, Point::value_t const dist_thr
 }
 
 Character
-Recognizer::normalize(const Character & chr) const
+_normalize(const Character & chr)
 {
 	if (chr.stroke_count() == 0 ||
 	    chr.strokes_begin()->point_count() == 0)
@@ -144,7 +145,12 @@ Recognizer::normalize(const Character & chr) const
 	     si != chr.strokes_end();
 	     ++si)
 	{
-		ret.add_stroke(normalize(*si, std::sqrt(distance*distance*2) * DIST_THRESHOLD));
+		ret.add_stroke(
+			_normalize(
+				*si,
+				std::sqrt(distance*distance) * DIST_THRESHOLD_RATIO
+			)
+		);
 	}
 
 	// walk through the character and adjust the point to range [0...1)
@@ -165,85 +171,5 @@ Recognizer::normalize(const Character & chr) const
 	return ret;
 }
 
-Recognizer::character_possibility_t
-Recognizer::recognize(Character const & chr) const
-{
-	character_possibility_t ret;
-
-	Query q(db_);
-
-	// find character
-	std::string sql(
-		"SELECT character_name, character_id FROM characters WHERE"
-		"	stroke_count IN (" + toString(chr.stroke_count())
-	);
-	if (chr.get_name() != "")
-		sql += ") AND character_name IN ('" + chr.get_name() + "'";
-	for (Stroke::const_iterator si = chr.strokes_begin();
-	     si != chr.strokes_end();
-	     ++si)
-	{
-		sql += ") AND character_id IN ("
-		       "	SELECT character_id FROM strokes WHERE "
-		       "		pt_count IN (" + toString(si->point_count()) + ") AND "
-		       "		sequence IN (" + toString(si - chr.strokes_begin()) + ")";
-	}
-	sql += ");";
-
-	// collecting results
-	std::map< int, std::string > id_name;
-	q.get_result(sql);
-	while (q.more_rows())
-	{
-		ResultRow r(q.fetch_row());
-		id_name[r.get_int("character_id")] = r.get_text("character_name");
-	}
-	q.free_result();
-
-	// retrieving points for possibility
-	std::string ids;
-	for(std::map< int, std::string >::iterator it = id_name.begin();
-	    it != id_name.end();
-	    ++it)
-		ids += toString(it->first) + ", ";
-	ids = ids.substr(0, ids.size() - 2);
-	sql =	"SELECT points.x, points.y FROM points, strokes, characters WHERE"
-		"	points.stroke_id = strokes.stroke_id AND"
-		"	strokes.character_id = characters.character_id AND"
-		"	characters.character_id IN (" + ids + ") "
-		"ORDER BY"
-		"	strokes.character_id ASC, strokes.sequence ASC, points.sequence ASC;";
-
-	// calculate possibility and return the result
-	q.get_result(sql);
-	for(std::map< int, std::string >::iterator it = id_name.begin();
-	    it != id_name.end();
-	    ++it)
-	{
-		double c_possib = 0;
-		for (Stroke::const_iterator si = chr.strokes_begin();
-		     si != chr.strokes_end();
-		     ++si)
-		{
-			double s_possib = 0;
-			for (Point::const_iterator pi = si->points_begin();
-			     pi != si->points_end();
-			     ++pi)
-			{
-				if (!q.more_rows())
-					return ret;
-				ResultRow r(q.fetch_row());
-				double xd = r.get_real("x") - pi->x(),
-				       yd = r.get_real("y") - pi->y();
-				s_possib += std::sqrt(xd * xd + yd * yd);
-			}
-			c_possib += s_possib / si->point_count();
-		}
-		ret[ c_possib / chr.stroke_count() ] = std::make_pair(it->first, it->second);
-	}
-	q.free_result();
-
-	return ret;
-}
 
 } // namespace chrasis

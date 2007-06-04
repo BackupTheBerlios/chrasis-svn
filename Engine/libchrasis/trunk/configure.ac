@@ -37,18 +37,6 @@ AC_DEFINE_UNQUOTED(
 	"$PACKAGE_VERSION",
 	[The release version of libchrasis.])
 
-# Check for modules
-LIBXMLPP_VERSION=2.10
-SQLITE3_VERSION=3.3
-
-PKG_CHECK_MODULES(LIBXMLPP, libxml++-2.6 >= $LIBXMLPP_VERSION)
-AC_SUBST(LIBXMLPP_CFLAGS)
-AC_SUBST(LIBXMLPP_LIBS)
-
-PKG_CHECK_MODULES(SQLITE3, sqlite3 >= $SQLITE3_VERSION)
-AC_SUBST(SQLITE3_CFLAGS)
-AC_SUBST(SQLITE3_LIBS)
-
 # Init automake stuff
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER([include/config.h])
@@ -82,6 +70,11 @@ AC_HEADER_STDC
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 
+# Platform-dependent
+# module versions
+LIBXMLPP_VERSION=2.10
+SQLITE3_VERSION=3.3
+
 # Options
 AC_ARG_ENABLE([debug],
 	[AS_HELP_STRING(--enable-debug,Turn on debugging support)],
@@ -103,7 +96,47 @@ AC_ARG_ENABLE([debug],
 	[LIBDEBUG="false"])
 AC_SUBST(LIBDEBUG)
 
-# Platform-dependent
+AC_ARG_ENABLE([tools],
+	[AS_HELP_STRING(--disable-tools,Build the character database mantaince tools)],
+	[case "${enableval}" in
+	yes)
+		BUILD_TOOLS="true"
+		AC_DEFINE(
+			ENABLE_TOOLS, 1,
+			[Define to 1 if you want to build the character database maintaince tools])
+		PKG_CHECK_MODULES(LIBXMLPP, libxml++-2.6 >= $LIBXMLPP_VERSION)
+		TOOLS_SUBDIRS=tools
+		DATA_SUBDIRS=data
+		;;
+	no)
+		BUILD_TOOLS="false"
+		TOOLS_SUBDIRS=
+		DATA_SUBDIRS=
+		;;
+	*)
+		AC_MSG_ERROR(bad value ${enableval} for --enable-tools)
+		;;
+	esac],
+	[
+		BUILD_TOOLS="true"
+		AC_DEFINE(
+			ENABLE_TOOLS, 1,
+			[Define to 1 if you want to build the character database maintaince tools])
+		PKG_CHECK_MODULES(LIBXMLPP, libxml++-2.6 >= $LIBXMLPP_VERSION)
+		TOOLS_SUBDIRS=tools
+		DATA_SUBDIRS=data
+	]
+)
+AC_SUBST(LIBXMLPP_CFLAGS)
+AC_SUBST(LIBXMLPP_LIBS)
+AC_SUBST(BUILD_TOOLS)
+AC_SUBST(TOOLS_SUBDIRS)
+AC_SUBST(DATA_SUBDIRS)
+
+PKG_CHECK_MODULES(SQLITE3, sqlite3 >= $SQLITE3_VERSION)
+AC_SUBST(SQLITE3_CFLAGS)
+AC_SUBST(SQLITE3_LIBS)
+
 dnl What kind of system are we using?
 case $host_os in
 win32*)
@@ -130,18 +163,21 @@ unix)
 	;;
 esac
 
-AC_OUTPUT([
-	Makefile 
-	data/Makefile 
+AC_CONFIG_FILES([
+	Makefile
+	data/Makefile
 	src/Makefile
-	src/tools/Makefile 
-	chrasis.pc 
+	src/tools/Makefile
+	chrasis.pc
 	Doxyfile
 ])
+
+AC_OUTPUT()
 
 AC_MSG_RESULT([
 Build options:
   Version                 $PACKAGE_VERSION
   Install prefix          $prefix
+  Build tools             $BUILD_TOOLS
   Enable debug            $LIBDEBUG
 ])
