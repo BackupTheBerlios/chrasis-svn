@@ -35,7 +35,6 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = chrasis.pc
 
 chrasis_headers_hidden = \
-	include/chrasis/internal.h \
 	include/chrasis/character.h \
 	include/chrasis/database.h
 chrasis_headers = \
