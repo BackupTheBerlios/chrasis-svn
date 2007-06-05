@@ -2,7 +2,7 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT(libchrasis, 1.0.0, chrasis-devel@googlegroups.com)
+AC_INIT(libchrasis, 0.1.0, chrasis-devel@googlegroups.com)
 AC_CONFIG_SRCDIR([src/chrasisio.cpp])
 
 AC_SUBST(PACKAGE_VERSION)
