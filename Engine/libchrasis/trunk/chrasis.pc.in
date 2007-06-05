@@ -12,4 +12,4 @@ Description: Intelligent Chinese Handwriting Recognization System
 Version: @PACKAGE_VERSION@
 Requires: 
 Libs: -L${libdir} -lchrasis
-Cflags: -I${includedir}/chrasis
+Cflags: -I${includedir}/chrasis-@PACKAGE_VERSION@

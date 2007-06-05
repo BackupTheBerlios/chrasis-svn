@@ -42,9 +42,9 @@ chrasis_headers = \
 	include/chrasis.h
 
 install-data-local:
-	$(mkinstalldirs) $(DESTDIR)/$(prefix)/include/chrasis/chrasis
-	$(INSTALL_DATA) $(chrasis_headers) $(DESTDIR)/$(prefix)/include/chrasis
-	$(INSTALL_DATA) $(chrasis_headers_hidden) $(DESTDIR)/$(prefix)/include/chrasis/chrasis
+	$(mkinstalldirs) $(DESTDIR)/$(includedir)/chrasis-@PACKAGE_VERSION@/chrasis
+	$(INSTALL_DATA) $(chrasis_headers) $(DESTDIR)/$(includedir)/chrasis-@PACKAGE_VERSION@
+	$(INSTALL_DATA) $(chrasis_headers_hidden) $(DESTDIR)/$(includedir)/chrasis-@PACKAGE_VERSION@/chrasis
 
 docs:
 	if [ -x "@DOXYGEN@" ]; then \
