@@ -123,9 +123,9 @@ learn(Character const & chr, Database & db)
 	if (likely.size() == 0 ||
 	    likely.begin()->first > 0.15) // the number (0.15) is a magic number.
 	    				 // i'm still testing for a good enough threshold.
-		return _remember(chr, db);
+		return _remember(_normalize(chr), db);
 	else
-		return _reflect(chr, likely.begin()->second.first, db);
+		return _reflect(_normalize(chr), likely.begin()->second.first, db);
 	
 	return false;
 }
