@@ -156,12 +156,93 @@ std::ostream & operator<<(std::ostream &, basic_character< STROKE_T, CONT > cons
 EXPORT template < typename STROKE_T, template < typename > class CONT >
 bool operator<(basic_character< STROKE_T, CONT > const &, basic_character< STROKE_T, CONT > const &);
 
+template < typename VALUE_T, template < typename > class CONT >
+typename basic_point< VALUE_T, CONT >::value_t
+basic_point< VALUE_T, CONT >::set_arg(value_t const a)
+{
+	value_t orig_len = abs();	//< remember current length
+	x() = std::acos(a) * orig_len;
+	y() = std::asin(a) * orig_len;
+	return arg();
+}
+
+template < typename VALUE_T, template < typename > class CONT >
+typename basic_point< VALUE_T, CONT >::value_t
+basic_point< VALUE_T, CONT >::set_length(value_t const l)
+{
+	value_t factor = l / abs();
+	x() *= factor;
+	y() *= factor;
+	return abs();
+}
+
+template < typename VALUE_T, template < typename > class CONT >
+std::ostream &
+operator << (std::ostream & lhs, basic_point< VALUE_T, CONT > const & rhs)
+{
+	return lhs << "(" << rhs.x() << ", " << rhs.y() << ")";
+}
+
+template < typename VALUE_T, template < typename > class CONT >
+basic_point< VALUE_T, CONT >
+operator - (basic_point< VALUE_T, CONT > const & lhs, basic_point< VALUE_T, CONT> const & rhs)
+{
+	return basic_point< VALUE_T, CONT >(
+		lhs.x() - rhs.x(),
+		lhs.y() - rhs.y() );
+}
+
+template < typename VALUE_T, template < typename > class CONT >
+bool
+operator != (basic_point< VALUE_T, CONT > const & lhs, basic_point< VALUE_T, CONT > const & rhs)
+{
+	return lhs.x() != rhs.x() || lhs.y() != rhs.y();
+}
+
+template < typename POINT_T, template < typename > class CONT >
+typename basic_stroke< POINT_T, CONT >::value_t
+basic_stroke< POINT_T, CONT >::length() const
+{
+	typename POINT_T::value_t length = 0.0;
+	for (typename POINT_T::const_iterator pi = points_.begin();
+	     pi != points_.end() - 1;
+	     ++pi)
+		length += (*pi - *(pi+1)).abs();
+	return length;
+}
+
+template < typename POINT_T, template < typename > class CONT >
+std::ostream &
+operator<<(std::ostream & lhs, basic_stroke< POINT_T, CONT > const & rhs)
+{
+	for (typename POINT_T::const_iterator i = rhs.points_begin();
+		i != rhs.points_end();
+		++i)
+		lhs << *i << " ";
+	return lhs;
+}
+
+template < typename STROKE_T, template < typename > class CONT >
+std::ostream &
+operator<<(std::ostream & lhs, basic_character< STROKE_T, CONT > const & rhs)
+{
+	lhs << rhs.get_name() << ": " << std::endl;
+	for (typename basic_character< STROKE_T, CONT >::stroke_t::const_iterator i = rhs.strokes_begin();
+		i != rhs.strokes_end();
+		++i)
+		lhs << *i << std::endl;
+	return lhs;
+}
+
+template < typename STROKE_T, template < typename > class CONT >
+bool
+operator<(basic_character< STROKE_T, CONT > const & lhs, basic_character< STROKE_T, CONT > const & rhs)
+{
+	return (lhs.get_name() < rhs.get_name()) ? true : false ;
+}
+
 typedef basic_point< double > Point;
 typedef basic_stroke< Point > Stroke;
 typedef basic_character< Stroke > Character;
 
-#ifndef USE_EXPORT
-# include "character.hpp"
-#endif
-
-#endif
+#endif // #ifndef _CHARACTER_H
