@@ -75,8 +75,8 @@ Character::collection read_chml(std::string ifilename)
 						continue;
 
 					tmp_stroke.add_point(Point(
-						boost::lexical_cast<double>(reader.get_attribute("x")),
-						boost::lexical_cast<double>(reader.get_attribute("y"))));
+						boost::lexical_cast<int>(reader.get_attribute("x")),
+						boost::lexical_cast<int>(reader.get_attribute("y"))));
 					reader.move_to_element();
 				}
 				tmp_char.add_stroke(tmp_stroke);

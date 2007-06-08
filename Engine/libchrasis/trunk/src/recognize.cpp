@@ -34,7 +34,7 @@ static const double ANGLE_THRESHOLD		= 30.0 / 180.0 * M_PI;	//< 30 deg
 static const double DIST_THRESHOLD_RATIO	= 1.0 / 15.0;		//< 1/15 of diagonal line
 
 Stroke
-_normalize( const Stroke & orig_stroke, Point::value_t const dist_threshold )
+_normalize( const Stroke & orig_stroke, double const dist_threshold )
 {
 	Point::collection normalized;
 	copy(orig_stroke.points_begin(), orig_stroke.points_end(), back_inserter(normalized));
@@ -156,7 +156,7 @@ _normalize(const Character & chr)
 	// walk through the character and adjust the point to range [0...40000)
 	// because:
 	// 	sqrt(2^31 - 1) ~= 46,340
-	// this way we avoid (x*x + y*y > INT_MAX)
+	// this way we avoid the case that (x * x + y * y) > INT_MAX
 	for (Stroke::iterator si = ret.strokes_begin();
 	     si != ret.strokes_end();
 	     ++si)

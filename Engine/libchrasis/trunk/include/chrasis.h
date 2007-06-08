@@ -34,7 +34,7 @@
 namespace chrasis
 {
 
-typedef double				possibility_t;
+typedef int				possibility_t;
 typedef std::map<
 	possibility_t,
 	std::pair< int, std::string > >	character_possibility_t;

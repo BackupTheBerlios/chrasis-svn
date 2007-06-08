@@ -53,8 +53,12 @@ public:
 	value_t const & x() const { return num_.real(); };	//< const x-coordinate
 	value_t const & y() const { return num_.imag(); };	//< const y-coordinate
 
-	value_t arg() const { return std::arg(num_); };		//< the argument (angle) of the point
-	value_t abs() const { return std::abs(num_); };		//< the distance between the point and origin
+	double arg() const
+	{
+		return std::arg( std::complex< double >(num_.real(), num_.imag()) );
+	}							//< the argument of the point
+	value_t abs() const { return std::abs(num_); };
+								//< the distance between the point and origin
 
 	value_t set_arg(value_t const);				//< set argument
 	value_t set_length(value_t const);			//< set length
@@ -244,7 +248,7 @@ operator<(basic_character< STROKE_T, CONT > const & lhs, basic_character< STROKE
 	return (lhs.get_name() < rhs.get_name()) ? true : false ;
 }
 
-typedef basic_point< double > Point;
+typedef basic_point< int > Point;
 typedef basic_stroke< Point > Stroke;
 typedef basic_character< Stroke > Character;
 

@@ -61,17 +61,17 @@ recognize(Character const & chr, Database & db)
 	sql += ");";
 
 	// retrieving points for possibility
-	std::vector< std::pair< long long, std::string > > id_name;
+	std::vector< std::pair< int, std::string > > id_name;
 	std::string ids;
 	q.get_result(sql);
 	while (q.more_rows())
 	{
 		ResultRow r(q.fetch_row());
 		id_name.push_back( std::make_pair(
-			r.get<long long>("character_id"),
+			r.get<int>("character_id"),
 			r.get<std::string>("character_name")
 		) );
-		ids += boost::lexical_cast<std::string>(r.get<long long>("character_id")) + ", ";
+		ids += boost::lexical_cast<std::string>(r.get<int>("character_id")) + ", ";
 	}
 	q.free_result();
 	ids = ids.substr(0, ids.size() - 2);
@@ -84,7 +84,7 @@ recognize(Character const & chr, Database & db)
 
 	// calculate possibility and return the result
 	q.get_result(sql);
-	for(std::vector< std::pair< long long, std::string > >::iterator it = id_name.begin();
+	for(std::vector< std::pair< int, std::string > >::iterator it = id_name.begin();
 	    it != id_name.end();
 	    ++it)
 	{
@@ -101,8 +101,8 @@ recognize(Character const & chr, Database & db)
 				if (!q.more_rows())
 					return ret;
 				ResultRow r(q.fetch_row());
-				double xd = r.get<double>("x") - pi->x(),
-				       yd = r.get<double>("y") - pi->y();
+				double xd = r.get<int>("x") - pi->x(),
+				       yd = r.get<int>("y") - pi->y();
 				s_possib += std::sqrt(xd * xd + yd * yd);
 			}
 			c_possib += s_possib / si->point_count();
@@ -121,8 +121,8 @@ learn(Character const & chr, Database & db)
 	character_possibility_t likely = recognize(chr, db);
 
 	if (likely.size() == 0 ||
-	    likely.begin()->first > 0.15) // the number (0.15) is a magic number.
-	    				 // i'm still testing for a good enough threshold.
+	    likely.begin()->first > 40000 * 0.15)	// the number (0.15) is a magic number.
+							// i'm still testing for a good enough threshold.
 		return _remember(_normalize(chr), db);
 	else
 		return _reflect(_normalize(chr), likely.begin()->second.first, db);
@@ -137,66 +137,66 @@ initialize_database(Database & db)
 	Query q(db);
 	q.execute("BEGIN TRANSACTION;");
 	q.execute(
-		"CREATE TABLE IF NOT EXISTS points ("
-		"	pt_id		INTEGER	PRIMARY KEY	AUTOINCREMENT	NOT NULL,"
-		"	stroke_id	INTEGER					NOT NULL,"
-		"	sequence	INTEGER					NOT NULL,"
-		"	x		INTEGER					NOT NULL,"
-		"	y		INTEGER					NOT NULL"
+		"CREATE TABLE IF NOT EXISTS points (\n"
+		"	pt_id		INTEGER	PRIMARY KEY	AUTOINCREMENT	NOT NULL,\n"
+		"	stroke_id	INTEGER					NOT NULL,\n"
+		"	sequence	INTEGER					NOT NULL,\n"
+		"	x		INTEGER					NOT NULL,\n"
+		"	y		INTEGER					NOT NULL\n"
 		");"
 	);
 	q.execute(
-		"CREATE TABLE IF NOT EXISTS strokes ("
-		"	stroke_id	INTEGER	PRIMARY KEY	AUTOINCREMENT	NOT NULL,"
-		"	character_id	INTEGER					NOT NULL,"
-		"	pt_count	INTEGER					NOT NULL,"
-		"	sequence	INTEGER					NOT NULL"
+		"CREATE TABLE IF NOT EXISTS strokes (\n"
+		"	stroke_id	INTEGER	PRIMARY KEY	AUTOINCREMENT	NOT NULL,\n"
+		"	character_id	INTEGER					NOT NULL,\n"
+		"	pt_count	INTEGER					NOT NULL,\n"
+		"	sequence	INTEGER					NOT NULL\n"
 		");"
 	);
 	q.execute(
-		"CREATE TRIGGER IF NOT EXISTS strokes_id_change AFTER UPDATE OF stroke_id ON strokes "
-		"BEGIN"
-		"	UPDATE points SET stroke_id = new.stroke_id WHERE"
-		"		stroke_id = old.stroke_id;"
+		"CREATE TRIGGER IF NOT EXISTS strokes_id_change AFTER UPDATE OF stroke_id ON strokes\n"
+		"BEGIN\n"
+		"	UPDATE points SET stroke_id = new.stroke_id WHERE\n"
+		"		stroke_id = old.stroke_id;\n"
 		"END;"
 	);
 	q.execute(
-		"CREATE TABLE IF NOT EXISTS characters ("
-		"	character_id	INTEGER PRIMARY KEY	AUTOINCREMENT	NOT NULL,"
-		"	character_name	TEXT					NOT NULL,"
-		"	stroke_count	INTEGER					NOT NULL,"
-		"	sample_count	INTEGER DEFAULT 1			NOT NULL"
+		"CREATE TABLE IF NOT EXISTS characters (\n"
+		"	character_id	INTEGER PRIMARY KEY	AUTOINCREMENT	NOT NULL,\n"
+		"	character_name	TEXT					NOT NULL,\n"
+		"	stroke_count	INTEGER					NOT NULL,\n"
+		"	sample_count	INTEGER	 DEFAULT 1			NOT NULL\n"
 		");"
 	);
 	q.execute(
-		"CREATE TRIGGER IF NOT EXISTS characters_id_change AFTER UPDATE OF character_id ON characters "
-		"BEGIN"
-		"	UPDATE strokes SET character_id = new.character_id WHERE"
-		"		character_id = old.character_id;"
+		"CREATE TRIGGER IF NOT EXISTS characters_id_change AFTER UPDATE OF character_id ON characters\n"
+		"BEGIN\n"
+		"	UPDATE strokes SET character_id = new.character_id WHERE\n"
+		"		character_id = old.character_id;\n"
 		"END;"
 	);
 	q.execute(
-		"CREATE VIEW IF NOT EXISTS chr_pts AS"
-		"	SELECT"
-		"		characters.character_id	AS character_id,"
-		"		strokes.stroke_id	AS stroke_id,"
-		"		strokes.sequence	AS stroke_seq,"
-		"		points.sequence		AS point_seq,"
-		"		points.x 		AS x,"
-		"		points.y 		AS y"
-		"	FROM points, strokes, characters WHERE"
-		"		points.stroke_id = strokes.stroke_id AND"
-		"		strokes.character_id = characters.character_id"
-		"	ORDER BY"
-		"		strokes.character_id ASC,"
-		"		strokes.sequence ASC,"
+		"CREATE VIEW IF NOT EXISTS chr_pts AS\n"
+		"	SELECT\n"
+		"		characters.character_id	AS character_id,\n"
+		"		strokes.stroke_id	AS stroke_id,\n"
+		"		strokes.sequence	AS stroke_seq,\n"
+		"		points.sequence		AS point_seq,\n"
+		"		points.x 		AS x,\n"
+		"		points.y 		AS y\n"
+		"	FROM points, strokes, characters WHERE\n"
+		"		points.stroke_id = strokes.stroke_id AND\n"
+		"		strokes.character_id = characters.character_id\n"
+		"	ORDER BY\n"
+		"		strokes.character_id ASC,\n"
+		"		strokes.sequence ASC,\n"
 		"		points.sequence ASC;"
 	);
 	q.execute(
-		"CREATE VIEW IF NOT EXISTS stats AS"
-		"	SELECT"
-		"		SUM(sample_count)		 AS total_sample_count,"
-		"		COUNT(DISTINCT character_name)	 AS total_different_characters"
+		"CREATE VIEW IF NOT EXISTS stats AS\n"
+		"	SELECT\n"
+		"		SUM(sample_count)		 AS total_sample_count,\n"
+		"		COUNT(DISTINCT character_name)	 AS total_different_characters\n"
 		"	FROM characters;"
 	);
 	q.execute(

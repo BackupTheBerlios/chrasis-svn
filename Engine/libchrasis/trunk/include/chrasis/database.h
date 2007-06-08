@@ -77,7 +77,7 @@ class ResultRow
 public:
 	typedef Database		database_t;
 	typedef boost::variant <
-		long long,
+		int,
 		double,
 		std::string >		value_t;
 
@@ -94,7 +94,7 @@ public:
 			switch ( sqlite3_column_type(res, i) )
 			{
 			case SQLITE_INTEGER:
-				values_[ p ] = sqlite3_column_int64(res, i);
+				values_[ p ] = sqlite3_column_int(res, i);
 				break;
 			case SQLITE_FLOAT:
 				values_[ p ] = sqlite3_column_double(res, i);
@@ -116,7 +116,17 @@ public:
 
 	template <typename T>
 	T get(std::string const & idx)
-	{ return boost::get<T>(values_[idx]); }
+	{
+		try
+		{
+			return boost::get<T>(values_[idx]);
+		}
+		catch (boost::bad_get & ex)
+		{
+			std::cerr << ex.what() << std::endl;
+			std::cerr << idx << std::endl;
+		}
+	}
 private:
 	std::map< std::string, value_t > values_;
 

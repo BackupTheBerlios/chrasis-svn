@@ -28,13 +28,6 @@
 namespace chrasis
 {
 
-typedef double				possibility_t;
-typedef std::map<
-	possibility_t,
-	std::pair< int, std::string > >	character_possibility_t;
-typedef std::map< int, Character >	character_memories_t;
-
-
 // database related
 Database &
 _default_db();
