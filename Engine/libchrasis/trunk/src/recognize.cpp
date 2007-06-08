@@ -148,12 +148,15 @@ _normalize(const Character & chr)
 		ret.add_stroke(
 			_normalize(
 				*si,
-				std::sqrt(distance*distance) * DIST_THRESHOLD_RATIO
+				static_cast<int>(std::sqrt(distance*distance) * DIST_THRESHOLD_RATIO)
 			)
 		);
 	}
 
-	// walk through the character and adjust the point to range [0...1)
+	// walk through the character and adjust the point to range [0...40000)
+	// because:
+	// 	sqrt(2^31 - 1) ~= 46,340
+	// this way we avoid (x*x + y*y > INT_MAX)
 	for (Stroke::iterator si = ret.strokes_begin();
 	     si != ret.strokes_end();
 	     ++si)
@@ -163,8 +166,8 @@ _normalize(const Character & chr)
 		     ++pi)
 		{
 			*pi -= lt;
-			pi->x() /= distance;
-			pi->y() /= distance;
+			pi->x() = static_cast<int>((static_cast<double>(pi->x()) / distance) * 40000);
+			pi->y() = static_cast<int>((static_cast<double>(pi->y()) / distance) * 40000);
 		}
 	}
 

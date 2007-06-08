@@ -141,8 +141,8 @@ initialize_database(Database & db)
 		"	pt_id		INTEGER	PRIMARY KEY	AUTOINCREMENT	NOT NULL,"
 		"	stroke_id	INTEGER					NOT NULL,"
 		"	sequence	INTEGER					NOT NULL,"
-		"	x		REAL					NOT NULL,"
-		"	y		REAL					NOT NULL"
+		"	x		INTEGER					NOT NULL,"
+		"	y		INTEGER					NOT NULL"
 		");"
 	);
 	q.execute(

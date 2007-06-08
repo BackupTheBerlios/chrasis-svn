@@ -80,7 +80,7 @@ _reflect(Character const & chr, int const chr_id, Database & db)
 	q.get_result("SELECT sample_count FROM characters WHERE character_id = " + s_chr_id + ";");
 	std::string sample_cnt;
 	if (q.more_rows())
-		sample_cnt = boost::lexical_cast<std::string>(q.fetch_row().get<long long>("sample_count") + 1);
+		sample_cnt = boost::lexical_cast<std::string>(q.fetch_row().get<int>("sample_count") + 1);
 	else
 		return false;
 	q.free_result();
@@ -90,7 +90,7 @@ _reflect(Character const & chr, int const chr_id, Database & db)
 	if (q.more_rows())
 		do
 			s_stroke_ids.push_back(
-				boost::lexical_cast<std::string>(q.fetch_row().get<long long>("stroke_id"))
+				boost::lexical_cast<std::string>(q.fetch_row().get<int>("stroke_id"))
 			);
 		while (q.more_rows());
 	else
@@ -145,7 +145,7 @@ _recall(std::string const & n, Database & db)
 		qs.get_result(
 			"SELECT stroke_id FROM strokes WHERE"
 			"	character_id = " +
-					boost::lexical_cast<std::string>(rc.get<long long>("character_id")) + " "
+					boost::lexical_cast<std::string>(rc.get<int>("character_id")) + " "
 			"ORDER BY sequence ASC;"
 		);
 		while (qs.more_rows())
@@ -156,13 +156,13 @@ _recall(std::string const & n, Database & db)
 			qp.get_result(
 				"SELECT x, y FROM points WHERE"
 				"	stroke_id = " +
-						boost::lexical_cast<std::string>(rs.get<long long>("stroke_id")) + " "
+						boost::lexical_cast<std::string>(rs.get<int>("stroke_id")) + " "
 				"ORDER BY sequence ASC;"
 			);
 			while (qp.more_rows())
 			{
 				ResultRow rp = qp.fetch_row();
-				s.add_point(rp.get<double>("x"), rp.get<double>("y"));
+				s.add_point(rp.get<int>("x"), rp.get<int>("y"));
 			}
 			qp.free_result();
 
@@ -170,7 +170,7 @@ _recall(std::string const & n, Database & db)
 		}
 		qs.free_result();
 
-		ret[rc.get<long long>("character_id")] = chr;
+		ret[rc.get<int>("character_id")] = chr;
 	}
 	qc.free_result();
 
