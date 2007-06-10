@@ -33,12 +33,12 @@ _remember(Character const & chr, Database & db)
 {
 	Query q(db);
 
-	q.execute("BEGIN TRANSACTION");
+	q.execute("BEGIN TRANSACTION;");
 
 	q.execute(
-		"INSERT INTO characters (character_name, stroke_count) VALUES ("
-		"	'" + chr.get_name() + "', "
-		"	" + boost::lexical_cast<std::string>(chr.stroke_count()) + ");"
+		"INSERT INTO c(c_n, s_cnt) VALUES ('" +
+			chr.get_name() + "'," +
+			boost::lexical_cast<std::string>(chr.stroke_count()) + ");"
 	);
 	std::string chr_id = boost::lexical_cast<std::string>(q.last_insert_rowid());
 	for (Stroke::const_iterator si = chr.strokes_begin();
@@ -46,10 +46,10 @@ _remember(Character const & chr, Database & db)
 	     ++si)
 	{
 		q.execute(
-			"INSERT INTO strokes (sequence, character_id, pt_count) VALUES ("
-			"	" + boost::lexical_cast<std::string>(si - chr.strokes_begin()) + ", "
-			"	" + chr_id + ", "
-			"	" + boost::lexical_cast<std::string>(si->point_count()) + ");"
+			"INSERT INTO s(seq, c_id, p_cnt) VALUES (" +
+				boost::lexical_cast<std::string>(si - chr.strokes_begin()) + "," +
+				chr_id + "," +
+				boost::lexical_cast<std::string>(si->point_count()) + ");"
 		);
 		std::string stroke_id = boost::lexical_cast<std::string>(q.last_insert_rowid());
 		for (Point::const_iterator pi = si->points_begin();
@@ -57,11 +57,11 @@ _remember(Character const & chr, Database & db)
 		     ++pi)
 		{
 			q.execute(
-				"INSERT INTO points (sequence, stroke_id, x, y) VALUES ("
-				"	" + boost::lexical_cast<std::string>(pi - si->points_begin()) + ", "
-				"	" + stroke_id + ", "
-				"	" + boost::lexical_cast<std::string>(pi->x()) + ", "
-				"	" + boost::lexical_cast<std::string>(pi->y()) +	");"
+				"INSERT INTO p(seq, s_id, x, y) VALUES (" +
+					boost::lexical_cast<std::string>(pi - si->points_begin()) + "," +
+					stroke_id + "," +
+					boost::lexical_cast<std::string>(pi->x()) + "," +
+					boost::lexical_cast<std::string>(pi->y()) + ");"
 			);
 		}
 	}
@@ -77,20 +77,20 @@ _reflect(Character const & chr, int const chr_id, Database & db)
 	Query q(db);
 	std::string s_chr_id = boost::lexical_cast<std::string>(chr_id);
 
-	q.get_result("SELECT sample_count FROM characters WHERE character_id = " + s_chr_id + ";");
-	std::string sample_cnt;
+	q.get_result("SELECT smp_cnt FROM c WHERE c_id = " + s_chr_id + ";");
+	std::string smp_cnt;
 	if (q.more_rows())
-		sample_cnt = boost::lexical_cast<std::string>(q.fetch_row().get<int>("sample_count") + 1);
+		smp_cnt = boost::lexical_cast<std::string>(q.fetch_row().get<int>("smp_cnt") + 1);
 	else
 		return false;
 	q.free_result();
 
-	q.get_result("SELECT stroke_id FROM strokes WHERE character_id = " + s_chr_id + ";");
+	q.get_result("SELECT s_id FROM s WHERE c_id = " + s_chr_id + ";");
 	std::vector< std::string > s_stroke_ids;
 	if (q.more_rows())
 		do
 			s_stroke_ids.push_back(
-				boost::lexical_cast<std::string>(q.fetch_row().get<int>("stroke_id"))
+				boost::lexical_cast<std::string>(q.fetch_row().get<int>("s_id"))
 			);
 		while (q.more_rows());
 	else
@@ -99,6 +99,7 @@ _reflect(Character const & chr, int const chr_id, Database & db)
 
 	q.execute("BEGIN TRANSACTION;");
 
+	std::string affected_strokes;
 	for (Stroke::const_iterator si = chr.strokes_begin();
 	     si != chr.strokes_end();
 	     ++si)
@@ -108,20 +109,20 @@ _reflect(Character const & chr, int const chr_id, Database & db)
 		     ++pi)
 		{
 			q.execute(
-				"UPDATE points SET"
-				"	x = x + ( " + boost::lexical_cast<std::string>(pi->x()) + " - x ) / " + sample_cnt + ", "
-				"	y = y + ( " + boost::lexical_cast<std::string>(pi->y()) + " - y ) / " + sample_cnt + " "
-				"WHERE"
-				"	stroke_id = " + s_stroke_ids[si - chr.strokes_begin()] + " AND"
-				"	sequence = " + boost::lexical_cast<std::string>(pi - si->points_begin()) + ";"
+				"UPDATE p SET "
+					"x = x + (" + boost::lexical_cast<std::string>(pi->x()) + " - x) / " + smp_cnt + ","
+					"y = y + (" + boost::lexical_cast<std::string>(pi->y()) + " - y) / " + smp_cnt + " "
+				"WHERE "
+					"s_id = " + s_stroke_ids[si - chr.strokes_begin()] + " AND "
+					"seq = " + boost::lexical_cast<std::string>(pi - si->points_begin()) + ";"
 			);
 		}
 	}
 	q.execute(
-		"UPDATE characters SET"
-		"	sample_count = sample_count + 1 "
-		"WHERE"
-		"	character_id = " + s_chr_id + ";"
+		"UPDATE c SET "
+			"smp_cnt = smp_cnt + 1 "
+		"WHERE "
+			"c_id = " + s_chr_id + ";"
 	);
 
 	q.execute("END TRANSACTION;");
@@ -129,52 +130,44 @@ _reflect(Character const & chr, int const chr_id, Database & db)
 	return true;
 }
 
-
+/*
 character_memories_t
 _recall(std::string const & n, Database & db)
 {
 	character_memories_t ret;
 	Query qc(db), qs(db), qp(db);
 
-	qc.get_result("SELECT character_id FROM characters WHERE character_name = '" + n + "';");
+	qc.get_result("SELECT c_id FROM c WHERE c_n IN '" + n + "';");
 	while (qc.more_rows())
 	{
 		ResultRow rc = qc.fetch_row();
 
 		Character chr(n);
 		qs.get_result(
-			"SELECT stroke_id FROM strokes WHERE"
-			"	character_id = " +
-					boost::lexical_cast<std::string>(rc.get<int>("character_id")) + " "
-			"ORDER BY sequence ASC;"
+			"SELECT s.s_id,p.x,p.y FROM p,s WHERE "
+				"p.s_id IN (s.s_id) AND "
+				"s.c_id IN (" + boost::lexical_cast<std::string>(rc.get<int>("c_id")) + ") "
+			"ORDER BY s.seq ASC, p.seq ASC;"
 		);
+		int s_id = -1;
 		while (qs.more_rows())
 		{
 			ResultRow rs = qs.fetch_row();
-
-			Stroke s;
-			qp.get_result(
-				"SELECT x, y FROM points WHERE"
-				"	stroke_id = " +
-						boost::lexical_cast<std::string>(rs.get<int>("stroke_id")) + " "
-				"ORDER BY sequence ASC;"
-			);
-			while (qp.more_rows())
+			if (s_id != rs.get<int>("s_id"))
 			{
-				ResultRow rp = qp.fetch_row();
-				s.add_point(rp.get<int>("x"), rp.get<int>("y"));
+				s_id = rs.get<int>("s_id");
+				chr.new_stroke();
 			}
-			qp.free_result();
-
-			chr.add_stroke(s);
+			chr.add_point(rs.get<int>("x"), rs.get<int>("y"));
 		}
 		qs.free_result();
 
-		ret[rc.get<int>("character_id")] = chr;
+		ret[rc.get<int>("c_id")] = chr;
 	}
 	qc.free_result();
 
 	return ret;
 }
+*/
 
 } // namespace chrasis

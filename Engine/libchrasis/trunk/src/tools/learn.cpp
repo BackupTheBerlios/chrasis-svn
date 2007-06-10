@@ -9,8 +9,6 @@ int main(int argc, char* argv[])
 {
 	Database db(argv[2]);
 
-	initialize_database(db);
-
 	Character::collection chars = read_chml(argv[1]);
 
 	cout << "Characters in \"" << argv[1] << "\":" << endl;

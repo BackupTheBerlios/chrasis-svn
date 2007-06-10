@@ -29,11 +29,19 @@ namespace chrasis
 {
 
 // database related
+
+#define DEFAULT_DB_FILE "chr_data.db"
+
 Database &
 _default_db();
 
 
 // used by recognize()
+
+// these numbers are basically magics...
+static const double	ANGLE_THRESHOLD		= 30.0 / 180.0 * M_PI;	//< 30 deg
+static const double	DIST_THRESHOLD_RATIO	= 1.0 / 15.0;		//< 1/15 of diagonal line
+static const int	RESOLUTION		= 10000;		//< sampling resolution
 
 /**
  *  get rid of redundent points of a stroke
@@ -51,6 +59,9 @@ _normalize(Character const &);
 
 // used by learn()
 
+// these numbers a basically magics...
+static const double	LEARNING_THRESHOLD	= 0.15;			//< 15% of sampling resolution
+
 /**
  *  try to remember a new character
  */
@@ -63,11 +74,13 @@ _remember(Character const &, Database &);
 bool
 _reflect(Character const &, int const, Database &);
 
+#if 0
 /**
  *  try to recall how a character is written
  */
 character_memories_t
 _recall(std::string const &, Database &);
+#endif
 
 } // namespace chrasis
 

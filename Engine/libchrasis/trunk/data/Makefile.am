@@ -4,6 +4,7 @@ data = chr_data.db
 all: $(data)
 
 chr_data.db:
+	sqlite3 chr_data.db < database_schema.sql
 	for I in `find ./chmls/ -type f -name \*.chml`;do \
 		$(tooldir)/learn $${I} chr_data.db; \
 	done

@@ -49,10 +49,6 @@ CHRASIS_API
 bool
 learn(Character const &, Database &);
 
-CHRASIS_API
-void
-initialize_database(Database &);
-
 } // namespace chrasis
 
 #endif

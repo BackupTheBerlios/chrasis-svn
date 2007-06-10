@@ -28,11 +28,6 @@
 namespace chrasis
 {
 
-// !!! FIXME !!! 
-// !!! Magic Numbers !!!
-static const double ANGLE_THRESHOLD		= 30.0 / 180.0 * M_PI;	//< 30 deg
-static const double DIST_THRESHOLD_RATIO	= 1.0 / 15.0;		//< 1/15 of diagonal line
-
 Stroke
 _normalize( const Stroke & orig_stroke, double const dist_threshold )
 {
@@ -153,10 +148,7 @@ _normalize(const Character & chr)
 		);
 	}
 
-	// walk through the character and adjust the point to range [0...40000)
-	// because:
-	// 	sqrt(2^31 - 1) ~= 46,340
-	// this way we avoid the case that (x * x + y * y) > INT_MAX
+	// walk through the character and adjust the point to range [0...RESOLUTION)
 	for (Stroke::iterator si = ret.strokes_begin();
 	     si != ret.strokes_end();
 	     ++si)
@@ -166,8 +158,8 @@ _normalize(const Character & chr)
 		     ++pi)
 		{
 			*pi -= lt;
-			pi->x() = static_cast<int>((static_cast<double>(pi->x()) / distance) * 40000);
-			pi->y() = static_cast<int>((static_cast<double>(pi->y()) / distance) * 40000);
+			pi->x() = static_cast<int>((static_cast<double>(pi->x()) / distance) * RESOLUTION);
+			pi->y() = static_cast<int>((static_cast<double>(pi->y()) / distance) * RESOLUTION);
 		}
 	}
 
