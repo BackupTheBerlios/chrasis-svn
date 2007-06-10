@@ -31,8 +31,10 @@
 #include <sys/types.h>
 
 #include <gtkmm.h>
-
 #include <chrasis.h>
+
+#include <fstream>
+#include <string>
 
 #include "trainer.h"
 
@@ -61,8 +63,19 @@ int main(int argc, char *argv[])
 	}
 	
 	// prepare database
-	chrasis::Database db("chr_data.db");
-	chrasis::initialize_database(db);
+	if ( !fexist("chr_data.db") )
+	{
+		// copy from default location
+		ifstream fin(
+			chrasis::settings::default_database().c_str(),
+			std::ios_base::binary);
+		ofstream fout(
+			"chr_data.db",
+			std::ios_base::binary);
+		fout << fin.rdbuf();
+		fin.close();
+		fout.close();
+	}
 
 	Gtk::Main kit(argc, argv);
 	Trainer w;
