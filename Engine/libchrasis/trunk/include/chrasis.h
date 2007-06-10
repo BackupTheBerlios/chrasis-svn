@@ -30,6 +30,9 @@
 #endif
 
 #include <chrasis/global.h>
+#include <chrasis/settings.h>
+#include <chrasis/character.h>
+#include <chrasis/database.h>
 
 namespace chrasis
 {

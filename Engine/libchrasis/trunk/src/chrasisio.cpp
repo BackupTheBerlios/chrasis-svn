@@ -127,4 +127,17 @@ learn(Character const & chr, Database & db)
 	return false;
 }
 
+
+namespace settings
+{
+
+CHRASIS_API
+std::string
+default_database()
+{
+	return CHRASIS_DATADIR "/" DEFAULT_DB_FILE;
+}
+
+} // namespace settings
+
 } // namespace chrasis

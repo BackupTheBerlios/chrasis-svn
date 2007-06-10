@@ -22,48 +22,26 @@
  * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
  */
 
-#ifndef _GLOBAL_H
-#define _GLOBAL_H
+#ifndef _SETTINGS_H
+#define _SETTINGS_H
 
 #ifndef _CHRASIS_H
 #warning "shouldn't be including this file directly!"
 #warning "try #include <chrasis.h> instead."
 #endif
 
-// standard headers
-#include <complex>
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-#include <list>
-#include <map>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <iterator>
-
-#include <boost/variant.hpp>
-#include <boost/lexical_cast.hpp>
-
-// platform dependent header
-#include <sys/stat.h>
-
-template <typename T>
-static inline
-T
-abs(const T v)
+namespace chrasis
 {
-	return (v < T()) ? -v : v;
-}
 
-bool
-static inline
-fexist( std::string const & filename )
+namespace settings
 {
-	struct stat buffer;
-	if ( stat( filename.c_str(), &buffer ) )
-		return false;
-	return true;
-}
+
+CHRASIS_API
+std::string
+default_database();
+
+} // namespace settings
+
+} // namespace chrasis
 
 #endif
