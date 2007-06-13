@@ -8,7 +8,7 @@ chr_data.db:
 	time for I in `find ./chmls/ -type f -name \*.chml`;do \
 		$(tooldir)/learn $${I} chr_data.db; \
 	done
-	$(tooldir)/compact_db chr_data.db
+	echo "ANALYZE;VACUUM;" | sqlite3 chr_data.db
 
 db_schema.sql:
 	cp database_schema.sql db_schema.sql

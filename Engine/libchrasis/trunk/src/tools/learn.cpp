@@ -1,4 +1,5 @@
 #include <chrasis.h>
+#include <chrasis/internal.h>
 
 #include "chmlcodec.h"
 
@@ -18,8 +19,8 @@ int main(int argc, char* argv[])
 	{
 		cout << "Processing char #" << ci - chars.begin()
 		     << " (" << ci->get_name() << ")..." << endl;
-	
-		learn(*ci, db);
+
+		learn(normalize(*ci), db);
 	}
 
 	return 0;

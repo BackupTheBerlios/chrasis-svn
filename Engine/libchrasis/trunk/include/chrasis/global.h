@@ -30,23 +30,37 @@
 #warning "try #include <chrasis.h> instead."
 #endif
 
-// standard headers
-#include <complex>
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-#include <list>
-#include <map>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <iterator>
+namespace chrasis
+{
 
-#include <boost/variant.hpp>
-#include <boost/lexical_cast.hpp>
+typedef std::vector< int >		char_traits_t;
+typedef int				possibility_t;
+typedef std::map<
+	possibility_t,
+	std::pair< int, std::string > >	character_possibility_t;
+typedef std::map< int, Character >	character_memories_t;
 
-// platform dependent header
-#include <sys/stat.h>
+
+template <typename T>
+static inline
+std::string
+toString(T const & v)
+{
+	std::ostringstream oss;
+	oss << v;
+	return oss.str();
+}
+
+template <typename T>
+static inline
+T
+fromString(std::string const & v)
+{
+	std::istringstream iss(v);
+	T ret;
+	iss >> ret;
+	return ret;
+}
 
 template <typename T>
 static inline
@@ -65,5 +79,7 @@ fexist( std::string const & filename )
 		return false;
 	return true;
 }
+
+} // namespace chrasis
 
 #endif

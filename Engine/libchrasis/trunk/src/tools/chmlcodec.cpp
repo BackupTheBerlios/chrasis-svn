@@ -75,8 +75,8 @@ Character::collection read_chml(std::string ifilename)
 						continue;
 
 					tmp_stroke.add_point(Point(
-						boost::lexical_cast<int>(reader.get_attribute("x")),
-						boost::lexical_cast<int>(reader.get_attribute("y"))));
+						fromString<int>(reader.get_attribute("x")),
+						fromString<int>(reader.get_attribute("y"))));
 					reader.move_to_element();
 				}
 				tmp_char.add_stroke(tmp_stroke);
@@ -123,8 +123,8 @@ void write_chml(Character::collection & chrs, std::string ofilename)
 					// point node (<point x="..." y="..." />)
 					xmlpp::Element * pNode = sNode->add_child("point");
 
-					pNode->set_attribute("x", boost::lexical_cast<std::string>(pi->x()));
-					pNode->set_attribute("y", boost::lexical_cast<std::string>(pi->y()));
+					pNode->set_attribute("x", toString(pi->x()));
+					pNode->set_attribute("y", toString(pi->y()));
 				}
 			}
 		}

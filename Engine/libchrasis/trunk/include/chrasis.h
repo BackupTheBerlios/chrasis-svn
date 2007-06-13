@@ -29,20 +29,36 @@
 # define CHRASIS_API
 #endif
 
+#include <complex>
+#include <cmath>
+#include <iostream>
+#include <list>
+#include <map>
+#include <string>
+#include <vector>
+#include <iterator>
+#include <sstream>
+
+#include <sys/stat.h>
+
+#include <chrasis/character.h>
 #include <chrasis/global.h>
 #include <chrasis/settings.h>
-#include <chrasis/character.h>
 #include <chrasis/database.h>
 
 namespace chrasis
 {
 
+typedef std::vector< int >		char_traits_t;
 typedef int				possibility_t;
 typedef std::map<
 	possibility_t,
 	std::pair< int, std::string > >	character_possibility_t;
 typedef std::map< int, Character >	character_memories_t;
 
+CHRASIS_API
+Character
+normalize(Character const &);
 
 CHRASIS_API
 character_possibility_t

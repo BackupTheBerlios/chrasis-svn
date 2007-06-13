@@ -129,4 +129,87 @@
       <point x="196" y="259"/>
     </stroke>
   </character>
+  <character name="&#x5341;">
+    <stroke>
+      <point x="83" y="188"/>
+      <point x="108" y="186"/>
+      <point x="116" y="186"/>
+      <point x="126" y="186"/>
+      <point x="138" y="184"/>
+      <point x="148" y="184"/>
+      <point x="160" y="184"/>
+      <point x="174" y="182"/>
+      <point x="182" y="182"/>
+      <point x="192" y="182"/>
+      <point x="200" y="182"/>
+      <point x="210" y="180"/>
+      <point x="213" y="180"/>
+      <point x="215" y="180"/>
+      <point x="218" y="180"/>
+      <point x="224" y="178"/>
+      <point x="225" y="178"/>
+      <point x="227" y="178"/>
+      <point x="228" y="178"/>
+      <point x="229" y="178"/>
+      <point x="230" y="178"/>
+      <point x="231" y="178"/>
+      <point x="232" y="178"/>
+      <point x="233" y="178"/>
+      <point x="235" y="178"/>
+      <point x="237" y="178"/>
+      <point x="238" y="178"/>
+      <point x="244" y="180"/>
+      <point x="246" y="180"/>
+      <point x="247" y="181"/>
+      <point x="249" y="181"/>
+      <point x="250" y="181"/>
+      <point x="252" y="181"/>
+      <point x="253" y="181"/>
+    </stroke>
+    <stroke>
+      <point x="159" y="82"/>
+      <point x="159" y="83"/>
+      <point x="159" y="84"/>
+      <point x="159" y="87"/>
+      <point x="159" y="90"/>
+      <point x="159" y="98"/>
+      <point x="161" y="108"/>
+      <point x="161" y="120"/>
+      <point x="161" y="130"/>
+      <point x="163" y="140"/>
+      <point x="163" y="152"/>
+      <point x="163" y="162"/>
+      <point x="163" y="172"/>
+      <point x="163" y="182"/>
+      <point x="165" y="188"/>
+      <point x="165" y="191"/>
+      <point x="167" y="199"/>
+      <point x="167" y="209"/>
+      <point x="167" y="217"/>
+      <point x="167" y="227"/>
+      <point x="167" y="235"/>
+      <point x="167" y="238"/>
+      <point x="167" y="241"/>
+      <point x="167" y="244"/>
+      <point x="169" y="250"/>
+      <point x="169" y="253"/>
+      <point x="169" y="256"/>
+      <point x="170" y="258"/>
+      <point x="170" y="261"/>
+      <point x="170" y="263"/>
+      <point x="170" y="265"/>
+      <point x="170" y="267"/>
+      <point x="170" y="270"/>
+      <point x="170" y="272"/>
+      <point x="170" y="274"/>
+      <point x="168" y="280"/>
+      <point x="168" y="282"/>
+      <point x="168" y="285"/>
+      <point x="168" y="289"/>
+      <point x="168" y="291"/>
+      <point x="168" y="292"/>
+      <point x="168" y="293"/>
+      <point x="167" y="293"/>
+    </stroke>
+  </character>
 </characters>

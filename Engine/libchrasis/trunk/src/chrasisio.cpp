@@ -29,100 +29,130 @@ namespace chrasis
 {
 
 CHRASIS_API
+Character
+normalize(const Character & chr)
+{
+	if (chr.stroke_count() == 0 ||
+	    chr.strokes_begin()->point_count() == 0)
+		return chr;
+
+	Character ret(chr.get_name());
+
+	// find left-top and right-bottom point
+	Point lt = *(chr.strokes_begin()->points_begin()),
+	      rb = *(chr.strokes_begin()->points_begin());
+	for (Stroke::const_iterator si = chr.strokes_begin();
+	     si != chr.strokes_end();
+	     ++si)
+	{
+		for (Point::const_iterator pi = si->points_begin();
+		     pi != si->points_end();
+		     ++pi)
+		{
+			if (pi->x() < lt.x())
+				lt.x() = pi->x();
+			if (pi->y() < lt.y())
+				lt.y() = pi->y();
+			if (pi->x() > rb.x())
+				rb.x() = pi->x();
+			if (pi->y() > rb.y())
+				rb.y() = pi->y();
+		}
+	}
+
+	Point::value_t const distance = std::max(
+		abs(lt.x() - rb.x()),
+		abs(lt.y() - rb.y())
+	);
+	lt.x() = (lt.x() + rb.x() - distance) / 2;
+	lt.y() = (lt.y() + rb.y() - distance) / 2;
+	
+	// walk through each strokes and simplize them
+	int distance_threshold = static_cast<int>(std::sqrt(distance*distance) * DIST_THRESHOLD_RATIO);
+	for (Stroke::const_iterator si = chr.strokes_begin();
+	     si != chr.strokes_end();
+	     ++si)
+		ret.add_stroke(_normalize(*si, distance_threshold));
+
+	// walk through the character and adjust the point to range [0...RESOLUTION)
+	for (Stroke::iterator si = ret.strokes_begin();
+	     si != ret.strokes_end();
+	     ++si)
+		for (Point::iterator pi = si->points_begin();
+		     pi != si->points_end();
+		     ++pi)
+		{
+			*pi -= lt;
+			pi->x() = static_cast<int>((static_cast<double>(pi->x()) / distance) * RESOLUTION);
+			pi->y() = static_cast<int>((static_cast<double>(pi->y()) / distance) * RESOLUTION);
+		}
+
+	return ret;
+}
+
+CHRASIS_API
 character_possibility_t
-recognize(Character const & chr, Database & db)
+recognize(Character const & nchr, Database & db)
 {
 	character_possibility_t ret;
 
-	Character nrm_chr(_normalize(chr));
-
-	Query q(db);
-
-	// find character
-	std::string sql(
-		"SELECT c_n,c_id FROM c WHERE "
-			"s_cnt IN (" + boost::lexical_cast<std::string>(nrm_chr.stroke_count())
-	);
-	if (nrm_chr.get_name() != "")
-		sql += ") AND c_n IN ('" + nrm_chr.get_name() + "'";
-	for (Stroke::const_iterator si = nrm_chr.strokes_begin();
-	     si != nrm_chr.strokes_end();
+	char_traits_t t;
+	for (Stroke::const_iterator si = nchr.strokes_begin();
+	     si != nchr.strokes_end();
 	     ++si)
-	{
-		sql += ") AND c_id IN ("
-		       "	SELECT c_id FROM s WHERE "
-		       "		p_cnt IN (" +
-		       				boost::lexical_cast<std::string>(si->point_count()) + ") AND "
-		       "		seq IN (" +
-		       				boost::lexical_cast<std::string>(si - nrm_chr.strokes_begin()) + ")";
-	}
-	sql += ");";
-
-	// retrieving points for possibility
-	std::vector< std::pair< int, std::string > > id_name;
-	q.get_result(sql);
-	sql = "";
-	while (q.more_rows())
-	{
-		ResultRow r(q.fetch_row());
-		id_name.push_back( std::make_pair(
-			r.get<int>("c_id"),
-			r.get<std::string>("c_n")
-		) );
-		sql += boost::lexical_cast<std::string>(r.get<int>("c_id")) + ",";
-	}
-	q.free_result();
-	sql = sql.substr(0, sql.size() - 1) +
-	sql =	"SELECT p.x,p.y FROM p,s,c WHERE "
-			"p.s_id=s.s_id AND "
-			"s.c_id = c.c_id AND "
-			"c.c_id IN (" + sql + ") "
-		"ORDER BY "
-			"s.c_id ASC, s.seq ASC, p.seq ASC;";
+		t.push_back(si->point_count());
+	
+	character_memories_t likely = _get_chars_by_traits(t, nchr.get_name(), db);
 
 	// calculate possibility and return the result
-	q.get_result(sql);
-	for(std::vector< std::pair< int, std::string > >::iterator it = id_name.begin();
-	    it != id_name.end();
+	for(character_memories_t::iterator it = likely.begin();
+	    it != likely.end();
 	    ++it)
 	{
 		int c_possib = 0;
-		for (Stroke::const_iterator si = nrm_chr.strokes_begin();
-		     si != nrm_chr.strokes_end();
-		     ++si)
+		for (Stroke::const_iterator
+			si	= nchr.strokes_begin(),
+			lsi	= it->second.strokes_begin();
+		     si != nchr.strokes_end() &&
+		     lsi != it->second.strokes_end();
+		     ++si,
+		     ++lsi)
 		{
 			int s_possib = 0;
-			for (Point::const_iterator pi = si->points_begin();
-			     pi != si->points_end();
-			     ++pi)
+			for (Point::const_iterator
+				pi	= si->points_begin(),
+				lpi	= lsi->points_begin();
+			     pi != si->points_end() &&
+			     lpi != lsi->points_end();
+			     ++pi,
+			     ++lpi)
 			{
-				if (!q.more_rows())
-					return ret;
-				ResultRow r(q.fetch_row());
-				double xd = r.get<int>("x") - pi->x(),
-				       yd = r.get<int>("y") - pi->y();
-				s_possib += static_cast<int>(std::sqrt(xd * xd + yd * yd));
+				s_possib += static_cast<int>(
+					std::sqrt(
+						(lpi->x() - pi->x()) * (lpi->x() - pi->x()) +
+						(lpi->y() - pi->y()) * (lpi->y() - pi->y())
+					)
+				);
 			}
 			c_possib += s_possib / si->point_count();
 		}
-		ret[ c_possib / nrm_chr.stroke_count() ] = *it;
+		ret[ c_possib / nchr.stroke_count() ] = std::make_pair(it->first, it->second.get_name());
 	}
-	q.free_result();
 
 	return ret;
 }
 
 CHRASIS_API
 bool
-learn(Character const & chr, Database & db)
+learn(Character const & nchr, Database & db)
 {
-	character_possibility_t likely = recognize(chr, db);
+	character_possibility_t likely = recognize(nchr, db);
 
 	if ( likely.size() == 0 ||
 	     likely.begin()->first > static_cast<int>(RESOLUTION * LEARNING_THRESHOLD) )
-		return _remember(_normalize(chr), db);
+		return _remember(nchr, db);
 	else
-		return _reflect(_normalize(chr), likely.begin()->second.first, db);
+		return _reflect(nchr, likely.begin()->second.first, db);
 	
 	return false;
 }

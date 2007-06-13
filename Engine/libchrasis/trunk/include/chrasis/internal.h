@@ -47,14 +47,13 @@ static const int	RESOLUTION		= 10000;		//< sampling resolution
  *  get rid of redundent points of a stroke
  */
 Stroke
-_normalize(Stroke const &);
+_normalize(Stroke const &, int const);
 
 /**
- *  get rid of redundent points of a character
- *  (iteratively calls_normalize(Stroke const &))
+ *  get characters with alike traits
  */
-Character
-_normalize(Character const &);
+character_memories_t
+_get_chars_by_traits(char_traits_t const &, std::string const &, Database &);
 
 
 // used by learn()
@@ -63,24 +62,17 @@ _normalize(Character const &);
 static const double	LEARNING_THRESHOLD	= 0.15;			//< 15% of sampling resolution
 
 /**
- *  try to remember a new character
+ *  remember a new character
  */
 bool
 _remember(Character const &, Database &);
 
 /**
- *  update and adjust existing character
+ *  update an existing character
  */
 bool
 _reflect(Character const &, int const, Database &);
 
-#if 0
-/**
- *  try to recall how a character is written
- */
-character_memories_t
-_recall(std::string const &, Database &);
-#endif
 
 } // namespace chrasis
 
