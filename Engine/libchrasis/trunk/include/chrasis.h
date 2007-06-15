@@ -51,10 +51,11 @@ namespace chrasis
 
 typedef std::vector< int >		char_traits_t;
 typedef int				possibility_t;
-typedef std::map<
+typedef std::multimap<
 	possibility_t,
 	std::pair< int, std::string > >	character_possibility_t;
-typedef std::map< int, Character >	character_memories_t;
+typedef std::vector< int >		character_ids_t;
+
 
 CHRASIS_API
 Character

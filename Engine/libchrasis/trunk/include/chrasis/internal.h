@@ -52,8 +52,14 @@ _normalize(Stroke const &, int const);
 /**
  *  get characters with alike traits
  */
-character_memories_t
-_get_chars_by_traits(char_traits_t const &, std::string const &, Database &);
+character_ids_t
+_get_cids_by_traits(char_traits_t const &, std::string const &, Database &);
+
+/**
+ *  get character by id
+ */
+Character
+_get_char_by_id(int const, Database &);
 
 
 // used by learn()

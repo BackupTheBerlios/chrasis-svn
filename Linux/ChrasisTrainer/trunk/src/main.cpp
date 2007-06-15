@@ -1,7 +1,7 @@
 /*
  * Chrasis Trainer
  *
- * Copyright (c) 2006 Victor Tseng <palatis@gentoo.tw>
+ * Copyright (c) 2006 Victor Tseng <palatis@gmail.com>
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 	}
 	
 	// prepare database
-	if ( !fexist("chr_data.db") )
+	if ( !chrasis::fexist("chr_data.db") )
 	{
 		// copy from default location
 		ifstream fin(

@@ -102,19 +102,20 @@ recognize(Character const & nchr, Database & db)
 	     ++si)
 		t.push_back(si->point_count());
 	
-	character_memories_t likely = _get_chars_by_traits(t, nchr.get_name(), db);
+	character_ids_t likely_ids = _get_cids_by_traits(t, nchr.get_name(), db);
 
 	// calculate possibility and return the result
-	for(character_memories_t::iterator it = likely.begin();
-	    it != likely.end();
+	for(character_ids_t::iterator it = likely_ids.begin();
+	    it != likely_ids.end();
 	    ++it)
 	{
+		Character likely = _get_char_by_id(*it, db);
 		int c_possib = 0;
 		for (Stroke::const_iterator
 			si	= nchr.strokes_begin(),
-			lsi	= it->second.strokes_begin();
+			lsi	= likely.strokes_begin();
 		     si != nchr.strokes_end() &&
-		     lsi != it->second.strokes_end();
+		     lsi != likely.strokes_end();
 		     ++si,
 		     ++lsi)
 		{
@@ -136,7 +137,15 @@ recognize(Character const & nchr, Database & db)
 			}
 			c_possib += s_possib / si->point_count();
 		}
-		ret[ c_possib / nchr.stroke_count() ] = std::make_pair(it->first, it->second.get_name());
+		ret.insert(
+			std::make_pair(
+				c_possib / nchr.stroke_count(),
+				std::make_pair(
+					*it,
+					likely.get_name()
+				)
+			)
+		);
 	}
 
 	return ret;

@@ -10,8 +10,6 @@ using namespace chrasis;
 
 int main(int argc, char* argv[])
 {
-	Database db(argv[2]);
-
 	Character::collection all;
 
 	for (int i=1;i<argc;++i)

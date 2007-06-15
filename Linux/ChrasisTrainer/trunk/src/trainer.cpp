@@ -26,6 +26,19 @@
 #include <unistd.h>
 #include <glibmm/i18n.h>
 
+#include <sstream>
+#include <string>
+
+inline
+std::string
+utf8_to_hex(std::string s)
+{
+	std::ostringstream oss;
+	for(int i=0;i<s.length();++i)
+		oss << std::hex << static_cast<int>(static_cast<unsigned char>(s[i]));
+	return oss.str();
+}
+
 #include "trainer.h"
 #include "chmlcodec.h"
 
@@ -132,7 +145,6 @@ Trainer::on_menu_file_quit()
 void
 Trainer::on_learn_clicked()
 {
-	std::cout << "on_learn_clicked()" << std::endl;
 	Glib::RefPtr<Gtk::TreeSelection> refts = treeview_.get_selection();
 
 	if ( Gtk::TreeIter sl = refts->get_selected() )
@@ -217,8 +229,7 @@ Trainer::on_drawing_press(GdkEventButton * event)
 		Glib::RefPtr<Gdk::GC> gc = drawing_.get_style()->get_black_gc();
 
 		// draw a number before each stroke
-		Glib::RefPtr<Pango::Layout> num =
-			create_pango_layout(boost::lexical_cast<std::string>(++stroke_num));
+		Glib::RefPtr<Pango::Layout> num = create_pango_layout(chrasis::toString(++stroke_num));
 		int lx, ly;
 		num->get_size(lx, ly);
 		gc->set_rgb_fg_color(colors[2]);
@@ -350,7 +361,7 @@ Trainer::update_candidate_list()
 {
 	refliststore_->clear();
 
-	chrasis::character_possibility_t likely(recognize(cur_char_, db_));
+	chrasis::character_possibility_t likely(recognize(normalize(cur_char_), db_));
 
 	for (chrasis::character_possibility_t::iterator it = likely.begin();
 	     it != likely.end();
@@ -366,11 +377,11 @@ Trainer::update_candidate_list()
 void
 Trainer::learn_curchar()
 {
-	std::string fn(std::string("raw_data/") + cur_char_.get_name() + ".chml");
+	std::string fn(std::string("raw_data/") + utf8_to_hex(cur_char_.get_name()) + ".chml");
 
 	chrasis::Character::collection cc = chrasis::read_chml(fn);
 	cc.push_back(cur_char_);
 	chrasis::write_chml(cc, fn);
 
-	chrasis::learn(cur_char_, db_);
+	chrasis::learn(normalize(cur_char_), db_);
 }

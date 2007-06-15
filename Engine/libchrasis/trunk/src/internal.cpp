@@ -94,19 +94,19 @@ _normalize( const Stroke & orig_stroke, int const dist_threshold )
 	return ret;
 }
 
-character_memories_t
-_get_chars_by_traits(
+character_ids_t
+_get_cids_by_traits(
 	char_traits_t const & t,
 	std::string const & n,
 	Database & db)
 {
-	character_memories_t ret;
+	character_ids_t ret;
 
 	Database::OPENDB *odb = db.grabdb();
 	sqlite3_stmt *res = NULL;
 
 	std::string sql(
-		"SELECT c_n,c_id FROM c WHERE "
+		"SELECT c_id FROM c WHERE "
 			"s_cnt IN (" + toString(t.size())
 	);
 	if (n != "")
@@ -116,12 +116,8 @@ _get_chars_by_traits(
 	     ++i)
 		sql +=	") AND c_id IN ("
 				"SELECT c_id FROM s WHERE "
-					"p_cnt IN (" +
-						toString(*i) +
-					") AND "
-					"seq IN (" +
-						toString(i - t.begin()) +
-					")";
+					"p_cnt=" + toString(*i) + " AND "
+					"seq=" + toString(i - t.begin());
 	sql += ");";
 
 	const char *s = NULL;
@@ -140,24 +136,36 @@ _get_chars_by_traits(
 		return ret;
 	}
 
-	sql = "";
 	while (sqlite3_step(res) == SQLITE_ROW)
-	{
-		const char *tmp_n = (const char *)sqlite3_column_text(res, 0);
-		int tmp_id = sqlite3_column_int(res, 1);
-
-		ret[tmp_id] = Character(tmp_n);
-		sql += toString(tmp_id) + ",";
-	}
+		ret.push_back( sqlite3_column_int(res, 0) );
 	sqlite3_finalize(res);
 	res = NULL;
-	sql =	"SELECT p.x,p.y FROM p,s,c WHERE "
+
+	db.freedb(odb);
+
+	return ret;
+}
+
+Character
+_get_char_by_id(int const cid, Database & db)
+{
+	Character ret;
+
+	Database::OPENDB *odb = db.grabdb();
+	sqlite3_stmt *res = NULL;
+
+	std::string sql(
+		"SELECT s.seq,p.x,p.y FROM p,s,c WHERE "
 			"p.s_id=s.s_id AND "
-			"s.c_id = c.c_id AND "
-			"c.c_id IN (" + sql + ") "
+			"s.c_id=c.c_id AND "
+			"c.c_id=" + toString(cid) + " "
 		"ORDER BY "
-			"s.c_id ASC, s.seq ASC, p.seq ASC;";
-	
+			"s.c_id ASC, s.seq ASC, p.seq ASC;"
+	);
+
+	const char *s = NULL;
+	int rc;
+
 	rc = sqlite3_prepare(odb->db, sql.c_str(), sql.size(), &res, &s);
 	if (rc != SQLITE_OK)
 	{
@@ -171,27 +179,40 @@ _get_chars_by_traits(
 		return ret;
 	}
 
-	sql = "";
-	for (character_memories_t::iterator ci = ret.begin();
-	     ci != ret.end();
-	     ++ci)
+	int oseq = -1, seq;
+	while (sqlite3_step(res) == SQLITE_ROW)
 	{
-		for (char_traits_t::const_iterator i = t.begin();
-		     i != t.end();
-		     ++i)
+		if ( oseq != (seq = sqlite3_column_int(res, 0)) )
 		{
-			ci->second.new_stroke();
-			for (int n = 0; n < *i; ++n)
-			{
-				if (sqlite3_step(res) != SQLITE_ROW)
-					break;
-
-				ci->second.add_point(
-					sqlite3_column_int(res, 0),
-					sqlite3_column_int(res, 1)
-				);
-			}
+			ret.new_stroke();
+			oseq = seq;
 		}
+
+		ret.add_point(
+			sqlite3_column_int(res, 1),
+			sqlite3_column_int(res, 2)
+		);
+	}
+	sqlite3_finalize(res);
+	res = NULL;
+
+	sql = "SELECT c_n FROM c WHERE c_id=" + toString(cid) + " LIMIT 1;";
+	rc = sqlite3_prepare(odb->db, sql.c_str(), sql.size(), &res, &s);
+	if (rc != SQLITE_OK)
+	{
+		std::cerr << "Database: prepare query failed." << std::endl;
+		std::cerr << "          sql = [" + sql + "]" << std::endl;
+		return ret;
+	}
+	if (!res)
+	{
+		std::cerr << "get_result: query failed" << std::endl;
+		return ret;
+	}
+	if (sqlite3_step(res) == SQLITE_ROW)
+	{
+		const char *tmp_n = (const char *)sqlite3_column_text(res, 0);
+		ret.set_name(tmp_n);
 	}
 	sqlite3_finalize(res);
 	res = NULL;

@@ -1,7 +1,7 @@
 /*
  * Chrasis Trainer
  *
- * Copyright (c) 2006 Victor Tseng <palatis@gentoo.tw>
+ * Copyright (c) 2006 Victor Tseng <palatis@gmail.com>
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -67,7 +67,7 @@ private:
 	Glib::RefPtr<Gtk::ListStore> refliststore_;
 		Gtk::TreeModelColumnRecord columns_;
 			Gtk::TreeModelColumn<Glib::ustring> col_char_;
-			Gtk::TreeModelColumn<double> col_diff_;
+			Gtk::TreeModelColumn<unsigned int> col_diff_;
 			Gtk::TreeModelColumn<unsigned int> col_id_;
 
 	// Child widgets:

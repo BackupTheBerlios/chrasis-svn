@@ -1,7 +1,7 @@
 /*
  * Character Creater
  *
- * Copyright (c) 2006 Victor Tseng <palatis@gentoo.tw>
+ * Copyright (c) 2006 Victor Tseng <palatis@gmail.com>
  *
  *
  * This library is free software; you can redistribute it and/or
