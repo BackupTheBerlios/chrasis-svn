@@ -31,6 +31,7 @@ namespace chrasis
 // database related
 
 #define DEFAULT_DB_FILE		"chr_data.db"
+#define DEFAULT_EMPTYDB_FILE	"empty_db.db"
 #define DEFAULT_SCHEMA_FILE	"db_schema.sql"
 
 // used by recognize()

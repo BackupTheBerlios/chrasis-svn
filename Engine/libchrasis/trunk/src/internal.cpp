@@ -226,120 +226,49 @@ bool
 _remember(Character const & chr, Database & db)
 {
 	Database::OPENDB *odb = db.grabdb();
-	sqlite3_stmt *res = NULL;
 
-	const char *s = NULL;
-	int rc;
-	std::string sql;
+	db.execute("BEGIN TRANSACTION;", odb);
 
-	sql = "BEGIN TRANSACTION;";
-	rc = sqlite3_prepare(odb->db, sql.c_str(), sql.size(), &res, &s);
-	if (rc != SQLITE_OK)
-	{
-		std::cerr << "Database: prepare query failed." << std::endl;
-		std::cerr << "          sql = [" + sql + "]" << std::endl;
-		return false;
-	}
-	if (!res)
-	{
-		std::cerr << "Database: query failed." << std::endl;
-		return false;
-	}
-	sqlite3_step(res);
-	sqlite3_finalize(res);
-	res = NULL;
-
-	sql =	"INSERT INTO c(c_n,s_cnt) VALUES ('" +
+	db.execute(
+		"INSERT INTO c(c_n,s_cnt) VALUES ('" +
 			chr.get_name() + "'," +
 			toString(chr.stroke_count()) +
-		");";
-	rc = sqlite3_prepare(odb->db, sql.c_str(), sql.size(), &res, &s);
-	if (rc != SQLITE_OK)
-	{
-		std::cerr << "Database: prepare query failed." << std::endl;
-		std::cerr << "          sql = [" + sql + "]" << std::endl;
-		return false;
-	}
-	if (!res)
-	{
-		std::cerr << "Database: query failed." << std::endl;
-		return false;
-	}
-	sqlite3_step(res);
-	sqlite3_finalize(res);
-	res = NULL;
+		");",
+		odb
+	);
 
 	std::string chr_id = toString(sqlite3_last_insert_rowid(odb->db));
 	for (Stroke::const_iterator si = chr.strokes_begin();
 	     si != chr.strokes_end();
 	     ++si)
 	{
-		sql =	"INSERT INTO s(seq,c_id,p_cnt) VALUES (" +
+		db.execute(
+			"INSERT INTO s(seq,c_id,p_cnt) VALUES (" +
 				toString(si - chr.strokes_begin()) + "," +
 				chr_id + "," +
 				toString(si->point_count()) +
-			");";
-		rc = sqlite3_prepare(odb->db, sql.c_str(), sql.size(), &res, &s);
-		if (rc != SQLITE_OK)
-		{
-			std::cerr << "Database: prepare query failed." << std::endl;
-			std::cerr << "          sql = [" + sql + "]" << std::endl;
-			return false;
-		}
-		if (!res)
-		{
-			std::cerr << "Database: query failed." << std::endl;
-			return false;
-		}
-		sqlite3_step(res);
-		sqlite3_finalize(res);
-		res = NULL;
+			");",
+			odb
+		);
 
 		std::string stroke_id = toString(sqlite3_last_insert_rowid(odb->db));
 		for (Point::const_iterator pi = si->points_begin();
 		     pi != si->points_end();
 		     ++pi)
 		{
-			sql =	"INSERT INTO p(seq,s_id,x,y) VALUES (" +
+			db.execute(
+				"INSERT INTO p(seq,s_id,x,y) VALUES (" +
 					toString(pi - si->points_begin()) + "," +
 					stroke_id + "," +
 					toString(pi->x()) + "," +
 					toString(pi->y()) +
-				");";
-			rc = sqlite3_prepare(odb->db, sql.c_str(), sql.size(), &res, &s);
-			if (rc != SQLITE_OK)
-			{
-				std::cerr << "Database: prepare query failed." << std::endl;
-				std::cerr << "          sql = [" + sql + "]" << std::endl;
-				return false;
-			}
-			if (!res)
-			{
-				std::cerr << "Database: query failed." << std::endl;
-				return false;
-			}
-			sqlite3_step(res);
-			sqlite3_finalize(res);
-			res = NULL;
+				");",
+				odb
+			);
 		}
 	}
 
-	sql = "END TRANSACTION;";
-	rc = sqlite3_prepare(odb->db, sql.c_str(), sql.size(), &res, &s);
-	if (rc != SQLITE_OK)
-	{
-		std::cerr << "Database: prepare query failed." << std::endl;
-		std::cerr << "          sql = [" + sql + "]" << std::endl;
-		return false;
-	}
-	if (!res)
-	{
-		std::cerr << "Database: query failed." << std::endl;
-		return false;
-	}
-	sqlite3_step(res);
-	sqlite3_finalize(res);
-	res = NULL;
+	db.execute("END TRANSACTION;", odb);
 
 	db.freedb(odb);
 
@@ -404,22 +333,7 @@ _reflect(Character const & chr, int const chr_id, Database & db)
 	if (s_stroke_ids.size() != chr.stroke_count())
 		return false;
 
-	sql = "BEGIN TRANSACTION;";
-	rc = sqlite3_prepare(odb->db, sql.c_str(), sql.size(), &res, &s);
-	if (rc != SQLITE_OK)
-	{
-		std::cerr << "Database: prepare query failed." << std::endl;
-		std::cerr << "          sql = [" + sql + "]" << std::endl;
-		return false;
-	}
-	if (!res)
-	{
-		std::cerr << "Database: query failed." << std::endl;
-		return false;
-	}
-	sqlite3_step(res);
-	sqlite3_finalize(res);
-	res = NULL;
+	db.execute("BEGIN TRANSACTION;", odb);
 
 	for (Stroke::const_iterator si = chr.strokes_begin();
 	     si != chr.strokes_end();
@@ -430,7 +344,8 @@ _reflect(Character const & chr, int const chr_id, Database & db)
 		     pi != si->points_end();
 		     ++pi)
 		{
-			sql =	"UPDATE p SET "
+			db.execute(
+				"UPDATE p SET "
 					"x = x + (" + 
 						toString(pi->x()) + " - x"
 					") / " + smp_cnt + ","
@@ -440,41 +355,13 @@ _reflect(Character const & chr, int const chr_id, Database & db)
 				"WHERE "
 					"s_id = " + s_stroke_ids[si - chr.strokes_begin()] + " AND "
 					"seq = " + toString(pi - si->points_begin()) +
-				";";
-			rc = sqlite3_prepare(odb->db, sql.c_str(), sql.size(), &res, &s);
-			if (rc != SQLITE_OK)
-			{
-				std::cerr << "Database: prepare query failed." << std::endl;
-				std::cerr << "          sql = [" + sql + "]" << std::endl;
-				return false;
-			}
-			if (!res)
-			{
-				std::cerr << "Database: query failed." << std::endl;
-				return false;
-			}
-			sqlite3_step(res);
-			sqlite3_finalize(res);
-			res = NULL;
+				";",
+				odb
+			);
 		}
 	}
 
-	sql = "END TRANSACTION;";
-	rc = sqlite3_prepare(odb->db, sql.c_str(), sql.size(), &res, &s);
-	if (rc != SQLITE_OK)
-	{
-		std::cerr << "Database: prepare query failed." << std::endl;
-		std::cerr << "          sql = [" + sql + "]" << std::endl;
-		return false;
-	}
-	if (!res)
-	{
-		std::cerr << "Database: query failed." << std::endl;
-		return false;
-	}
-	rc = sqlite3_step(res);
-	sqlite3_finalize(res);
-	res = NULL;
+	db.execute("END TRANSACTION;", odb);
 
 	db.freedb(odb);
 
