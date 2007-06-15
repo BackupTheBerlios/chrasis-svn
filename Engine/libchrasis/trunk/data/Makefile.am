@@ -1,5 +1,5 @@
 tooldir = $(top_builddir)/src/tools
-data = chr_data.db db_schema.sql
+data = chr_data.db empty_db.db
 
 all: $(data)
 
@@ -8,10 +8,10 @@ chr_data.db:
 	time for I in `find ./chmls/ -type f -name \*.chml`;do \
 		$(tooldir)/learn $${I} chr_data.db; \
 	done
-	echo "ANALYZE;VACUUM;" | sqlite3 chr_data.db
+	sqlite3 chr_data.db "ANALYZE;VACUUM;"
 
-db_schema.sql:
-	cp database_schema.sql db_schema.sql
+empty_db.db:
+	sqlite3 empty_db.db < database_schema.sql
 
 install-data-local: $(data)
 	$(mkinstalldirs) $(DESTDIR)/$(datadir)/chrasis

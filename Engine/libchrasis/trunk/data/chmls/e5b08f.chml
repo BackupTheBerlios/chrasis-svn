@@ -1342,4 +1342,122 @@
       <point x="203" y="209"/>
     </stroke>
   </character>
+  <character name="&#x5C0F;">
+    <stroke>
+      <point x="175" y="92"/>
+      <point x="175" y="93"/>
+      <point x="175" y="94"/>
+      <point x="175" y="96"/>
+      <point x="175" y="98"/>
+      <point x="175" y="101"/>
+      <point x="175" y="109"/>
+      <point x="175" y="117"/>
+      <point x="177" y="125"/>
+      <point x="177" y="133"/>
+      <point x="177" y="143"/>
+      <point x="177" y="151"/>
+      <point x="177" y="154"/>
+      <point x="177" y="162"/>
+      <point x="177" y="170"/>
+      <point x="177" y="180"/>
+      <point x="177" y="188"/>
+      <point x="177" y="196"/>
+      <point x="177" y="199"/>
+      <point x="177" y="202"/>
+      <point x="177" y="210"/>
+      <point x="177" y="213"/>
+      <point x="177" y="215"/>
+      <point x="177" y="218"/>
+      <point x="177" y="220"/>
+      <point x="179" y="226"/>
+      <point x="179" y="228"/>
+      <point x="179" y="231"/>
+      <point x="179" y="233"/>
+      <point x="181" y="239"/>
+      <point x="181" y="241"/>
+      <point x="181" y="243"/>
+      <point x="181" y="245"/>
+      <point x="181" y="247"/>
+      <point x="181" y="248"/>
+      <point x="181" y="250"/>
+      <point x="181" y="251"/>
+      <point x="181" y="252"/>
+      <point x="181" y="253"/>
+      <point x="181" y="254"/>
+      <point x="181" y="255"/>
+      <point x="181" y="256"/>
+      <point x="180" y="256"/>
+      <point x="179" y="256"/>
+      <point x="175" y="252"/>
+      <point x="171" y="248"/>
+      <point x="167" y="244"/>
+      <point x="163" y="240"/>
+      <point x="159" y="234"/>
+      <point x="158" y="233"/>
+      <point x="157" y="232"/>
+      <point x="156" y="231"/>
+      <point x="156" y="230"/>
+      <point x="155" y="230"/>
+      <point x="155" y="229"/>
+    </stroke>
+    <stroke>
+      <point x="129" y="168"/>
+      <point x="129" y="169"/>
+      <point x="129" y="170"/>
+      <point x="129" y="172"/>
+      <point x="125" y="176"/>
+      <point x="124" y="177"/>
+      <point x="120" y="181"/>
+      <point x="118" y="187"/>
+      <point x="114" y="193"/>
+      <point x="108" y="197"/>
+      <point x="104" y="203"/>
+      <point x="100" y="209"/>
+      <point x="99" y="211"/>
+      <point x="95" y="217"/>
+      <point x="91" y="223"/>
+      <point x="85" y="227"/>
+      <point x="84" y="229"/>
+      <point x="80" y="233"/>
+      <point x="79" y="235"/>
+      <point x="78" y="236"/>
+      <point x="78" y="237"/>
+      <point x="77" y="238"/>
+    </stroke>
+    <stroke>
+      <point x="206" y="164"/>
+      <point x="207" y="164"/>
+      <point x="207" y="165"/>
+      <point x="208" y="165"/>
+      <point x="210" y="166"/>
+      <point x="210" y="168"/>
+      <point x="212" y="169"/>
+      <point x="216" y="173"/>
+      <point x="218" y="179"/>
+      <point x="219" y="180"/>
+      <point x="221" y="186"/>
+      <point x="225" y="192"/>
+      <point x="227" y="198"/>
+      <point x="229" y="204"/>
+      <point x="233" y="208"/>
+      <point x="237" y="214"/>
+      <point x="241" y="222"/>
+      <point x="242" y="224"/>
+      <point x="246" y="230"/>
+      <point x="248" y="231"/>
+      <point x="249" y="233"/>
+      <point x="250" y="235"/>
+      <point x="252" y="236"/>
+      <point x="253" y="237"/>
+      <point x="254" y="238"/>
+      <point x="255" y="240"/>
+      <point x="256" y="241"/>
+      <point x="258" y="242"/>
+      <point x="259" y="243"/>
+      <point x="260" y="244"/>
+      <point x="261" y="244"/>
+      <point x="262" y="244"/>
+      <point x="262" y="245"/>
+    </stroke>
+  </character>
 </characters>

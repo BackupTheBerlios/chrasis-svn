@@ -53,6 +53,8 @@ public:
 	OPENDB* grabdb();
 	void freedb(OPENDB*);
 	
+	bool execute(std::string const &, OPENDB * const = NULL);
+
 private:
 	Database(const Database &) {};
 	Database& operator=(const Database &) { return *this; };

@@ -38,7 +38,23 @@ namespace settings
 
 CHRASIS_API
 std::string
-default_database();
+system_database_path();
+
+CHRASIS_API
+std::string
+empty_database_path();
+
+CHRASIS_API
+std::string
+user_database_path();
+
+CHRASIS_API
+std::string
+database_schema_path();
+
+CHRASIS_API
+bool
+initialize_userdir();
 
 } // namespace settings
 

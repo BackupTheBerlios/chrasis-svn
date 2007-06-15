@@ -31,15 +31,17 @@
 
 #include <complex>
 #include <cmath>
-#include <iostream>
 #include <list>
 #include <map>
 #include <string>
 #include <vector>
 #include <iterator>
+#include <iostream>
 #include <sstream>
+#include <fstream>
 
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <chrasis/character.h>
 #include <chrasis/global.h>
