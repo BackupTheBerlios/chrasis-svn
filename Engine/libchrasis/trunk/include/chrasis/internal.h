@@ -42,6 +42,12 @@ static const double	DIST_THRESHOLD_RATIO	= 1.0 / 15.0;		//< 1/15 of diagonal lin
 static const int	RESOLUTION		= 10000;		//< sampling resolution
 
 /**
+ *  recognize from one database
+ */
+bool
+_recognize(Character const &, Database &, character_possibility_t &);
+
+/**
  *  get rid of redundent points of a stroke
  */
 Stroke
@@ -64,6 +70,12 @@ _get_char_by_id(int const, Database &);
 
 // these numbers a basically magics...
 static const double	LEARNING_THRESHOLD	= 0.15;			//< 15% of sampling resolution
+
+/**
+ *  learn a character into one database
+ */
+bool
+_learn(Character const &, Database &);
 
 /**
  *  remember a new character

@@ -29,6 +29,73 @@ namespace chrasis
 {
 
 CHRASIS_API
+Stroke
+normalize( const Stroke & orig_stroke, int const dist_threshold )
+{
+	Point::collection normalized;
+	copy(orig_stroke.points_begin(), orig_stroke.points_end(), back_inserter(normalized));
+
+	// get rid of useless points
+	bool erased_something;
+	do
+	{
+		// erase segment with too-close angles
+		bool erased_angle;
+		do
+		{
+			erased_angle = false;
+			for (Point::iterator pi = normalized.begin();
+			     pi != normalized.end();)
+			{
+				Point::iterator pf = pi, pm = pi+1, pl = pi+2;
+				if (pm == normalized.end() || pl == normalized.end())
+					break;
+				double angle = std::min(
+					abs((*pf - *pm).arg() - (*pm - *pl).arg()),
+					abs((*pf - *pm).arg() + (*pm - *pl).arg())
+				);
+				if (angle < ANGLE_THRESHOLD)
+				{
+					erased_angle = true;
+					pi = normalized.erase(pm);
+				}
+				else
+					++pi;
+			}
+		}
+		while (erased_angle);
+		erased_something = erased_angle;
+
+		// erase segment with too-short distance
+		int norm_size = normalized.size();
+		for (Point::iterator pi = normalized.begin();
+		     pi != normalized.end();)
+		{
+			Point::iterator pf = pi, pl = pi + 1;
+			if (pl == normalized.end())
+				break;
+			if ((*pf - *pl).abs() < dist_threshold)
+			{
+				Point pm((pf->x() + pl->x()) / 2, (pf->y() + pl->y()) / 2);
+				erased_something = true;
+				*pf = pm;
+				pi = normalized.erase(pl);
+			}
+			else
+				++pi;
+		}
+	}
+	while (erased_something);
+
+	Stroke ret;
+	for (Point::iterator pi = normalized.begin();
+	     pi != normalized.end();
+	     ++pi)
+		ret.add_point(*pi);
+	return ret;
+}
+
+CHRASIS_API
 Character
 normalize(const Character & chr)
 {
@@ -72,7 +139,7 @@ normalize(const Character & chr)
 	for (Stroke::const_iterator si = chr.strokes_begin();
 	     si != chr.strokes_end();
 	     ++si)
-		ret.add_stroke(_normalize(*si, distance_threshold));
+		ret.add_stroke(normalize(*si, distance_threshold));
 
 	// walk through the character and adjust the point to range [0...RESOLUTION)
 	for (Stroke::iterator si = ret.strokes_begin();
@@ -92,78 +159,43 @@ normalize(const Character & chr)
 
 CHRASIS_API
 character_possibility_t
+recognize(Character const & nchr)
+{
+	static Database
+		sys_db( settings::system_database_path() ),
+		usr_db( settings::user_database_path() );
+
+	character_possibility_t ret;
+
+	// TODO: parallel with threads?
+	_recognize(nchr, sys_db, ret);
+	_recognize(nchr, usr_db, ret);
+
+	return ret;
+}
+
+CHRASIS_API
+character_possibility_t
 recognize(Character const & nchr, Database & db)
 {
 	character_possibility_t ret;
-
-	char_traits_t t;
-	for (Stroke::const_iterator si = nchr.strokes_begin();
-	     si != nchr.strokes_end();
-	     ++si)
-		t.push_back(si->point_count());
-	
-	character_ids_t likely_ids = _get_cids_by_traits(t, nchr.get_name(), db);
-
-	// calculate possibility and return the result
-	for(character_ids_t::iterator it = likely_ids.begin();
-	    it != likely_ids.end();
-	    ++it)
-	{
-		Character likely = _get_char_by_id(*it, db);
-		int c_possib = 0;
-		for (Stroke::const_iterator
-			si	= nchr.strokes_begin(),
-			lsi	= likely.strokes_begin();
-		     si != nchr.strokes_end() &&
-		     lsi != likely.strokes_end();
-		     ++si,
-		     ++lsi)
-		{
-			int s_possib = 0;
-			for (Point::const_iterator
-				pi	= si->points_begin(),
-				lpi	= lsi->points_begin();
-			     pi != si->points_end() &&
-			     lpi != lsi->points_end();
-			     ++pi,
-			     ++lpi)
-			{
-				s_possib += static_cast<int>(
-					std::sqrt(
-						(lpi->x() - pi->x()) * (lpi->x() - pi->x()) +
-						(lpi->y() - pi->y()) * (lpi->y() - pi->y())
-					)
-				);
-			}
-			c_possib += s_possib / si->point_count();
-		}
-		ret.insert(
-			std::make_pair(
-				c_possib / nchr.stroke_count(),
-				std::make_pair(
-					*it,
-					likely.get_name()
-				)
-			)
-		);
-	}
-
+	_recognize(nchr, db, ret);
 	return ret;
+}
+
+CHRASIS_API
+bool
+learn(Character const & nchr)
+{
+	static Database usr_db( settings::user_database_path() );
+	return _learn(nchr, usr_db);
 }
 
 CHRASIS_API
 bool
 learn(Character const & nchr, Database & db)
 {
-	character_possibility_t likely = recognize(nchr, db);
-
-	if ( likely.size() == 0 ||
-	     likely.begin()->first > static_cast<int>(RESOLUTION * LEARNING_THRESHOLD) )
-		return _remember(nchr, db);
-	else
-		return _reflect(nchr, likely.begin()->second.first, db);
-	
-	return false;
+	return _learn(nchr, db);
 }
 
 

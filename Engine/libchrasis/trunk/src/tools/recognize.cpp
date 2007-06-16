@@ -21,8 +21,8 @@ int main(int argc, char* argv[])
 
 		Character chr(*ci);
 		chr.set_name("");
-	
-		character_possibility_t likely(recognize(normalize(chr), db));
+
+		character_possibility_t likely = recognize(normalize(chr), db);
 
 		std::cout << "likely:" << std::endl;
 		for (character_possibility_t::iterator it = likely.begin();

@@ -58,6 +58,9 @@ typedef std::multimap<
 	std::pair< int, std::string > >	character_possibility_t;
 typedef std::vector< int >		character_ids_t;
 
+CHRASIS_API
+Stroke
+normalize(Stroke const &, int const);
 
 CHRASIS_API
 Character
@@ -65,7 +68,15 @@ normalize(Character const &);
 
 CHRASIS_API
 character_possibility_t
+recognize(Character const &);
+
+CHRASIS_API
+character_possibility_t
 recognize(Character const &, Database &);
+
+CHRASIS_API
+bool
+learn(Character const &);
 
 CHRASIS_API
 bool

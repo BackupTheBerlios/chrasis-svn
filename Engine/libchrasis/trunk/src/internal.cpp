@@ -28,70 +28,62 @@
 namespace chrasis
 {
 
-Stroke
-_normalize( const Stroke & orig_stroke, int const dist_threshold )
+bool
+_recognize(Character const & nchr, Database & db, character_possibility_t & ret)
 {
-	Point::collection normalized;
-	copy(orig_stroke.points_begin(), orig_stroke.points_end(), back_inserter(normalized));
+	char_traits_t t;
+	for (Stroke::const_iterator si = nchr.strokes_begin();
+	     si != nchr.strokes_end();
+	     ++si)
+		t.push_back(si->point_count());
+	
+	character_ids_t likely_ids = _get_cids_by_traits(t, nchr.get_name(), db);
 
-	// get rid of useless points
-	bool erased_something;
-	do
+	// calculate possibility and return the result
+	for(character_ids_t::iterator it = likely_ids.begin();
+	    it != likely_ids.end();
+	    ++it)
 	{
-		// erase segment with too-close angles
-		bool erased_angle;
-		do
+		Character likely = _get_char_by_id(*it, db);
+		int c_possib = 0;
+		for (Stroke::const_iterator
+			si	= nchr.strokes_begin(),
+			lsi	= likely.strokes_begin();
+		     si != nchr.strokes_end() &&
+		     lsi != likely.strokes_end();
+		     ++si,
+		     ++lsi)
 		{
-			erased_angle = false;
-			for (Point::iterator pi = normalized.begin();
-			     pi != normalized.end();)
+			int s_possib = 0;
+			for (Point::const_iterator
+				pi	= si->points_begin(),
+				lpi	= lsi->points_begin();
+			     pi != si->points_end() &&
+			     lpi != lsi->points_end();
+			     ++pi,
+			     ++lpi)
 			{
-				Point::iterator pf = pi, pm = pi+1, pl = pi+2;
-				if (pm == normalized.end() || pl == normalized.end())
-					break;
-				double angle = std::min(
-					abs((*pf - *pm).arg() - (*pm - *pl).arg()),
-					abs((*pf - *pm).arg() + (*pm - *pl).arg())
+				s_possib += static_cast<int>(
+					std::sqrt(
+						(lpi->x() - pi->x()) * (lpi->x() - pi->x()) +
+						(lpi->y() - pi->y()) * (lpi->y() - pi->y())
+					)
 				);
-				if (angle < ANGLE_THRESHOLD)
-				{
-					erased_angle = true;
-					pi = normalized.erase(pm);
-				}
-				else
-					++pi;
 			}
+			c_possib += s_possib / si->point_count();
 		}
-		while (erased_angle);
-		erased_something = erased_angle;
-
-		// erase segment with too-short distance
-		int norm_size = normalized.size();
-		for (Point::iterator pi = normalized.begin();
-		     pi != normalized.end();)
-		{
-			Point::iterator pf = pi, pl = pi + 1;
-			if (pl == normalized.end())
-				break;
-			if ((*pf - *pl).abs() < dist_threshold)
-			{
-				Point pm((pf->x() + pl->x()) / 2, (pf->y() + pl->y()) / 2);
-				erased_something = true;
-				*pf = pm;
-				pi = normalized.erase(pl);
-			}
-			else
-				++pi;
-		}
+		ret.insert(
+			std::make_pair(
+				c_possib / nchr.stroke_count(),
+				std::make_pair(
+					*it,
+					likely.get_name()
+				)
+			)
+		);
 	}
-	while (erased_something);
 
-	Stroke ret;
-	for (Point::iterator pi = normalized.begin();
-	     pi != normalized.end();
-	     ++pi)
-		ret.add_point(*pi);
-	return ret;
+	return true;
 }
 
 character_ids_t
@@ -107,18 +99,19 @@ _get_cids_by_traits(
 
 	std::string sql(
 		"SELECT c_id FROM c WHERE "
-			"s_cnt IN (" + toString(t.size())
+			"s_cnt=" + toString(t.size())
 	);
 	if (n != "")
-		sql += ") AND c_n IN ('" + n + "'";
+		sql += " AND c_n='" + n + "'";
 	for (char_traits_t::const_iterator i = t.begin();
 	     i != t.end();
 	     ++i)
-		sql +=	") AND c_id IN ("
+		sql +=	" AND c_id IN ("
 				"SELECT c_id FROM s WHERE "
 					"p_cnt=" + toString(*i) + " AND "
-					"seq=" + toString(i - t.begin());
-	sql += ");";
+					"seq=" + toString(i - t.begin()) +
+			")";
+	sql += ";";
 
 	const char *s = NULL;
 	int rc;
@@ -160,7 +153,7 @@ _get_char_by_id(int const cid, Database & db)
 			"s.c_id=c.c_id AND "
 			"c.c_id=" + toString(cid) + " "
 		"ORDER BY "
-			"s.c_id ASC, s.seq ASC, p.seq ASC;"
+			"s.seq ASC, p.seq ASC;"
 	);
 
 	const char *s = NULL;
@@ -220,6 +213,24 @@ _get_char_by_id(int const cid, Database & db)
 	db.freedb(odb);
 
 	return ret;
+}
+
+bool
+_learn(Character const & nchr, Database & db)
+{
+	if (nchr.get_name() == "")
+		return false;
+
+	character_possibility_t likely;
+	_recognize(nchr, db, likely);
+
+	if (likely.size() == 0 ||
+	    likely.begin()->first > RESOLUTION * LEARNING_THRESHOLD)
+		return _remember(nchr, db);
+	else
+		return _reflect(nchr, likely.begin()->second.first, db);
+	
+	return false;
 }
 
 bool
