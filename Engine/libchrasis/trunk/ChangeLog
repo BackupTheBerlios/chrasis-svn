@@ -1,0 +1,4 @@
+= Jun 16, 2007 =
+	- chrasis::settings namespace support
+	- all filenames in ascii now.
+	- code cleanup.
