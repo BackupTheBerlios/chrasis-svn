@@ -5,9 +5,7 @@ all: $(data)
 
 chr_data.db:
 	sqlite3 chr_data.db < database_schema.sql
-	time for I in `find ./chmls/ -type f -name \*.chml`;do \
-		$(tooldir)/learn $${I} chr_data.db; \
-	done
+	time $(tooldir)/learn `find ./chmls/ -type f -name \*.chml` chr_data.db
 	sqlite3 chr_data.db "ANALYZE;VACUUM;"
 
 empty_db.db:

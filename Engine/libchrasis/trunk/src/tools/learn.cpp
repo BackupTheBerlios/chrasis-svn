@@ -8,16 +8,27 @@ using namespace chrasis;
 
 int main(int argc, char* argv[])
 {
-	Database db(argv[2]);
+	if (argc < 3)
+	{
+		cout << "Usage: " << argv[0] << " file1.chml [file2.chml ...] database.db" << endl;
+		return 1;
+	}
 
-	Character::collection chars = read_chml(argv[1]);
+	Database db( argv[argc-1] );
 
-	cout << "Characters in \"" << argv[1] << "\":" << endl;
-	for (Character::iterator ci = chars.begin();
-	     ci != chars.end();
+	Character::collection all_chars;
+	for (int i=1;i<argc-1;++i)
+	{
+		cout << "Reading \"" << argv[i] << "\"..." << endl;
+		Character::collection chars = read_chml(argv[i]);
+		std::copy(chars.begin(), chars.end(), back_inserter(all_chars));
+	}
+
+	for (Character::iterator ci = all_chars.begin();
+	     ci != all_chars.end();
 	     ++ci)
 	{
-		cout << "Processing char #" << ci - chars.begin()
+		cout << "Learning character #" << ci - all_chars.begin()
 		     << " (" << ci->get_name() << ")..." << endl;
 
 		learn(normalize(*ci), db);

@@ -2,7 +2,7 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT(libchrasis, 0.1.0, chrasis-devel@googlegroups.com)
+AC_INIT(libchrasis, 0.1.1, chrasis-devel@googlegroups.com)
 AC_CONFIG_SRCDIR([src/chrasisio.cpp])
 
 AC_SUBST(PACKAGE_VERSION)
@@ -25,7 +25,7 @@ AC_SUBST(LIBCHRASIS_AGE)
 # Define a string for the earliest version that this release has
 # binary compatibility with. This is used for module locations.
 #
-LIBCHRASIS_BINARY_VERSION=1.0.0
+LIBCHRASIS_BINARY_VERSION=0.1.1
 AC_SUBST(LIBCHRASIS_BINARY_VERSION)
 
 AC_DEFINE_UNQUOTED(
