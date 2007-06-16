@@ -58,7 +58,6 @@ private:
 	void draw_character();
 	void update_candidate_list();
 
-	chrasis::Database db_;
 	chrasis::Character cur_char_;
 
 	Glib::RefPtr<Gtk::UIManager> refuimanager_;

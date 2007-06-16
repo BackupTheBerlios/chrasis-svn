@@ -29,6 +29,7 @@
 // for mkdir
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #include <gtkmm.h>
 #include <chrasis.h>
@@ -61,21 +62,8 @@ int main(int argc, char *argv[])
 			return 1;
 		}
 	}
-	
-	// prepare database
-	if ( !chrasis::fexist("chr_data.db") )
-	{
-		// copy from default location
-		ifstream fin(
-			chrasis::settings::default_database().c_str(),
-			std::ios_base::binary);
-		ofstream fout(
-			"chr_data.db",
-			std::ios_base::binary);
-		fout << fin.rdbuf();
-		fin.close();
-		fout.close();
-	}
+
+	chrasis::settings::initialize_userdir();
 
 	Gtk::Main kit(argc, argv);
 	Trainer w;

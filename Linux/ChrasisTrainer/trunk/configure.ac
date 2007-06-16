@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
 
-AC_INIT([chrasistrainer], [0.0.1], [palatis@gmail.com])
+AC_INIT([chrasistrainer], [0.0.2], [palatis@gmail.com])
 AC_CONFIG_SRCDIR([src/chrasistrainer.h])
 
 AC_SUBST(PACKAGE_VERSION)
@@ -35,7 +35,7 @@ AC_TYPE_SIZE_T
 # Check for modules
 GTKMM_VERSION=2.4
 LIBXMLPP_VERSION=2.10
-CHRASIS_VERSION=0.1.0
+CHRASIS_VERSION=0.1.1
 
 PKG_CHECK_MODULES(GTKMM, gtkmm-2.4 >= $GTKMM_VERSION)
 AC_SUBST(GTKMM_CFLAGS)

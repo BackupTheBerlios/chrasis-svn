@@ -44,8 +44,7 @@ utf8_to_hex(std::string s)
 
 using namespace std;
 
-Trainer::Trainer():
-	db_("chr_data.db")
+Trainer::Trainer()
 {
 	set_title("Chrasis Trainer");
 	set_default_size(400, 400);
@@ -361,16 +360,38 @@ Trainer::update_candidate_list()
 {
 	refliststore_->clear();
 
-	chrasis::character_possibility_t likely(recognize(normalize(cur_char_), db_));
+	chrasis::character_possibility_t likely(recognize(normalize(cur_char_)));
 
+	// if a character appeared twice, only show the one with higher possibility.
+	std::map< std::string, int > uniq_map;
 	for (chrasis::character_possibility_t::iterator it = likely.begin();
 	     it != likely.end();
 	     ++it)
 	{
+		if ( uniq_map[it->second.second] == 0 ||
+		     uniq_map[it->second.second] > it->first )
+			uniq_map[it->second.second] = it->first;
+	}
+	std::multimap< int, std::string > diff_map;
+	for (std::map< std::string, int >::iterator it = uniq_map.begin();
+	     it != uniq_map.end();
+	     ++it)
+	{
+		diff_map.insert(
+			std::make_pair(
+				it->second,
+				it->first
+			)
+		);
+	}
+	
+	for (std::multimap< int, std::string >::iterator it = diff_map.begin();
+	     it != diff_map.end();
+	     ++it)
+	{
 		Gtk::TreeModel::Row row = *(refliststore_->append());
-		row[col_char_] = it->second.second;
+		row[col_char_] = it->second;
 		row[col_diff_] = it->first;
-		row[col_id_] = it->second.first;
 	}
 }
 
@@ -383,5 +404,5 @@ Trainer::learn_curchar()
 	cc.push_back(cur_char_);
 	chrasis::write_chml(cc, fn);
 
-	chrasis::learn(normalize(cur_char_), db_);
+	chrasis::learn(normalize(cur_char_));
 }
