@@ -99,6 +99,9 @@ Database::execute(std::string const & sql, Database::OPENDB * const xodb)
 	else
 		odb = xodb;
 
+	if (getenv("LIBCHRASIS_DEBUG") != NULL)
+		std::cout << sql << std::endl;
+
 	sqlite3_stmt *res = NULL;
 	const char *s = NULL;
 	int rc = sqlite3_prepare(odb->db, sql.c_str(), sql.size(), &res, &s);

@@ -28,16 +28,23 @@
 namespace chrasis
 {
 
+static inline
+std::string
+idiotic_hash(Character const & chr)
+{
+	std::string ret;
+	for (Stroke::const_iterator si = chr.strokes_begin();
+	     si != chr.strokes_end();
+	     ++si)
+		ret += toString(si->point_count()) + ",";
+	ret.erase(ret.size()-1);
+	return ret;
+}
+
 bool
 _recognize(Character const & nchr, Database & db, character_possibility_t & ret)
 {
-	char_traits_t t;
-	for (Stroke::const_iterator si = nchr.strokes_begin();
-	     si != nchr.strokes_end();
-	     ++si)
-		t.push_back(si->point_count());
-	
-	character_ids_t likely_ids = _get_cids_by_traits(t, nchr.get_name(), db);
+	character_ids_t likely_ids = _get_cids_by_prototype(nchr, db);
 
 	// calculate possibility and return the result
 	for(character_ids_t::iterator it = likely_ids.begin();
@@ -87,9 +94,8 @@ _recognize(Character const & nchr, Database & db, character_possibility_t & ret)
 }
 
 character_ids_t
-_get_cids_by_traits(
-	char_traits_t const & t,
-	std::string const & n,
+_get_cids_by_prototype(
+	Character const & pchr,
 	Database & db)
 {
 	character_ids_t ret;
@@ -99,19 +105,32 @@ _get_cids_by_traits(
 
 	std::string sql(
 		"SELECT c_id FROM c WHERE "
-			"s_cnt=" + toString(t.size())
+			"sp_hash IN ('" + idiotic_hash(pchr) + "') AND "
+			"s_cnt IN (" + toString(pchr.stroke_count()) + ")"
+	);
+	if (pchr.get_name() != "")
+		sql +=	" AND c_n='" + pchr.get_name() + "'";
+	sql += ";";
+	/*
+	std::string sql(
+		"SELECT c_id FROM c WHERE "
+			"s_cnt IN (" + toString(t.size()) + ") "
 	);
 	if (n != "")
-		sql += " AND c_n='" + n + "'";
+		sql +=	"AND c_n='" + n + "' ";
+	sql +=		"AND c_id IN (";
 	for (char_traits_t::const_iterator i = t.begin();
 	     i != t.end();
 	     ++i)
-		sql +=	" AND c_id IN ("
-				"SELECT c_id FROM s WHERE "
+		sql +=		"SELECT c_id FROM s WHERE "
 					"p_cnt=" + toString(*i) + " AND "
-					"seq=" + toString(i - t.begin()) +
-			")";
-	sql += ";";
+					"seq=" + toString(i - t.begin()) + " "
+				"INTERSECT ";
+	sql.erase(sql.size() - 10);
+	sql += ");";
+	*/
+	if (getenv("LIBCHRASIS_DEBUG") != NULL)
+		std::cout << sql << std::endl;
 
 	const char *s = NULL;
 	int rc;
@@ -155,6 +174,8 @@ _get_char_by_id(int const cid, Database & db)
 		"ORDER BY "
 			"s.seq ASC, p.seq ASC;"
 	);
+	if (getenv("LIBCHRASIS_DEBUG") != NULL)
+		std::cout << sql << std::endl;
 
 	const char *s = NULL;
 	int rc;
@@ -190,6 +211,8 @@ _get_char_by_id(int const cid, Database & db)
 	res = NULL;
 
 	sql = "SELECT c_n FROM c WHERE c_id=" + toString(cid) + " LIMIT 1;";
+	if (getenv("LIBCHRASIS_DEBUG") != NULL)
+		std::cout << sql << std::endl;
 	rc = sqlite3_prepare(odb->db, sql.c_str(), sql.size(), &res, &s);
 	if (rc != SQLITE_OK)
 	{
@@ -241,9 +264,10 @@ _remember(Character const & chr, Database & db)
 	db.execute("BEGIN TRANSACTION;", odb);
 
 	db.execute(
-		"INSERT INTO c(c_n,s_cnt) VALUES ('" +
-			chr.get_name() + "'," +
-			toString(chr.stroke_count()) +
+		"INSERT INTO c(c_n,s_cnt,sp_hash) VALUES ("
+			"'" + chr.get_name() + "'," +
+			toString(chr.stroke_count()) + ","
+			"'" + idiotic_hash(chr) + "'"
 		");",
 		odb
 	);

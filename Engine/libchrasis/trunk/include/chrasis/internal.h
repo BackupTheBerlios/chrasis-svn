@@ -57,7 +57,7 @@ _normalize(Stroke const &, int const);
  *  get characters with alike traits
  */
 character_ids_t
-_get_cids_by_traits(char_traits_t const &, std::string const &, Database &);
+_get_cids_by_prototype(Character const &, Database &);
 
 /**
  *  get character by id

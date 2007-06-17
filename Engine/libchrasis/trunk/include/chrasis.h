@@ -51,7 +51,6 @@
 namespace chrasis
 {
 
-typedef std::vector< int >		char_traits_t;
 typedef int				possibility_t;
 typedef std::multimap<
 	possibility_t,

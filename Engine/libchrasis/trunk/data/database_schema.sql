@@ -2,7 +2,8 @@ CREATE TABLE c (
 	c_id	INTEGER PRIMARY KEY	AUTOINCREMENT	NOT NULL,
 	c_n	TEXT					NOT NULL,
 	s_cnt	INTEGER					NOT NULL,
-	smp_cnt	INTEGER  DEFAULT 1			NOT NULL
+	smp_cnt	INTEGER  DEFAULT 1			NOT NULL,
+	sp_hash	TEXT					NOT NULL
 );
 CREATE TABLE s (
 	s_id	INTEGER PRIMARY KEY	AUTOINCREMENT	NOT NULL,
@@ -35,11 +36,10 @@ CREATE VIEW stats AS
 		SUM(smp_cnt)		AS total_sample_cnt,
 		COUNT(DISTINCT c_n)	AS total_diff_chrs
 	FROM c;
+CREATE INDEX c_hash_scnt ON c (sp_hash,s_cnt);
 CREATE INDEX c_n ON c (c_n);
-CREATE INDEX c_scnt ON c (s_cnt);
-CREATE INDEX pt_seq ON p (seq);
-CREATE INDEX s_pcnt ON s (p_cnt);
-CREATE INDEX s_seq ON s (seq);
+CREATE INDEX s_cid_seq ON s (c_id,seq);
+CREATE INDEX p_sid_seq ON p (s_id,seq);
 CREATE TRIGGER c_id_change AFTER UPDATE OF c_id ON c
 BEGIN
 	UPDATE s SET c_id = new.c_id WHERE
