@@ -37,7 +37,6 @@ CREATE VIEW stats AS
 		COUNT(DISTINCT c_n)	AS total_diff_chrs
 	FROM c;
 CREATE INDEX c_hash_scnt ON c (sp_hash,s_cnt);
-CREATE INDEX c_n ON c (c_n);
 CREATE INDEX s_cid_seq ON s (c_id,seq);
 CREATE INDEX p_sid_seq ON p (s_id,seq);
 CREATE TRIGGER c_id_change AFTER UPDATE OF c_id ON c

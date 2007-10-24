@@ -27,6 +27,8 @@
 
 #include <chrasis/character.h>
 
+#include <iostream>
+
 namespace chrasis
 {
 

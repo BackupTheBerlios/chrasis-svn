@@ -33,16 +33,14 @@
 namespace chrasis
 {
 
-template <
-	typename VALUE_T,
-	template < typename > class CONT = std::vector >
+template < typename VALUE_T >
 class basic_point
 {
 public:
 	typedef VALUE_T					value_t;
-	typedef basic_point< VALUE_T, CONT >		point_t;
+	typedef basic_point< VALUE_T >			point_t;
 
-	typedef CONT< point_t >				collection;
+	typedef std::vector< point_t >			collection;
 	typedef typename collection::iterator		iterator;
 	typedef typename collection::const_iterator	const_iterator;
 
@@ -73,28 +71,26 @@ private:
 	std::complex< value_t > num_;
 };
 
-template < typename VALUE_T, template < typename > class CONT >
-std::ostream & operator<<( std::ostream &, basic_point< VALUE_T, CONT > const &);
+template < typename VALUE_T >
+std::ostream & operator<<( std::ostream &, basic_point< VALUE_T > const &);
 
-template < typename VALUE_T, template < typename > class CONT >
-basic_point< VALUE_T, CONT >
-operator - (basic_point< VALUE_T, CONT > const &, basic_point< VALUE_T, CONT > const &);
+template < typename VALUE_T >
+basic_point< VALUE_T >
+operator - (basic_point< VALUE_T > const &, basic_point< VALUE_T > const &);
 
-template < typename VALUE_T, template < typename > class CONT >
+template < typename VALUE_T >
 bool
-operator != (basic_point< VALUE_T, CONT > const &, basic_point< VALUE_T, CONT > const &);
+operator != (basic_point< VALUE_T > const &, basic_point< VALUE_T > const &);
 
-template <
-	typename POINT_T,
-	template < typename > class CONT = std::vector >
+template < typename POINT_T >
 class basic_stroke
 {
 public:
 	typedef typename POINT_T::value_t		value_t;
 	typedef POINT_T					point_t;
-	typedef basic_stroke< POINT_T, CONT >		stroke_t;
+	typedef basic_stroke< POINT_T >			stroke_t;
 
-	typedef CONT< stroke_t >			collection;
+	typedef std::vector< stroke_t >			collection;
 	typedef typename collection::iterator		iterator;
 	typedef typename collection::const_iterator	const_iterator;
 
@@ -114,21 +110,19 @@ private:
 	typename point_t::collection points_;
 };
 
-template < typename POINT_T, template < typename > class CONT >
-std::ostream & operator<<(std::ostream & lhs, basic_stroke< POINT_T, CONT > const &);
+template < typename POINT_T >
+std::ostream & operator<<(std::ostream & lhs, basic_stroke< POINT_T > const &);
 
-template <
-	typename STROKE_T,
-	template < typename > class CONT = std::vector >
+template < typename STROKE_T >
 class basic_character
 {
 public:
 	typedef typename STROKE_T::point_t		point_t;
 	typedef typename point_t::value_t		value_t;
 	typedef STROKE_T				stroke_t;
-	typedef basic_character< STROKE_T, CONT >	character_t;
+	typedef basic_character< STROKE_T >		character_t;
 
-	typedef CONT< character_t >			collection;
+	typedef std::vector< character_t >		collection;
 	typedef typename collection::iterator		iterator;
 	typedef typename collection::const_iterator	const_iterator;
 
@@ -157,15 +151,15 @@ private:
 	std::string name_;
 };
 
-template < typename STROKE_T, template < typename > class CONT >
-std::ostream & operator<<(std::ostream &, basic_character< STROKE_T, CONT > const &);
+template < typename STROKE_T >
+std::ostream & operator<<(std::ostream &, basic_character< STROKE_T > const &);
 
-template < typename STROKE_T, template < typename > class CONT >
-bool operator<(basic_character< STROKE_T, CONT > const &, basic_character< STROKE_T, CONT > const &);
+template < typename STROKE_T >
+bool operator<(basic_character< STROKE_T > const &, basic_character< STROKE_T > const &);
 
-template < typename VALUE_T, template < typename > class CONT >
-typename basic_point< VALUE_T, CONT >::value_t
-basic_point< VALUE_T, CONT >::set_arg(value_t const a)
+template < typename VALUE_T >
+typename basic_point< VALUE_T >::value_t
+basic_point< VALUE_T >::set_arg(value_t const a)
 {
 	value_t orig_len = abs();	//< remember current length
 	x() = std::acos(a) * orig_len;
@@ -173,9 +167,9 @@ basic_point< VALUE_T, CONT >::set_arg(value_t const a)
 	return arg();
 }
 
-template < typename VALUE_T, template < typename > class CONT >
-typename basic_point< VALUE_T, CONT >::value_t
-basic_point< VALUE_T, CONT >::set_length(value_t const l)
+template < typename VALUE_T >
+typename basic_point< VALUE_T >::value_t
+basic_point< VALUE_T >::set_length(value_t const l)
 {
 	value_t factor = l / abs();
 	x() *= factor;
@@ -183,32 +177,32 @@ basic_point< VALUE_T, CONT >::set_length(value_t const l)
 	return abs();
 }
 
-template < typename VALUE_T, template < typename > class CONT >
+template < typename VALUE_T >
 std::ostream &
-operator << (std::ostream & lhs, basic_point< VALUE_T, CONT > const & rhs)
+operator << (std::ostream & lhs, basic_point< VALUE_T > const & rhs)
 {
 	return lhs << "(" << rhs.x() << ", " << rhs.y() << ")";
 }
 
-template < typename VALUE_T, template < typename > class CONT >
-basic_point< VALUE_T, CONT >
-operator - (basic_point< VALUE_T, CONT > const & lhs, basic_point< VALUE_T, CONT> const & rhs)
+template < typename VALUE_T >
+basic_point< VALUE_T >
+operator - (basic_point< VALUE_T > const & lhs, basic_point< VALUE_T > const & rhs)
 {
-	return basic_point< VALUE_T, CONT >(
+	return basic_point< VALUE_T >(
 		lhs.x() - rhs.x(),
 		lhs.y() - rhs.y() );
 }
 
-template < typename VALUE_T, template < typename > class CONT >
+template < typename VALUE_T >
 bool
-operator != (basic_point< VALUE_T, CONT > const & lhs, basic_point< VALUE_T, CONT > const & rhs)
+operator != (basic_point< VALUE_T > const & lhs, basic_point< VALUE_T > const & rhs)
 {
 	return lhs.x() != rhs.x() || lhs.y() != rhs.y();
 }
 
-template < typename POINT_T, template < typename > class CONT >
-typename basic_stroke< POINT_T, CONT >::value_t
-basic_stroke< POINT_T, CONT >::length() const
+template < typename POINT_T >
+typename basic_stroke< POINT_T >::value_t
+basic_stroke< POINT_T >::length() const
 {
 	typename POINT_T::value_t length = 0.0;
 	for (typename POINT_T::const_iterator pi = points_.begin();
@@ -218,9 +212,9 @@ basic_stroke< POINT_T, CONT >::length() const
 	return length;
 }
 
-template < typename POINT_T, template < typename > class CONT >
+template < typename POINT_T >
 std::ostream &
-operator<<(std::ostream & lhs, basic_stroke< POINT_T, CONT > const & rhs)
+operator<<(std::ostream & lhs, basic_stroke< POINT_T > const & rhs)
 {
 	for (typename POINT_T::const_iterator i = rhs.points_begin();
 		i != rhs.points_end();
@@ -229,21 +223,21 @@ operator<<(std::ostream & lhs, basic_stroke< POINT_T, CONT > const & rhs)
 	return lhs;
 }
 
-template < typename STROKE_T, template < typename > class CONT >
+template < typename STROKE_T >
 std::ostream &
-operator<<(std::ostream & lhs, basic_character< STROKE_T, CONT > const & rhs)
+operator<<(std::ostream & lhs, basic_character< STROKE_T > const & rhs)
 {
 	lhs << rhs.get_name() << ": " << std::endl;
-	for (typename basic_character< STROKE_T, CONT >::stroke_t::const_iterator i = rhs.strokes_begin();
+	for (typename basic_character< STROKE_T >::stroke_t::const_iterator i = rhs.strokes_begin();
 		i != rhs.strokes_end();
 		++i)
 		lhs << *i << std::endl;
 	return lhs;
 }
 
-template < typename STROKE_T, template < typename > class CONT >
+template < typename STROKE_T >
 bool
-operator<(basic_character< STROKE_T, CONT > const & lhs, basic_character< STROKE_T, CONT > const & rhs)
+operator<(basic_character< STROKE_T > const & lhs, basic_character< STROKE_T > const & rhs)
 {
 	return (lhs.get_name() < rhs.get_name()) ? true : false ;
 }

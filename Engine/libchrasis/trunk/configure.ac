@@ -71,9 +71,6 @@ AC_HEADER_STDC
 AC_C_CONST
 
 # Platform-dependent
-# module versions
-LIBXMLPP_VERSION=2.10
-SQLITE3_VERSION=3.3
 
 # Options
 AC_ARG_ENABLE([debug],
@@ -104,7 +101,7 @@ AC_ARG_ENABLE([tools],
 		AC_DEFINE(
 			ENABLE_TOOLS, 1,
 			[Define to 1 if you want to build the character database maintaince tools])
-		PKG_CHECK_MODULES(LIBXMLPP, libxml++-2.6 >= $LIBXMLPP_VERSION)
+		PKG_CHECK_MODULES(LIBXML, [libxml-2.0])
 		TOOLS_SUBDIRS=tools
 		DATA_SUBDIRS=data
 		;;
@@ -122,18 +119,18 @@ AC_ARG_ENABLE([tools],
 		AC_DEFINE(
 			ENABLE_TOOLS, 1,
 			[Define to 1 if you want to build the character database maintaince tools])
-		PKG_CHECK_MODULES(LIBXMLPP, libxml++-2.6 >= $LIBXMLPP_VERSION)
+		PKG_CHECK_MODULES(LIBXML, [libxml-2.0])
 		TOOLS_SUBDIRS=tools
 		DATA_SUBDIRS=data
 	]
 )
-AC_SUBST(LIBXMLPP_CFLAGS)
-AC_SUBST(LIBXMLPP_LIBS)
+AC_SUBST(LIBXML_CFLAGS)
+AC_SUBST(LIBXML_LIBS)
 AC_SUBST(BUILD_TOOLS)
 AC_SUBST(TOOLS_SUBDIRS)
 AC_SUBST(DATA_SUBDIRS)
 
-PKG_CHECK_MODULES(SQLITE3, sqlite3 >= $SQLITE3_VERSION)
+PKG_CHECK_MODULES(SQLITE3, [sqlite3])
 AC_SUBST(SQLITE3_CFLAGS)
 AC_SUBST(SQLITE3_LIBS)
 
