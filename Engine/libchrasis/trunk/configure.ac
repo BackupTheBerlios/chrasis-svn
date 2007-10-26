@@ -2,7 +2,7 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT(libchrasis, 0.1.1, chrasis-devel@googlegroups.com)
+AC_INIT(libchrasis, 0.1.2, chrasis-devel@googlegroups.com)
 AC_CONFIG_SRCDIR([src/chrasisio.cpp])
 
 AC_SUBST(PACKAGE_VERSION)
@@ -28,13 +28,9 @@ AC_SUBST(LIBCHRASIS_AGE)
 LIBCHRASIS_BINARY_VERSION=0.1.1
 AC_SUBST(LIBCHRASIS_BINARY_VERSION)
 
-AC_DEFINE_UNQUOTED(
-	LIBCHRASIS_BINARY_VERSION,
-	"$LIBCHRASIS_BINARY_VERSION",
+AC_DEFINE_UNQUOTED(LIBCHRASIS_BINARY_VERSION, "$LIBCHRASIS_BINARY_VERSION",
 	[The binary version of libchrasis.])
-AC_DEFINE_UNQUOTED(
-	LIBCHRASIS_VERSION,
-	"$PACKAGE_VERSION",
+AC_DEFINE_UNQUOTED(LIBCHRASIS_VERSION, "$PACKAGE_VERSION",
 	[The release version of libchrasis.])
 
 # Init automake stuff
@@ -43,7 +39,7 @@ AM_CONFIG_HEADER([include/config.h])
 #AC_PREFIX_DEFAULT(/usr)
 
 # Init libtool
-AC_LIBTOOL_DLOPEN
+#AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 
@@ -52,17 +48,17 @@ AC_SUBST(LIBTOOL_DEPS)
 LIBTOOL_EXPORT_OPTIONS='-export-symbols-regex "^[[^_]].*"'
 AC_SUBST(LIBTOOL_EXPORT_OPTIONS)
 
-hecks if doxygen is avaiable
-AC_PATH_PROG(DOXYGEN, doxygen, no)
-AM_CONDITIONAL(HAVE_DOXYGEN, test x$DOXYGEN != xno)
-AC_SUBST(DOXYGEN)
+# checks if doxygen is avaiable
+#AC_PATH_PROG(DOXYGEN, doxygen, no)
+#AM_CONDITIONAL(HAVE_DOXYGEN, test x$DOXYGEN != xno)
+#AC_SUBST(DOXYGEN)
 
 # Checks if graphviz is available
-AC_CHECK_PROG(HAVE_GRAPHVIZ, dot, YES, NO)
-AC_PATH_PROG(DOT, dot)
-AC_SUBST(DOT)
-AC_PATH_PROG(PERL, perl)
-AC_SUBST(PERL)
+#AC_CHECK_PROG(HAVE_GRAPHVIZ, dot, YES, NO)
+#AC_PATH_PROG(DOT, dot)
+#AC_SUBST(DOT)
+#AC_PATH_PROG(PERL, perl)
+#AC_SUBST(PERL)
 
 # Checks for libraries.
 AC_HEADER_STDC
@@ -70,95 +66,83 @@ AC_HEADER_STDC
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 
-# Platform-dependent
-
 # Options
 AC_ARG_ENABLE([debug],
 	[AS_HELP_STRING(--enable-debug,Turn on debugging support)],
-	[case "${enableval}" in
-	yes)
-		LIBDEBUG="true"
-		AC_DEFINE(
-			ENABLE_DEBUG, 1,
-			[Define to 1 if you want native library runtime debugging code enabled])
-		CFLAGS="$CFLAGS -g"
-		;;
-	no)
-		LIBDEBUG="false"
-		;;
-	*)
-		AC_MSG_ERROR(bad value ${enableval} for --enable-debug)
-		;;
-	esac],
-	[LIBDEBUG="false"])
+	ac_arg_debug=${enableval}, ac_arg_debug="no")
+AC_ARG_ENABLE([tools],
+	[AC_HELP_STRING(--disable-tools,Build the character database mantaince tools)],
+	ac_arg_tools=${enableval}, ac_arg_tools="yes")
+
+# Platform-dependent
+dnl What kind of system are we using?
+os_is_win32=0
+os_is_macosx=0
+os_is_posix=0
+
+case "$target_os" in
+win32*)
+	os_is_win32=1
+	;;
+darwin* | rhapsody*)
+	os_is_macosx=1
+	;;
+cygwin* | mingw32* | *)
+	os_is_posix=1
+	;;
+esac
+
+AC_DEFINE_UNQUOTED(UNDER_WIN32, ${os_is_win32}, [Runtime is under Win32 environment])
+AC_DEFINE_UNQUOTED(UNDER_MACOSX, ${os_is_macosx}, [Runtime is under MacOSX environment])
+AC_DEFINE_UNQUOTED(UNDER_POSIX, ${os_is_posix}, [Runtime is under POSIX environment])
+
+case "${ac_arg_debug}" in
+yes)
+	LIBDEBUG="true"
+	AC_DEFINE(ENABLE_DEBUG, 1,
+		[Define to 1 if you want native library runtime debugging code enabled])
+	CFLAGS="$CFLAGS -g"
+	;;
+*)
+	LIBDEBUG="false"
+	;;
+esac
 AC_SUBST(LIBDEBUG)
 
-AC_ARG_ENABLE([tools],
-	[AS_HELP_STRING(--disable-tools,Build the character database mantaince tools)],
-	[case "${enableval}" in
-	yes)
-		BUILD_TOOLS="true"
-		AC_DEFINE(
-			ENABLE_TOOLS, 1,
-			[Define to 1 if you want to build the character database maintaince tools])
+case "${ac_arg_tools}" in
+yes)
+	BUILD_TOOLS="true"
+	AC_DEFINE(ENABLE_TOOLS, 1,
+		[Define to 1 if you want to build the character database maintaince tools])
+	if test ${os_is_macosx} = 0; then
+		LIBXML_CFLAGS="-I/usr/include/libxml2"
+		LIBXML_LIBS="-lxml2"
+	else
 		PKG_CHECK_MODULES(LIBXML, [libxml-2.0])
-		TOOLS_SUBDIRS=tools
-		DATA_SUBDIRS=data
-		;;
-	no)
-		BUILD_TOOLS="false"
-		TOOLS_SUBDIRS=
-		DATA_SUBDIRS=
-		;;
-	*)
-		AC_MSG_ERROR(bad value ${enableval} for --enable-tools)
-		;;
-	esac],
-	[
-		BUILD_TOOLS="true"
-		AC_DEFINE(
-			ENABLE_TOOLS, 1,
-			[Define to 1 if you want to build the character database maintaince tools])
-		PKG_CHECK_MODULES(LIBXML, [libxml-2.0])
-		TOOLS_SUBDIRS=tools
-		DATA_SUBDIRS=data
-	]
-)
+	fi
+	TOOLS_SUBDIRS=tools
+	DATA_SUBDIRS=data
+	;;
+*)
+	BUILD_TOOLS="false"
+	TOOLS_SUBDIRS=""
+	DATA_SUBDIRS=""
+	;;
+esac
 AC_SUBST(LIBXML_CFLAGS)
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(BUILD_TOOLS)
 AC_SUBST(TOOLS_SUBDIRS)
 AC_SUBST(DATA_SUBDIRS)
 
-PKG_CHECK_MODULES(SQLITE3, [sqlite3])
+if test ${os_is_macosx} = 0; then
+	SQLITE3_CFLAGS=""
+	SQLITE3_LIBS="-lsqlite3"
+else
+	PKG_CHECK_MODULES(SQLITE3, [sqlite3])
+fi
 AC_SUBST(SQLITE3_CFLAGS)
 AC_SUBST(SQLITE3_LIBS)
-
-dnl What kind of system are we using?
-case $host_os in
-win32*)
-	SYSTEM=win32
-	;;
-cygwin*)
-	SYSTEM=unix
-	;;
-*)
-	SYSTEM=unix
-	;;
-esac
-
-case $SYSTEM in
-win32)
-	AC_DEFINE(
-		UNDER_WIN32, 1,
-		[Runtime is under Win32 environment])
-	;;
-unix)
-	AC_DEFINE(
-		UNDER_POSIX, 1,
-		[Runtime is under POSIX environment])
-	;;
-esac
 
 AC_CONFIG_FILES([
 	Makefile

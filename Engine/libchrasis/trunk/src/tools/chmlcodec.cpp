@@ -116,6 +116,8 @@ write_chml(Character::collection & chrs, std::string ofilename)
 	if (writer == NULL)
 		return;
 
+	xmlTextWriterSetIndent(writer, 1);
+
 	xmlTextWriterStartDocument(writer, NULL, "UTF-8", NULL);
 	xmlTextWriterStartElement(writer, reinterpret_cast<const xmlChar *>("characters"));
 
