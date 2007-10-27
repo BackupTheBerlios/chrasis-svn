@@ -19,7 +19,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA
  *
- * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
+ * $Id$
  */
 
 #ifndef _CHARACTER_H
@@ -35,6 +35,10 @@
 namespace chrasis
 {
 
+/**
+ * A Character is the basic unit of recognition.
+ */
+
 class Character
 {
 public:
@@ -44,18 +48,25 @@ public:
 		class Point
 		{
 		public:
-			typedef int				value_t;
-			typedef std::vector< Point >		collection;
-			typedef collection::iterator		iterator;
-			typedef collection::const_iterator	const_iterator;
+			typedef int				value_t;	///< value type of point x, y
+			typedef std::vector< Point >		container;	///< container type of points
+			/// iterator walks through a collection of points
+			typedef container::iterator		iterator;
+			/// iterator walks through a collection of const points
+			typedef container::const_iterator	const_iterator;
 
+			/**
+			 * create a new point (x, y)
+			 * @param x x coordinate
+			 * @param y y coordinate
+			 */
 			Point(value_t const x, value_t const y):
 				x_(x), y_(y) {}
 
-			value_t & x() { return x_; }			//< x-coordinate
-			value_t & y() { return y_; }			//< y-coordinate
-			value_t const & x() const { return x_; }	//< x-coordinate (const)
-			value_t const & y() const { return y_; }	//< y-coordinate (const)
+			value_t & x() { return x_; }			///< x-coordinate
+			value_t & y() { return y_; }			///< y-coordinate
+			value_t const & x() const { return x_; }	///< x-coordinate (const)
+			value_t const & y() const { return y_; }	///< y-coordinate (const)
 
 			/// argument of the point
 			double arg() const
@@ -80,6 +91,9 @@ public:
 				return abs();
 			}
 
+			/**
+			 * add two points together
+			 */
 			Point & operator += (const Point & rhs)
 			{
 				x_ += rhs.x_;
@@ -87,6 +101,9 @@ public:
 				return *this;
 			}
 
+			/**
+			 * minus the point by another
+			 */
 			Point & operator -= (const Point & rhs)
 			{
 				x_ -= rhs.x_;
@@ -98,10 +115,12 @@ public:
 			value_t y_;
 		};
 
-		typedef Point::value_t			value_t;
-		typedef std::vector< Stroke >		collection;
-		typedef collection::iterator		iterator;
-		typedef collection::const_iterator	const_iterator;
+		typedef Point::value_t			value_t;	///< value type of point x, y
+		typedef std::vector< Stroke >		container;	///< container type of strokes
+		/// iterator walks through a collection of strokes
+		typedef container::iterator		iterator;
+		/// iterator walks through a collection of const strokes
+		typedef container::const_iterator	const_iterator;
 
 		/**
 		 * add a new point to the end of the stroke
@@ -122,8 +141,8 @@ public:
 		 */
 		Point::iterator points_begin() { return points_.begin(); };
 		/**
-		 * get the iterator points to the last point of the stroke
-		 * @return iterator of the last point of the stroke
+		 * get the iterator points to the pass-the-end point of the stroke
+		 * @return iterator of the pass-the-end point of the stroke
 		 */
 		Point::iterator points_end() { return points_.end(); };
 		/**
@@ -132,8 +151,8 @@ public:
 		 */
 		Point::const_iterator points_begin() const { return points_.begin(); };
 		/**
-		 * get the const iterator points to the last point of the stroke
-		 * @return const iterator of the last point of the stroke
+		 * get the const iterator points to the pass-the-end point of the stroke
+		 * @return const iterator of the pass-the-end point of the stroke
 		 */
 		Point::const_iterator points_end() const { return points_.end(); };
 
@@ -167,35 +186,85 @@ public:
 		}
 
 	private:
-		Point::collection points_;
+		Point::container points_;
 	};
 
-	typedef Stroke::Point::value_t		value_t;
-	typedef std::vector< Character >	collection;
-	typedef collection::iterator		iterator;
-	typedef collection::const_iterator	const_iterator;
+	typedef Stroke::Point::value_t		value_t;	///< value type of point x, y
+	typedef std::vector< Character >	container;	///< container type of characters
+	/// iterator walks through a collection of characters
+	typedef container::iterator		iterator;
+	/// iterator walks through a collection of const characters
+	typedef container::const_iterator	const_iterator;
 
-	Character(const std::string & n = std::string()):
-		name_(n) {}
+	/**
+	 * create a character with a given name
+	 * @param name the name of the character, default to empty string.
+	 */
+	Character(const std::string & name = std::string()):
+		name_(name) {}
 
+	/**
+	 * add an empty stroke to the end of the character
+	 */
 	void new_stroke() { strokes_.push_back(Stroke()); };
+	/**
+	 * add the given stroke to the end of the character
+	 * @param s the stroke to be added
+	 */
 	void add_stroke(const Stroke & s) { strokes_.push_back(s); };
 
+	/**
+	 * get the number of strokes of the character
+	 * @return number of strokes
+	 */
 	int stroke_count() const { return strokes_.size(); };
 
+	/**
+	 * add a point to the last stroke of the character
+	 * @param p the point to be added
+	 */
 	void add_point(Stroke::Point const & p) { strokes_.rbegin()->add_point(p); };
+	/**
+	 * add a point to the last stroke of the character
+	 * @param x x coordinate of the point to be added
+	 * @param y y coordinate of the point to be added
+	 */
 	void add_point(const value_t x, const value_t y)
 		{ strokes_.rbegin()->add_point(x, y); };
 
+	/**
+	 * get the name of the character
+	 * @return the name
+	 */
 	const std::string get_name() const { return name_; };
+	/**
+	 * set the name of the character
+	 * @param n new name
+	 */
 	void set_name(const std::string & n) { name_ = n; };
 
+	/**
+	 * get the iterator points to the first stroke of the character
+	 * @return iterator of the first stroke of the character
+	 */
 	Stroke::iterator strokes_begin() { return strokes_.begin(); };
+	/**
+	 * get the iterator points to the pass-the-end stroke of the character
+	 * @return iterator of the last pass-the-end stroke of the character
+	 */
 	Stroke::iterator strokes_end() { return strokes_.end(); };
+	/**
+	 * get the const iterator points to the first stroke of the character
+	 * @return const iterator of the first stroke of the character
+	 */
 	Stroke::const_iterator strokes_begin() const { return strokes_.begin(); };
+	/**
+	 * get the const iterator points to the pass-the-end stroke of the character
+	 * @return const iterator of the pass-the-end stroke of the character
+	 */
 	Stroke::const_iterator strokes_end() const { return strokes_.end(); };
 private:
-	Stroke::collection strokes_;
+	Stroke::container strokes_;
 	std::string name_;
 };
 
@@ -244,7 +313,9 @@ operator < (Character const & lhs, Character const & rhs)
 	return (lhs.get_name() < rhs.get_name());
 }
 
+/// alias for Stroke
 typedef Character::Stroke		Stroke;
+/// alias for Point
 typedef Character::Stroke::Point	Point;
 
 } // namespace chrasis

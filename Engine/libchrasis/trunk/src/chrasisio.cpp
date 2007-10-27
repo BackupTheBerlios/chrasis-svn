@@ -32,7 +32,7 @@ CHRASIS_API
 Stroke
 normalize( const Stroke & orig_stroke, int const dist_threshold )
 {
-	Point::collection normalized;
+	Point::container normalized;
 	copy(orig_stroke.points_begin(), orig_stroke.points_end(), back_inserter(normalized));
 
 	// get rid of useless points
@@ -67,7 +67,6 @@ normalize( const Stroke & orig_stroke, int const dist_threshold )
 		erased_something = erased_angle;
 
 		// erase segment with too-short distance
-		int norm_size = normalized.size();
 		for (Point::iterator pi = normalized.begin();
 		     pi != normalized.end();)
 		{

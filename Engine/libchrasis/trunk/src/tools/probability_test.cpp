@@ -6,7 +6,7 @@
 using namespace std;
 using namespace chrasis;
 
-void recognize_all(Character::collection & chrs, Database & db)
+void recognize_all(Character::container & chrs, Database & db)
 {
 	int correct = 0, correct2 = 0;
 
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 
 	Database db( argv[1] );
 
-	Character::collection to_be_tested = read_chml(argv[2]);
+	Character::container to_be_tested = read_chml(argv[2]);
 	recognize_all(to_be_tested, db);
 
 	return 0;

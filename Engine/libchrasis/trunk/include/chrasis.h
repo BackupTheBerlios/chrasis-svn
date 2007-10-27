@@ -19,20 +19,15 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA
  *
- * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
+ * $Id$
  */
 
 /**
- * \ingroup libchrasis
+ * \author $Author$
  *
- * \brief Standard IO for libchrasis
+ * \version $Revision$
  *
- * \author $Author: $
- *
- * \version $Revision: $
- *
- * \date $Date: $
- *
+ * \date $Date$
  */
 
 #ifndef _CHRASIS_H

@@ -87,7 +87,7 @@ main(int argc, char* argv[])
 		return 0;
 	}
 
-	Character::collection in = read_chml(argv[1]);
+	Character::container in = read_chml(argv[1]);
 	long double sum_size = 0;
 
 	for (Character::const_iterator ci = in.begin();

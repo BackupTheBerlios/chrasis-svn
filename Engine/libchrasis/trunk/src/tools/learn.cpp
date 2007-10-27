@@ -16,11 +16,11 @@ int main(int argc, char* argv[])
 
 	Database db( argv[argc-1] );
 
-	Character::collection all_chars;
+	Character::container all_chars;
 	for (int i=1;i<argc-1;++i)
 	{
 		cout << "Reading \"" << argv[i] << "\"..." << endl;
-		Character::collection chars = read_chml(argv[i]);
+		Character::container chars = read_chml(argv[i]);
 		std::copy(chars.begin(), chars.end(), back_inserter(all_chars));
 	}
 

@@ -38,10 +38,10 @@ using namespace std;
 namespace chrasis
 {
 
-Character::collection
+Character::container
 read_chml(std::string ifilename)
 {
-	Character::collection ret_chrs;
+	Character::container ret_chrs;
 
 	xmlTextReaderPtr reader = xmlReaderForFile(ifilename.c_str(), NULL, 0);
 	if (reader == NULL)
@@ -110,7 +110,7 @@ read_chml(std::string ifilename)
 }
 
 void
-write_chml(Character::collection & chrs, std::string ofilename)
+write_chml(Character::container & chrs, std::string ofilename)
 {
 	xmlTextWriterPtr writer = xmlNewTextWriterFilename(ofilename.c_str(), 0);
 	if (writer == NULL)

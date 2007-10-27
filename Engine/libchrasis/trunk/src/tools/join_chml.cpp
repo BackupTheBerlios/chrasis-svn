@@ -16,11 +16,11 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	Character::collection all;
+	Character::container all;
 
 	for (int i=1 ; i<argc-1 ; ++i)
 	{
-		Character::collection chars = read_chml(argv[i]);
+		Character::container chars = read_chml(argv[i]);
 		std::copy(chars.begin(), chars.end(), back_inserter(all));
 	}
 
