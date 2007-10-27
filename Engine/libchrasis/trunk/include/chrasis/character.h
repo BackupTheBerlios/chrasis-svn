@@ -30,221 +30,222 @@
 #warning "try #include <chrasis.h> instead."
 #endif
 
+#include <cmath>
+
 namespace chrasis
 {
 
-template < typename VALUE_T >
-class basic_point
+class Character
 {
 public:
-	typedef VALUE_T					value_t;
-	typedef basic_point< VALUE_T >			point_t;
-
-	typedef std::vector< point_t >			collection;
-	typedef typename collection::iterator		iterator;
-	typedef typename collection::const_iterator	const_iterator;
-
-	basic_point(const value_t x, const value_t y): num_(x, y) {};
-
-	value_t & x() { return num_.real(); };			//< x-coordinate
-	value_t & y() { return num_.imag(); };			//< y-coordinate
-	value_t const & x() const { return num_.real(); };	//< const x-coordinate
-	value_t const & y() const { return num_.imag(); };	//< const y-coordinate
-
-	double arg() const
+	class Stroke
 	{
-		return std::arg( std::complex< double >(num_.real(), num_.imag()) );
-	}							//< the argument of the point
-	value_t abs() const { return std::abs(num_); };
-								//< the distance between the point and origin
+	public:
+		class Point
+		{
+		public:
+			typedef int				value_t;
+			typedef std::vector< Point >		collection;
+			typedef collection::iterator		iterator;
+			typedef collection::const_iterator	const_iterator;
 
-	value_t set_arg(value_t const);				//< set argument
-	value_t set_length(value_t const);			//< set length
+			Point(value_t const x, value_t const y):
+				x_(x), y_(y) {}
 
-	point_t & operator -= (const point_t & rhs)
-	{
-		num_.real() -= rhs.x();
-		num_.imag() -= rhs.y();
-		return *this;
-	}
-private:
-	std::complex< value_t > num_;
-};
+			value_t & x() { return x_; }			//< x-coordinate
+			value_t & y() { return y_; }			//< y-coordinate
+			value_t const & x() const { return x_; }	//< x-coordinate (const)
+			value_t const & y() const { return y_; }	//< y-coordinate (const)
 
-template < typename VALUE_T >
-std::ostream & operator<<( std::ostream &, basic_point< VALUE_T > const &);
+			/// argument of the point
+			double arg() const
+			{ return std::atan( static_cast<double>(x_) / y_ ); }
+			/// the distance between the point and origin
+			double abs() const { return std::sqrt(x_*x_ + y_*y_); }
 
-template < typename VALUE_T >
-basic_point< VALUE_T >
-operator - (basic_point< VALUE_T > const &, basic_point< VALUE_T > const &);
+			/// set argument
+			value_t set_arg(double const a)
+			{
+				value_t old_len = abs();
+				x_ = std::acos(a) * old_len;
+				y_ = std::asin(a) * old_len;
+				return arg();
+			}
+			/// set the distance between the point and origin
+			value_t set_length(double const l)
+			{
+				double factor = l / abs();
+				x_ = x_ * factor;
+				y_ = y_ * factor;
+				return abs();
+			}
 
-template < typename VALUE_T >
-bool
-operator != (basic_point< VALUE_T > const &, basic_point< VALUE_T > const &);
+			Point & operator += (const Point & rhs)
+			{
+				x_ += rhs.x_;
+				y_ += rhs.y_;
+				return *this;
+			}
 
-template < typename POINT_T >
-class basic_stroke
-{
-public:
-	typedef typename POINT_T::value_t		value_t;
-	typedef POINT_T					point_t;
-	typedef basic_stroke< POINT_T >			stroke_t;
+			Point & operator -= (const Point & rhs)
+			{
+				x_ -= rhs.x_;
+				y_ -= rhs.y_;
+				return *this;
+			}
+		private:
+			value_t x_;
+			value_t y_;
+		};
 
-	typedef std::vector< stroke_t >			collection;
-	typedef typename collection::iterator		iterator;
-	typedef typename collection::const_iterator	const_iterator;
+		typedef Point::value_t			value_t;
+		typedef std::vector< Stroke >		collection;
+		typedef collection::iterator		iterator;
+		typedef collection::const_iterator	const_iterator;
 
-	void add_point(point_t const & p) { points_.push_back(p); };
-	void add_point(value_t const x, value_t const y)
-		{ points_.push_back(point_t(x, y)); };
+		/**
+		 * add a new point to the end of the stroke
+		 * @param p the point to be added
+		 */
+		void add_point(Point const & p) { points_.push_back(p); };
+		/**
+		 * add a new point to the end of the stroke
+		 * @param x x coordinate of the point to be added
+		 * @param y y coordinate of the point to be added
+		 */
+		void add_point(value_t const x, value_t const y)
+			{ points_.push_back(Point(x, y)); };
 
-	typename point_t::iterator points_begin() { return points_.begin(); };
-	typename point_t::iterator points_end() { return points_.end(); };
-	typename point_t::const_iterator points_begin() const { return points_.begin(); };
-	typename point_t::const_iterator points_end() const { return points_.end(); };
+		/**
+		 * get the iterator points to the first point of the stroke
+		 * @return iterator of the first point of the stroke
+		 */
+		Point::iterator points_begin() { return points_.begin(); };
+		/**
+		 * get the iterator points to the last point of the stroke
+		 * @return iterator of the last point of the stroke
+		 */
+		Point::iterator points_end() { return points_.end(); };
+		/**
+		 * get the const iterator points to the first point of the stroke
+		 * @return const iterator of the first point of the stroke
+		 */
+		Point::const_iterator points_begin() const { return points_.begin(); };
+		/**
+		 * get the const iterator points to the last point of the stroke
+		 * @return const iterator of the last point of the stroke
+		 */
+		Point::const_iterator points_end() const { return points_.end(); };
 
-	size_t point_count() const { return points_.size(); }
-	value_t length() const;
+		/**
+		 * get the number of points of the stroke
+		 * @return number of points of the stroke
+		 */
+		size_t point_count() const { return points_.size(); }
+		
+		/**
+		 * get the length of the stroke
+		 * @return length of the stroke
+		 */
+		value_t length() const
+		{
+			Point::value_t length = 0.0;
+			for (Point::const_iterator
+				pi = points_.begin(),
+				pii = points_.begin() + 1;
+			     pi != points_.end() &&
+			     pii != points_.end();
+			     ++pi,
+			     ++pii)
+			{
+				length += std::sqrt(
+					(pi->x() - pii->x()) * (pi->x() - pii->x()) +
+					(pi->y() - pii->y()) * (pi->y() - pii->y())
+				);
+			}
+			return length;
+		}
 
-private:
-	typename point_t::collection points_;
-};
+	private:
+		Point::collection points_;
+	};
 
-template < typename POINT_T >
-std::ostream & operator<<(std::ostream & lhs, basic_stroke< POINT_T > const &);
+	typedef Stroke::Point::value_t		value_t;
+	typedef std::vector< Character >	collection;
+	typedef collection::iterator		iterator;
+	typedef collection::const_iterator	const_iterator;
 
-template < typename STROKE_T >
-class basic_character
-{
-public:
-	typedef typename STROKE_T::point_t		point_t;
-	typedef typename point_t::value_t		value_t;
-	typedef STROKE_T				stroke_t;
-	typedef basic_character< STROKE_T >		character_t;
+	Character(const std::string & n = std::string()):
+		name_(n) {}
 
-	typedef std::vector< character_t >		collection;
-	typedef typename collection::iterator		iterator;
-	typedef typename collection::const_iterator	const_iterator;
-
-
-	basic_character(): name_() {};
-	basic_character(const std::string & n): name_(n) {};
-
-	void new_stroke() { strokes_.push_back(stroke_t()); };
-	void add_stroke(const STROKE_T & s) { strokes_.push_back(s); };
+	void new_stroke() { strokes_.push_back(Stroke()); };
+	void add_stroke(const Stroke & s) { strokes_.push_back(s); };
 
 	int stroke_count() const { return strokes_.size(); };
 
-	void add_point(const point_t & p) { strokes_.rbegin()->add_point(p); };
-	void add_point(const typename point_t::value_t x, const typename point_t::value_t y)
+	void add_point(Stroke::Point const & p) { strokes_.rbegin()->add_point(p); };
+	void add_point(const value_t x, const value_t y)
 		{ strokes_.rbegin()->add_point(x, y); };
 
 	const std::string get_name() const { return name_; };
 	void set_name(const std::string & n) { name_ = n; };
 
-	typename stroke_t::iterator strokes_begin() { return strokes_.begin(); };
-	typename stroke_t::iterator strokes_end() { return strokes_.end(); };
-	typename stroke_t::const_iterator strokes_begin() const { return strokes_.begin(); };
-	typename stroke_t::const_iterator strokes_end() const { return strokes_.end(); };
+	Stroke::iterator strokes_begin() { return strokes_.begin(); };
+	Stroke::iterator strokes_end() { return strokes_.end(); };
+	Stroke::const_iterator strokes_begin() const { return strokes_.begin(); };
+	Stroke::const_iterator strokes_end() const { return strokes_.end(); };
 private:
-	typename stroke_t::collection strokes_;
+	Stroke::collection strokes_;
 	std::string name_;
 };
 
-template < typename STROKE_T >
-std::ostream & operator<<(std::ostream &, basic_character< STROKE_T > const &);
-
-template < typename STROKE_T >
-bool operator<(basic_character< STROKE_T > const &, basic_character< STROKE_T > const &);
-
-template < typename VALUE_T >
-typename basic_point< VALUE_T >::value_t
-basic_point< VALUE_T >::set_arg(value_t const a)
+static inline
+Character::Stroke::Point
+operator + (	Character::Stroke::Point const & lhs,
+		Character::Stroke::Point const & rhs)
 {
-	value_t orig_len = abs();	//< remember current length
-	x() = std::acos(a) * orig_len;
-	y() = std::asin(a) * orig_len;
-	return arg();
+	return Character::Stroke::Point(
+		lhs.x() + rhs.x(),
+		lhs.y() + rhs.y()
+	);
 }
 
-template < typename VALUE_T >
-typename basic_point< VALUE_T >::value_t
-basic_point< VALUE_T >::set_length(value_t const l)
+static inline
+Character::Stroke::Point
+operator - (	Character::Stroke::Point const & lhs,
+		Character::Stroke::Point const & rhs)
 {
-	value_t factor = l / abs();
-	x() *= factor;
-	y() *= factor;
-	return abs();
-}
-
-template < typename VALUE_T >
-std::ostream &
-operator << (std::ostream & lhs, basic_point< VALUE_T > const & rhs)
-{
-	return lhs << "(" << rhs.x() << ", " << rhs.y() << ")";
-}
-
-template < typename VALUE_T >
-basic_point< VALUE_T >
-operator - (basic_point< VALUE_T > const & lhs, basic_point< VALUE_T > const & rhs)
-{
-	return basic_point< VALUE_T >(
+	return Character::Stroke::Point(
 		lhs.x() - rhs.x(),
-		lhs.y() - rhs.y() );
+		lhs.y() - rhs.y()
+	);
 }
 
-template < typename VALUE_T >
+static inline
 bool
-operator != (basic_point< VALUE_T > const & lhs, basic_point< VALUE_T > const & rhs)
+operator == (	Character::Stroke::Point const & lhs,
+		Character::Stroke::Point const & rhs)
 {
-	return lhs.x() != rhs.x() || lhs.y() != rhs.y();
+	return (lhs.x() == rhs.x() && lhs.y() == rhs.y());
 }
 
-template < typename POINT_T >
-typename basic_stroke< POINT_T >::value_t
-basic_stroke< POINT_T >::length() const
-{
-	typename POINT_T::value_t length = 0.0;
-	for (typename POINT_T::const_iterator pi = points_.begin();
-	     pi != points_.end() - 1;
-	     ++pi)
-		length += (*pi - *(pi+1)).abs();
-	return length;
-}
-
-template < typename POINT_T >
-std::ostream &
-operator<<(std::ostream & lhs, basic_stroke< POINT_T > const & rhs)
-{
-	for (typename POINT_T::const_iterator i = rhs.points_begin();
-		i != rhs.points_end();
-		++i)
-		lhs << *i << " ";
-	return lhs;
-}
-
-template < typename STROKE_T >
-std::ostream &
-operator<<(std::ostream & lhs, basic_character< STROKE_T > const & rhs)
-{
-	lhs << rhs.get_name() << ": " << std::endl;
-	for (typename basic_character< STROKE_T >::stroke_t::const_iterator i = rhs.strokes_begin();
-		i != rhs.strokes_end();
-		++i)
-		lhs << *i << std::endl;
-	return lhs;
-}
-
-template < typename STROKE_T >
+static inline
 bool
-operator<(basic_character< STROKE_T > const & lhs, basic_character< STROKE_T > const & rhs)
+operator != (	Character::Stroke::Point const & lhs,
+		Character::Stroke::Point const & rhs)
 {
-	return (lhs.get_name() < rhs.get_name()) ? true : false ;
+	return (lhs.x() != rhs.x() || lhs.y() != rhs.y());
 }
 
-typedef basic_point< int > Point;
-typedef basic_stroke< Point > Stroke;
-typedef basic_character< Stroke > Character;
+static inline
+bool
+operator < (Character const & lhs, Character const & rhs)
+{
+	return (lhs.get_name() < rhs.get_name());
+}
+
+typedef Character::Stroke		Stroke;
+typedef Character::Stroke::Point	Point;
 
 } // namespace chrasis
 

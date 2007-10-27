@@ -66,9 +66,6 @@
 /* Runtime is under POSIX environment */
 #undef UNDER_POSIX
 
-/* Runtime is under Win32 environment */
-#undef UNDER_WIN32
-
 /* Version number of package */
 #undef VERSION
 

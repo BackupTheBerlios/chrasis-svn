@@ -36,22 +36,42 @@ namespace chrasis
 namespace settings
 {
 
+/**
+ * path for system database.
+ * @return path points to the system database
+ */
 CHRASIS_API
 std::string
 system_database_path();
 
+/**
+ * path for empty database
+ * @return path points to an empty database
+ */
 CHRASIS_API
 std::string
 empty_database_path();
 
+/**
+ * path to the user's database
+ * @return path points to current user's database
+ */
 CHRASIS_API
 std::string
 user_database_path();
 
+/**
+ * path to the empty database schema
+ * @return path points to an empty database schema
+ */
 CHRASIS_API
 std::string
 database_schema_path();
 
+/**
+ * function to setup the user's data directory
+ * @return true for success, false for failed.
+ */
 CHRASIS_API
 bool
 initialize_userdir();

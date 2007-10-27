@@ -41,27 +41,15 @@ static const double	ANGLE_THRESHOLD		= 30.0 / 180.0 * M_PI;	//< 30 deg
 static const double	DIST_THRESHOLD_RATIO	= 1.0 / 15.0;		//< 1/15 of diagonal line
 static const int	RESOLUTION		= 10000;		//< sampling resolution
 
-/**
- *  recognize from one database
- */
 bool
 _recognize(Character const &, Database &, character_possibility_t &);
 
-/**
- *  get rid of redundent points of a stroke
- */
 Stroke
 _normalize(Stroke const &, int const);
 
-/**
- *  get characters with alike traits
- */
 character_ids_t
 _get_cids_by_prototype(Character const &, Database &);
 
-/**
- *  get character by id
- */
 Character
 _get_char_by_id(int const, Database &);
 
@@ -71,24 +59,14 @@ _get_char_by_id(int const, Database &);
 // these numbers a basically magics...
 static const double	LEARNING_THRESHOLD	= 0.15;			//< 15% of sampling resolution
 
-/**
- *  learn a character into one database
- */
 bool
 _learn(Character const &, Database &);
 
-/**
- *  remember a new character
- */
 bool
 _remember(Character const &, Database &);
 
-/**
- *  update an existing character
- */
 bool
 _reflect(Character const &, int const, Database &);
-
 
 } // namespace chrasis
 

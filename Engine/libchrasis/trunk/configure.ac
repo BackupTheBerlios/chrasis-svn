@@ -148,7 +148,7 @@ Build options:
   Build tools             $BUILD_TOOLS
   Enable debug            $LIBDEBUG
 
-  Building for            $host_os
+  Building for            $target_os
 ])
 if test ${os_is_unknown} = 1; then
 AC_MSG_RESULT([

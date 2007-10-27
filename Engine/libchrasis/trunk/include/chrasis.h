@@ -22,6 +22,19 @@
  * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
  */
 
+/**
+ * \ingroup libchrasis
+ *
+ * \brief Standard IO for libchrasis
+ *
+ * \author $Author: $
+ *
+ * \version $Revision: $
+ *
+ * \date $Date: $
+ *
+ */
+
 #ifndef _CHRASIS_H
 #define _CHRASIS_H
 
@@ -51,35 +64,99 @@
 namespace chrasis
 {
 
-typedef int				possibility_t;
-typedef std::multimap<
-	possibility_t,
-	std::pair< int, std::string > >	character_possibility_t;
-typedef std::vector< int >		character_ids_t;
-
+/**
+ * Normalize a single stroke based on distance threshold.
+ *
+ * @brief normalize a stroke
+ *
+ * @param stroke the original stroke
+ * @param distance_threshold the distance threshold of the elimination of points
+ * @return normalized stroke
+ *
+ */
 CHRASIS_API
 Stroke
-normalize(Stroke const &, int const);
+normalize(Stroke const & stroke, int const distance_threshold);
 
+/**
+ * Walk through each stroke in a character and calls
+ * normalize(stroke) with proper distance threshold on them.
+ *
+ * @brief normalize a character
+ *
+ * @param character the original character
+ */
 CHRASIS_API
 Character
-normalize(Character const &);
+normalize(Character const & character);
 
+/**
+ * Try recognize the character with pre-defined databases.
+ *   - system database
+ *     - in /usr/share/chrasis/chr_data.db
+ *   - user database
+ *     - in ~/.chrasis/chr_data.db
+ *
+ * @param character the character to be recognized
+ * @return a list of character with alikeness
+ *
+ * @see character_possibility_t
+ *
+ */
 CHRASIS_API
 character_possibility_t
-recognize(Character const &);
+recognize(Character const & character);
 
+/**
+ * Try recognize the character with given databases.
+ *
+ * @param character the character to be recognized
+ * @param database the database with character/stroke informations
+ * @return a list of character with alikeness
+ *
+ * @see character_possibility_t
+ *
+ */
 CHRASIS_API
 character_possibility_t
-recognize(Character const &, Database &);
+recognize(Character const & character, Database & database);
 
+/**
+ * Learn the specified character into user database.
+ * The given character would be either:
+ *   - remembered if
+ *     - the character doesn't exist in the database, or
+ *     - character in db looks not alike
+ *   - reflected if
+ *     - character exists in db and is somewhat alike this one
+ *
+ * @param character the character to be learned
+ * @return true if learned with no problem, false otherwise.
+ *
+ * @see recognize
+ */
 CHRASIS_API
 bool
-learn(Character const &);
+learn(Character const & character);
 
+/**
+ * Learn the specified character into the specified database.
+ * The given character would be either:
+ *   - remembered if
+ *     - the character doesn't exist in the database, or
+ *     - character in db looks not alike
+ *   - reflected if
+ *     - character exists in db and is somewhat alike this one
+ *
+ * @param character the character to be learned
+ * @param database the database used to store the character information.
+ * @return true if learned with no problem, false otherwise.
+ *
+ * @see recognize
+ */
 CHRASIS_API
 bool
-learn(Character const &, Database &);
+learn(Character const & character, Database & database);
 
 } // namespace chrasis
 

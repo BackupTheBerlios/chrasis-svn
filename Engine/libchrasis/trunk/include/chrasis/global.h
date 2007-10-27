@@ -33,12 +33,27 @@
 namespace chrasis
 {
 
-typedef std::vector< int >		char_traits_t;
+/// Possibility of character alikeness stores in this format
 typedef int				possibility_t;
+/**
+ * A list of all possible character ordered by how alike the
+ * charaters are. Structured like this:
+ * - \b node : each node, from .begin() to .end().
+ *   - \b ->first : the alikeness (smaller the more similar)
+ *   - \b ->second : std::pair<> containing some character informations
+ *     - \b ->first : the \a character_id stored in the database
+ *     - \b ->second : name of the character
+ */
 typedef std::multimap<
 	possibility_t,
 	std::pair< int, std::string > >	character_possibility_t;
+
+typedef std::vector< int >		char_traits_t;
+typedef std::multimap<
+	possibility_t,
+	std::pair< int, int > >		stroke_possibility_t;
 typedef std::vector< int >		character_ids_t;
+typedef std::vector< int >		stroke_ids_t;
 
 template <typename T>
 static inline
@@ -74,9 +89,7 @@ static inline
 fexist( std::string const & filename )
 {
 	struct stat buffer;
-	if ( stat( filename.c_str(), &buffer ) )
-		return false;
-	return true;
+	return !( stat(filename.c_str(), &buffer) );
 }
 
 } // namespace chrasis
