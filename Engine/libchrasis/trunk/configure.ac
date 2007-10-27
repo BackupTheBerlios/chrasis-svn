@@ -2,8 +2,9 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT(libchrasis, 0.1.2, chrasis-devel@googlegroups.com)
+AC_INIT([libchrasis],[0.1.2],[chrasis-devel@googlegroups.com])
 AC_CONFIG_SRCDIR([src/chrasisio.cpp])
+AC_CANONICAL_TARGET
 
 AC_SUBST(PACKAGE_VERSION)
 
@@ -49,9 +50,9 @@ LIBTOOL_EXPORT_OPTIONS='-export-symbols-regex "^[[^_]].*"'
 AC_SUBST(LIBTOOL_EXPORT_OPTIONS)
 
 # checks if doxygen is avaiable
-#AC_PATH_PROG(DOXYGEN, doxygen, no)
-#AM_CONDITIONAL(HAVE_DOXYGEN, test x$DOXYGEN != xno)
-#AC_SUBST(DOXYGEN)
+AC_PATH_PROG(DOXYGEN, doxygen, no)
+AM_CONDITIONAL(HAVE_DOXYGEN, test x$DOXYGEN != xno)
+AC_SUBST(DOXYGEN)
 
 # Checks if graphviz is available
 #AC_CHECK_PROG(HAVE_GRAPHVIZ, dot, YES, NO)
@@ -71,29 +72,24 @@ AC_ARG_ENABLE([debug],
 	[AS_HELP_STRING(--enable-debug,Turn on debugging support)],
 	ac_arg_debug=${enableval}, ac_arg_debug="no")
 AC_ARG_ENABLE([tools],
-	[AC_HELP_STRING(--disable-tools,Build the character database mantaince tools)],
+	[AS_HELP_STRING(--disable-tools,Build the character database mantaince tools)],
 	ac_arg_tools=${enableval}, ac_arg_tools="yes")
 
 # Platform-dependent
 dnl What kind of system are we using?
-os_is_win32=0
-os_is_macosx=0
 os_is_posix=0
+os_is_unknown=0
 
-case "$target_os" in
-win32*)
-	os_is_win32=1
+case "$target" in
+*-linux*)
+	os_is_posix=1
+	os_is_unknown=0
 	;;
-darwin* | rhapsody*)
-	os_is_macosx=1
-	;;
-cygwin* | mingw32* | *)
+*)
 	os_is_posix=1
 	;;
 esac
 
-AC_DEFINE_UNQUOTED(UNDER_WIN32, ${os_is_win32}, [Runtime is under Win32 environment])
-AC_DEFINE_UNQUOTED(UNDER_MACOSX, ${os_is_macosx}, [Runtime is under MacOSX environment])
 AC_DEFINE_UNQUOTED(UNDER_POSIX, ${os_is_posix}, [Runtime is under POSIX environment])
 
 case "${ac_arg_debug}" in
@@ -114,12 +110,7 @@ yes)
 	BUILD_TOOLS="true"
 	AC_DEFINE(ENABLE_TOOLS, 1,
 		[Define to 1 if you want to build the character database maintaince tools])
-	if test ${os_is_macosx} = 0; then
-		LIBXML_CFLAGS="-I/usr/include/libxml2"
-		LIBXML_LIBS="-lxml2"
-	else
-		PKG_CHECK_MODULES(LIBXML, [libxml-2.0])
-	fi
+	PKG_CHECK_MODULES(LIBXML, [libxml-2.0])
 	TOOLS_SUBDIRS=tools
 	DATA_SUBDIRS=data
 	;;
@@ -135,12 +126,7 @@ AC_SUBST(BUILD_TOOLS)
 AC_SUBST(TOOLS_SUBDIRS)
 AC_SUBST(DATA_SUBDIRS)
 
-if test ${os_is_macosx} = 0; then
-	SQLITE3_CFLAGS=""
-	SQLITE3_LIBS="-lsqlite3"
-else
-	PKG_CHECK_MODULES(SQLITE3, [sqlite3])
-fi
+PKG_CHECK_MODULES(SQLITE3, [sqlite3])
 AC_SUBST(SQLITE3_CFLAGS)
 AC_SUBST(SQLITE3_LIBS)
 
@@ -153,7 +139,7 @@ AC_CONFIG_FILES([
 	Doxyfile
 ])
 
-AC_OUTPUT()
+AC_OUTPUT
 
 AC_MSG_RESULT([
 Build options:
@@ -161,4 +147,13 @@ Build options:
   Install prefix          $prefix
   Build tools             $BUILD_TOOLS
   Enable debug            $LIBDEBUG
+
+  Building for            $host_os
 ])
+if test ${os_is_unknown} = 1; then
+AC_MSG_RESULT([
+
+  *** Your host is unknown, build result may vary. ***
+
+])
+fi

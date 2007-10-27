@@ -1,5 +1,14 @@
 #! /bin/sh
 
+case `uname` in
+Darwin*)
+	echo "***"
+	echo "*** please go to MacOSX subdirectory and make there"
+	echo "***"
+	exit 1
+	;;
+esac
+
 set -x
 
 if [ "x${ACLOCAL_DIR}" != "x" ]; then
