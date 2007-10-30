@@ -3,7 +3,8 @@ INCLUDES = @LIBXML_CFLAGS@
 noinst_PROGRAMS = learn recognize join_chml probability_test char_size
 
 join_chml_SOURCES = join_chml.cpp chmlcodec.cpp
-join_chml_LDADD = @LIBXML_LIBS@ 
+join_chml_LDADD = @LIBXML_LIBS@ \
+	$(top_builddir)/src/libchrasis.la
 
 learn_SOURCES = learn.cpp chmlcodec.cpp
 learn_LDADD = \

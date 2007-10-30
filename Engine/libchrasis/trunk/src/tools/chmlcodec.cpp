@@ -42,6 +42,7 @@ Character::container
 read_chml(std::string ifilename)
 {
 	Character::container ret_chrs;
+	char * attr_tmp;
 
 	xmlTextReaderPtr reader = xmlReaderForFile(ifilename.c_str(), NULL, 0);
 	if (reader == NULL)
@@ -58,9 +59,10 @@ read_chml(std::string ifilename)
 		if (name != "character")
 			continue;
 
-		Character tmp_char(reinterpret_cast<const char *>(
-			xmlTextReaderGetAttribute(reader,
-				reinterpret_cast<const xmlChar *>("name"))));
+		attr_tmp = reinterpret_cast<char *>(
+			xmlTextReaderGetAttribute(reader, reinterpret_cast<const xmlChar *>("name")));
+		Character tmp_char(attr_tmp);
+		xmlFree(attr_tmp);
 
 		for (int sret = xmlTextReaderRead(reader);
 		     sret == 1;
@@ -89,14 +91,18 @@ read_chml(std::string ifilename)
 				if (name != "point")
 					continue;
 				
-				int x = fromString<int>(reinterpret_cast<const char*>(
+
+				attr_tmp = reinterpret_cast<char *>(
 					xmlTextReaderGetAttribute(reader,
-						reinterpret_cast<const xmlChar *>("x"))
-				));
-				int y = fromString<int>(reinterpret_cast<const char*>(
+						reinterpret_cast<const xmlChar *>("x")));
+				int x = fromString<int>(attr_tmp);
+				xmlFree(attr_tmp);
+				attr_tmp = reinterpret_cast<char *>(
 					xmlTextReaderGetAttribute(reader,
-						reinterpret_cast<const xmlChar *>("y"))
-				));
+						reinterpret_cast<const xmlChar *>("y")));
+				int y = fromString<int>(attr_tmp);
+				xmlFree(attr_tmp);
+
 				xmlTextReaderMoveToElement(reader);
 				tmp_stroke.add_point(x, y);
 			}

@@ -43,17 +43,38 @@ public:
 		typedef std::list<OPENDB> collection;
 
 		OPENDB();
+		
 		sqlite3 *db;
 		bool busy;
 	};
 
-	Database(std::string const &);
+	class Transaction {
+	public:
+		Transaction(OPENDB & odb):
+			odb_(odb)
+		{
+			sqlite3_exec(odb_.db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+		}
+
+		~Transaction()
+		{
+			sqlite3_exec(odb_.db, "END TRANSACTION;", NULL, NULL, NULL);
+		}
+	private:
+		OPENDB & odb_;
+	};
+
+	Database(std::string const & path): database_(path) { };
 	virtual ~Database();
 
 	OPENDB* grabdb();
-	void freedb(OPENDB*);
-	
-	bool execute(std::string const &, OPENDB * const = NULL);
+	void freedb(OPENDB* odb)
+	{
+		if (odb)
+			odb->busy = false;
+	}
+
+	bool execute(std::string const & sql, OPENDB * const xodb = NULL);
 
 private:
 	Database(const Database &) {};

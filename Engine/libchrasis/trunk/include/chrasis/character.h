@@ -30,6 +30,7 @@
 #warning "try #include <chrasis.h> instead."
 #endif
 
+#include <iostream>
 #include <cmath>
 
 namespace chrasis
@@ -60,59 +61,27 @@ public:
 			 * @param x x coordinate
 			 * @param y y coordinate
 			 */
-			Point(value_t const x, value_t const y):
-				x_(x), y_(y) {}
+			Point(value_t const x, value_t const y);
 
-			value_t & x() { return x_; }			///< x-coordinate
-			value_t & y() { return y_; }			///< y-coordinate
-			value_t const & x() const { return x_; }	///< x-coordinate (const)
-			value_t const & y() const { return y_; }	///< y-coordinate (const)
+			value_t & x();			///< x-coordinate
+			value_t & y();			///< y-coordinate
+			value_t const & x() const;	///< x-coordinate (const)
+			value_t const & y() const;	///< y-coordinate (const)
 
-			/// argument of the point
-			double arg() const
-			{ return std::atan( static_cast<double>(x_) / y_ ); }
-			/// the distance between the point and origin
-			double abs() const { return std::sqrt(x_*x_ + y_*y_); }
+			double arg() const;		///< argument of the point
+			double abs() const;		/// the distance between the point and origin
 
 			/// set argument
-			value_t set_arg(double const a)
-			{
-				value_t old_len = abs();
-				x_ = std::acos(a) * old_len;
-				y_ = std::asin(a) * old_len;
-				return arg();
-			}
+			value_t set_arg(double const a);
 			/// set the distance between the point and origin
-			value_t set_length(double const l)
-			{
-				double factor = l / abs();
-				x_ = x_ * factor;
-				y_ = y_ * factor;
-				return abs();
-			}
+			value_t set_length(double const l);
 
-			/**
-			 * add two points together
-			 */
-			Point & operator += (const Point & rhs)
-			{
-				x_ += rhs.x_;
-				y_ += rhs.y_;
-				return *this;
-			}
-
-			/**
-			 * minus the point by another
-			 */
-			Point & operator -= (const Point & rhs)
-			{
-				x_ -= rhs.x_;
-				y_ -= rhs.y_;
-				return *this;
-			}
+			/// add two points together
+			Point & operator += (Point const & rhs);
+			/// minus the point by another
+			Point & operator -= (Point const & rhs);
 		private:
-			value_t x_;
-			value_t y_;
+			value_t x_, y_;
 		};
 
 		typedef Point::value_t			value_t;	///< value type of point x, y
@@ -126,64 +95,52 @@ public:
 		 * add a new point to the end of the stroke
 		 * @param p the point to be added
 		 */
-		void add_point(Point const & p) { points_.push_back(p); };
+		void add_point(Point const & p);
 		/**
 		 * add a new point to the end of the stroke
 		 * @param x x coordinate of the point to be added
 		 * @param y y coordinate of the point to be added
 		 */
-		void add_point(value_t const x, value_t const y)
-			{ points_.push_back(Point(x, y)); };
+		void add_point(value_t const x, value_t const y);
 
 		/**
 		 * get the iterator points to the first point of the stroke
 		 * @return iterator of the first point of the stroke
 		 */
-		Point::iterator points_begin() { return points_.begin(); };
+		Point::iterator points_begin();
 		/**
 		 * get the iterator points to the pass-the-end point of the stroke
 		 * @return iterator of the pass-the-end point of the stroke
 		 */
-		Point::iterator points_end() { return points_.end(); };
+		Point::iterator points_end();
 		/**
 		 * get the const iterator points to the first point of the stroke
 		 * @return const iterator of the first point of the stroke
 		 */
-		Point::const_iterator points_begin() const { return points_.begin(); };
+		Point::const_iterator points_begin() const;
 		/**
 		 * get the const iterator points to the pass-the-end point of the stroke
 		 * @return const iterator of the pass-the-end point of the stroke
 		 */
-		Point::const_iterator points_end() const { return points_.end(); };
+		Point::const_iterator points_end() const;
 
 		/**
 		 * get the number of points of the stroke
 		 * @return number of points of the stroke
 		 */
-		size_t point_count() const { return points_.size(); }
+		size_t point_count() const;
+		
+		/**
+		 * test if the stroke is empty (contains no point)
+		 * @return true if contains no point, false otherwise.
+		 */
+		bool point_empty() const;
 		
 		/**
 		 * get the length of the stroke
 		 * @return length of the stroke
 		 */
-		value_t length() const
-		{
-			Point::value_t length = 0.0;
-			for (Point::const_iterator
-				pi = points_.begin(),
-				pii = points_.begin() + 1;
-			     pi != points_.end() &&
-			     pii != points_.end();
-			     ++pi,
-			     ++pii)
-			{
-				length += std::sqrt(
-					(pi->x() - pii->x()) * (pi->x() - pii->x()) +
-					(pi->y() - pii->y()) * (pi->y() - pii->y())
-				);
-			}
-			return length;
-		}
+		value_t length() const;
 
 	private:
 		Point::container points_;
@@ -200,118 +157,109 @@ public:
 	 * create a character with a given name
 	 * @param name the name of the character, default to empty string.
 	 */
-	Character(const std::string & name = std::string()):
-		name_(name) {}
+	Character(std::string const & name = std::string());
 
 	/**
 	 * add an empty stroke to the end of the character
 	 */
-	void new_stroke() { strokes_.push_back(Stroke()); };
+	void new_stroke();
 	/**
 	 * add the given stroke to the end of the character
 	 * @param s the stroke to be added
 	 */
-	void add_stroke(const Stroke & s) { strokes_.push_back(s); };
+	void add_stroke(Stroke const & s);
 
 	/**
 	 * get the number of strokes of the character
 	 * @return number of strokes
 	 */
-	int stroke_count() const { return strokes_.size(); };
+	size_t stroke_count() const;
+	/**
+	 * test if the character is empty (contains no stroke)
+	 * @return true if contains no stroke, false otherwise.
+	 */
+	bool stroke_empty() const;
 
 	/**
 	 * add a point to the last stroke of the character
 	 * @param p the point to be added
 	 */
-	void add_point(Stroke::Point const & p) { strokes_.rbegin()->add_point(p); };
+	void add_point(Stroke::Point const & p);
 	/**
 	 * add a point to the last stroke of the character
 	 * @param x x coordinate of the point to be added
 	 * @param y y coordinate of the point to be added
 	 */
-	void add_point(const value_t x, const value_t y)
-		{ strokes_.rbegin()->add_point(x, y); };
+	void add_point(value_t const x, value_t const y);
 
 	/**
 	 * get the name of the character
 	 * @return the name
 	 */
-	const std::string get_name() const { return name_; };
+	std::string const get_name() const;
 	/**
 	 * set the name of the character
 	 * @param n new name
 	 */
-	void set_name(const std::string & n) { name_ = n; };
+	void set_name(std::string const & n);
 
 	/**
 	 * get the iterator points to the first stroke of the character
 	 * @return iterator of the first stroke of the character
 	 */
-	Stroke::iterator strokes_begin() { return strokes_.begin(); };
+	Stroke::iterator strokes_begin();
 	/**
 	 * get the iterator points to the pass-the-end stroke of the character
 	 * @return iterator of the last pass-the-end stroke of the character
 	 */
-	Stroke::iterator strokes_end() { return strokes_.end(); };
+	Stroke::iterator strokes_end();
 	/**
 	 * get the const iterator points to the first stroke of the character
 	 * @return const iterator of the first stroke of the character
 	 */
-	Stroke::const_iterator strokes_begin() const { return strokes_.begin(); };
+	Stroke::const_iterator strokes_begin() const;
 	/**
 	 * get the const iterator points to the pass-the-end stroke of the character
 	 * @return const iterator of the pass-the-end stroke of the character
 	 */
-	Stroke::const_iterator strokes_end() const { return strokes_.end(); };
+	Stroke::const_iterator strokes_end() const;
 private:
 	Stroke::container strokes_;
 	std::string name_;
 };
 
-static inline
 Character::Stroke::Point
 operator + (	Character::Stroke::Point const & lhs,
-		Character::Stroke::Point const & rhs)
-{
-	return Character::Stroke::Point(
-		lhs.x() + rhs.x(),
-		lhs.y() + rhs.y()
-	);
-}
+		Character::Stroke::Point const & rhs);
 
-static inline
 Character::Stroke::Point
 operator - (	Character::Stroke::Point const & lhs,
-		Character::Stroke::Point const & rhs)
-{
-	return Character::Stroke::Point(
-		lhs.x() - rhs.x(),
-		lhs.y() - rhs.y()
-	);
-}
+		Character::Stroke::Point const & rhs);
 
-static inline
 bool
 operator == (	Character::Stroke::Point const & lhs,
-		Character::Stroke::Point const & rhs)
-{
-	return (lhs.x() == rhs.x() && lhs.y() == rhs.y());
-}
+		Character::Stroke::Point const & rhs);
 
-static inline
 bool
 operator != (	Character::Stroke::Point const & lhs,
-		Character::Stroke::Point const & rhs)
-{
-	return (lhs.x() != rhs.x() || lhs.y() != rhs.y());
-}
+		Character::Stroke::Point const & rhs);
 
-static inline
 bool
-operator < (Character const & lhs, Character const & rhs)
-{
-	return (lhs.get_name() < rhs.get_name());
-}
+operator < (Character const & lhs, Character const & rhs);
+
+// some helper functions for debug
+#ifdef _DEBUG
+
+std::ostream &
+operator << (std::ostream & lhs, Character::Stroke::Point const & rhs);
+
+std::ostream &
+operator << (std::ostream & lhs, Character::Stroke const & rhs);
+
+std::ostream &
+operator << (std::ostream & lhs, Character const & rhs);
+
+#endif
 
 /// alias for Stroke
 typedef Character::Stroke		Stroke;

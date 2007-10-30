@@ -25,6 +25,8 @@
 #include <chrasis.h>
 #include <chrasis/internal.h>
 
+#include <iterator>
+
 namespace chrasis
 {
 
@@ -115,30 +117,23 @@ normalize(const Character & chr)
 		     pi != si->points_end();
 		     ++pi)
 		{
-			if (pi->x() < lt.x())
-				lt.x() = pi->x();
-			if (pi->y() < lt.y())
-				lt.y() = pi->y();
-			if (pi->x() > rb.x())
-				rb.x() = pi->x();
-			if (pi->y() > rb.y())
-				rb.y() = pi->y();
+			if (pi->x() < lt.x()) lt.x() = pi->x();
+			if (pi->y() < lt.y()) lt.y() = pi->y();
+			if (pi->x() > rb.x()) rb.x() = pi->x();
+			if (pi->y() > rb.y()) rb.y() = pi->y();
 		}
 	}
-
 	Point::value_t const distance = std::max(
-		abs(lt.x() - rb.x()),
-		abs(lt.y() - rb.y())
+		abs(lt.x() - rb.x()), abs(lt.y() - rb.y())
 	);
 	lt.x() = (lt.x() + rb.x() - distance) / 2;
 	lt.y() = (lt.y() + rb.y() - distance) / 2;
-	
+
 	// walk through each strokes and simplize them
-	int distance_threshold = static_cast<int>(std::sqrt(distance*distance) * DIST_THRESHOLD_RATIO);
 	for (Stroke::const_iterator si = chr.strokes_begin();
 	     si != chr.strokes_end();
 	     ++si)
-		ret.add_stroke(normalize(*si, distance_threshold));
+		ret.add_stroke(normalize(*si, distance * DIST_THRESHOLD_RATIO));
 
 	// walk through the character and adjust the point to range [0...RESOLUTION)
 	for (Stroke::iterator si = ret.strokes_begin();
@@ -164,22 +159,29 @@ recognize(Character const & nchr)
 		sys_db( settings::system_database_path() ),
 		usr_db( settings::user_database_path() );
 
-	character_possibility_t ret;
+	Database::OPENDB
+		*sys_odb = sys_db.grabdb(),
+		*usr_odb = usr_db.grabdb();
 
 	// TODO: parallel with threads?
-	_recognize(nchr, sys_db, ret);
-	_recognize(nchr, usr_db, ret);
+	character_possibility_t
+		ret = _recognize(nchr, *sys_odb),
+		ret2 = _recognize(nchr, *usr_odb);
+
+	sys_db.freedb(sys_odb);
+	usr_db.freedb(usr_odb);
+
+	copy(ret2.begin(), ret2.end(),
+		std::insert_iterator< character_possibility_t >(ret, ret.end()));
 
 	return ret;
 }
 
 CHRASIS_API
 character_possibility_t
-recognize(Character const & nchr, Database & db)
+recognize(Character const & nchr, Database::OPENDB & odb)
 {
-	character_possibility_t ret;
-	_recognize(nchr, db, ret);
-	return ret;
+	return _recognize(nchr, odb);
 }
 
 CHRASIS_API
@@ -187,14 +189,18 @@ bool
 learn(Character const & nchr)
 {
 	static Database usr_db( settings::user_database_path() );
-	return _learn(nchr, usr_db);
+	Database::OPENDB *odb = usr_db.grabdb();
+	int ret = _learn(nchr, *odb);
+	usr_db.freedb(odb);
+
+	return ret;
 }
 
 CHRASIS_API
 bool
-learn(Character const & nchr, Database & db)
+learn(Character const & nchr, Database::OPENDB & odb)
 {
-	return _learn(nchr, db);
+	return _learn(nchr, odb);
 }
 
 

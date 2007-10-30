@@ -34,11 +34,6 @@ Database::OPENDB::OPENDB():
 {
 }
 
-Database::Database(std::string const & d):
-	database_(d)
-{
-}
-
 Database::~Database()
 {
 	for (OPENDB::collection::iterator it = opendbs_.begin();
@@ -83,48 +78,20 @@ Database::grabdb()
 	return &(*odb);
 }
 
-void
-Database::freedb(Database::OPENDB *odb)
-{
-	if (odb)
-		odb->busy = false;
-}
-
 bool
 Database::execute(std::string const & sql, Database::OPENDB * const xodb)
 {
-	OPENDB *odb;
-	if (xodb == NULL)
-		odb = grabdb();
-	else
-		odb = xodb;
+	OPENDB *odb = (xodb == NULL)?grabdb():xodb;
 
 	if (getenv("LIBCHRASIS_DEBUG") != NULL)
 		std::cout << sql << std::endl;
 
-	sqlite3_stmt *res = NULL;
-	const char *s = NULL;
-	int rc = sqlite3_prepare(odb->db, sql.c_str(), sql.size(), &res, &s);
-
-	if (rc != SQLITE_OK)
-	{
-		std::cerr << "Database: prepare query failed." << std::endl;
-		std::cerr << "          sql = [" + sql + "]" << std::endl;
-		return false;
-	}
-	if (!res)
-	{
-		std::cerr << "Database: query failed." << std::endl;
-		return false;
-	}
-
-	sqlite3_step(res);
-	sqlite3_finalize(res);
+	int rc = sqlite3_exec(odb->db, sql.c_str(), NULL, NULL, NULL);
 
 	if (xodb == NULL)
 		freedb(odb);
 
-	return true;
+	return rc;
 }
 
 } // namespace chrasis

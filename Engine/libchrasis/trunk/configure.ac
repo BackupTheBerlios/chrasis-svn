@@ -2,14 +2,14 @@
 
 AC_PREREQ(2.59)
 
-AC_INIT([libchrasis],[0.1.2],[chrasis-devel@googlegroups.com])
+AC_INIT([libchrasis],[0.2.0],[chrasis-devel@googlegroups.com])
 AC_CONFIG_SRCDIR([src/chrasisio.cpp])
 AC_CANONICAL_TARGET
 
 AC_SUBST(PACKAGE_VERSION)
 
 # increment if the interface has additions, changes, removals.
-LIBCHRASIS_CURRENT=1
+LIBCHRASIS_CURRENT=0
 
 # increment any time the source changes; set to 0 if you increment CURRENT
 LIBCHRASIS_REVISION=0
@@ -26,7 +26,7 @@ AC_SUBST(LIBCHRASIS_AGE)
 # Define a string for the earliest version that this release has
 # binary compatibility with. This is used for module locations.
 #
-LIBCHRASIS_BINARY_VERSION=0.1.1
+LIBCHRASIS_BINARY_VERSION=0.2.0
 AC_SUBST(LIBCHRASIS_BINARY_VERSION)
 
 AC_DEFINE_UNQUOTED(LIBCHRASIS_BINARY_VERSION, "$LIBCHRASIS_BINARY_VERSION",
@@ -97,7 +97,8 @@ yes)
 	LIBDEBUG="true"
 	AC_DEFINE(ENABLE_DEBUG, 1,
 		[Define to 1 if you want native library runtime debugging code enabled])
-	CFLAGS="$CFLAGS -g"
+	CFLAGS="$(CFLAGS) -g -D_DEBUG -pg"
+	CXXFLAGS="$(CXXFLAGS) -g -D_DEBUG -pg"
 	;;
 *)
 	LIBDEBUG="false"

@@ -8,6 +8,7 @@ using namespace chrasis;
 int main(int argc, char* argv[])
 {
 	Database db(argv[2]);
+	Database::OPENDB *odb = db.grabdb();
 
 	Character::container chars = read_chml(argv[1]);
 
@@ -22,7 +23,7 @@ int main(int argc, char* argv[])
 		Character chr(*ci);
 		chr.set_name("");
 
-		character_possibility_t likely = recognize(normalize(chr), db);
+		character_possibility_t likely = recognize(normalize(chr), *odb);
 
 		std::cout << "likely:" << std::endl;
 		for (character_possibility_t::iterator it = likely.begin();

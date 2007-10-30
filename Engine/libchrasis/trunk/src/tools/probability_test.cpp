@@ -6,7 +6,7 @@
 using namespace std;
 using namespace chrasis;
 
-void recognize_all(Character::container & chrs, Database & db)
+void recognize_all(Character::container & chrs, Database::OPENDB & odb)
 {
 	int correct = 0, correct2 = 0;
 
@@ -17,10 +17,10 @@ void recognize_all(Character::container & chrs, Database & db)
 		Character chr(*ci);
 		chr.set_name("");
 
-		character_possibility_t likely = recognize(normalize(chr), db);
+		character_possibility_t likely = recognize(normalize(chr), odb);
 		character_possibility_t::iterator candidate = likely.begin();
 
-		learn(normalize(*ci), db);
+		learn(normalize(*ci), odb);
 
 		if (candidate->second.second == ci->get_name())
 		{
@@ -81,9 +81,13 @@ int main(int argc, char* argv[])
 	}
 
 	Database db( argv[1] );
+	Database::OPENDB *odb = db.grabdb();
+	Database::Transaction t(*odb);
 
 	Character::container to_be_tested = read_chml(argv[2]);
-	recognize_all(to_be_tested, db);
+	recognize_all(to_be_tested, *odb);
+
+	db.freedb(odb);
 
 	return 0;
 }

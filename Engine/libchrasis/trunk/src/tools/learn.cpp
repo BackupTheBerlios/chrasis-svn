@@ -15,23 +15,25 @@ int main(int argc, char* argv[])
 	}
 
 	Database db( argv[argc-1] );
+	Database::OPENDB *odb = db.grabdb();
+	Database::Transaction t(*odb);
 
-	Character::container all_chars;
+	int learned_cnt = 0;
+
 	for (int i=1;i<argc-1;++i)
 	{
 		cout << "Reading \"" << argv[i] << "\"..." << endl;
 		Character::container chars = read_chml(argv[i]);
-		std::copy(chars.begin(), chars.end(), back_inserter(all_chars));
-	}
 
-	for (Character::iterator ci = all_chars.begin();
-	     ci != all_chars.end();
-	     ++ci)
-	{
-		cout << "Learning character #" << ci - all_chars.begin()
-		     << " (" << ci->get_name() << ")..." << endl;
-
-		learn(normalize(*ci), db);
+		for (Character::const_iterator ci = chars.begin();
+		     ci != chars.end();
+		     ++ci)
+		{
+			cout	<< "\tLearning character #" << ++learned_cnt
+				<< " (" << ci->get_name() << ")...";
+			learn(normalize(*ci), *odb);
+			cout	<< " [OK]" << endl;
+		}
 	}
 
 	return 0;

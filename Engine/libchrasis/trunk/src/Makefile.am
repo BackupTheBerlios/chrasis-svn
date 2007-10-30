@@ -6,7 +6,8 @@ DIST_SUBDIRS = . tools
 libchrasis_la_SOURCES = \
 	database.cpp \
 	chrasisio.cpp \
-	internal.cpp
+	internal.cpp \
+	character.cpp
 
 libchrasis_la_LIBADD = \
 	@SQLITE3_LIBS@

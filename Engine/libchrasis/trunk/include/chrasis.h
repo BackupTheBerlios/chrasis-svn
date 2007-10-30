@@ -106,15 +106,15 @@ recognize(Character const & character);
  * Try recognize the character with given databases.
  *
  * @param character the character to be recognized
- * @param database the database with character/stroke informations
+ * @param odb the database with character/stroke informations
  * @return a list of character with alikeness
  *
  * @see character_possibility_t
- *
+ * @see Database::OPENDB
  */
 CHRASIS_API
 character_possibility_t
-recognize(Character const & character, Database & database);
+recognize(Character const & character, Database::OPENDB & odb);
 
 /**
  * Learn the specified character into user database.
@@ -144,14 +144,15 @@ learn(Character const & character);
  *     - character exists in db and is somewhat alike this one
  *
  * @param character the character to be learned
- * @param database the database used to store the character information.
+ * @param odb the database used to store the character information.
  * @return true if learned with no problem, false otherwise.
  *
  * @see recognize
+ * @see Database::OPENDB
  */
 CHRASIS_API
 bool
-learn(Character const & character, Database & database);
+learn(Character const & character, Database::OPENDB & odb);
 
 } // namespace chrasis
 
