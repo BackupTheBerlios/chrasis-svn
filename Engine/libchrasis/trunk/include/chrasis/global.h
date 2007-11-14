@@ -33,31 +33,6 @@
 namespace chrasis
 {
 
-/// Possibility of character alikeness stores in this format
-typedef double				possibility_t;
-/**
- * A list of all possible characters ordered by how alike the charaters are.
- * Structured like this:
- * - \b node : each node, from .begin() to .end().
- *   - \b ->first : the alikeness (smaller the more similar)
- *   - \b ->second : std::pair<> containing some character informations
- *     - \b ->first : the \a character_id stored in the database
- *     - \b ->second : name of the character
- */
-typedef std::multimap<
-	possibility_t,
-	std::pair< int, std::string > >	character_possibility_t;
-
-typedef std::vector< int >		char_traits_t;
-/**
- * A list of all possible strokes ordered by how alike the strokes are.
- * Structured like this:
- * - \b node : each node, from .begin() to .end().
- *   - \b ->first : the alikeness (smaller the more similar)
- *   - \b ->second : the \a stroke_id stored in the database
- */
-typedef std::map<
-	int, possibility_t >		stroke_possibility_t;
 typedef std::vector< int >		id_container_t;
 
 template <typename T>

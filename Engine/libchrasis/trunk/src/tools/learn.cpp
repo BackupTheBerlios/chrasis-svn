@@ -1,5 +1,4 @@
 #include <chrasis.h>
-#include <chrasis/internal.h>
 
 #include "chmlcodec.h"
 
@@ -14,9 +13,9 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	Database db( argv[argc-1] );
-	Database::OPENDB *odb = db.grabdb();
-	Database::Transaction t(*odb);
+	SQLite::Database db( argv[argc-1] );
+	SQLite::Transaction t(db);
+	SQLite::Command cmd(t);
 
 	int learned_cnt = 0;
 
@@ -31,7 +30,7 @@ int main(int argc, char* argv[])
 		{
 			cout	<< "\tLearning character #" << ++learned_cnt
 				<< " (" << ci->get_name() << ")...";
-			learn(normalize(*ci), *odb);
+			learn(normalize(*ci), cmd);
 			cout	<< " [OK]" << endl;
 		}
 	}

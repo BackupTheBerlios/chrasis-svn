@@ -31,58 +31,92 @@
 #endif
 
 #include <sqlite3.h>
-#include <chrasis.h>
 
 namespace chrasis
 {
 
+namespace SQLite
+{
+
+class Database;
+class Transaction;
+class Command;
+
 class Database
 {
-public:
+public:	
+	friend class Transaction;
+	friend class Command;
+
+	Database(std::string const & path);
+	~Database();
+
+private:
 	struct OPENDB {
 		typedef std::list<OPENDB> collection;
-
-		OPENDB();
 		
+		OPENDB();
+
 		sqlite3 *db;
 		bool busy;
 	};
 
-	class Transaction {
-	public:
-		Transaction(OPENDB & odb):
-			odb_(odb)
-		{
-			sqlite3_exec(odb_.db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
-		}
-
-		~Transaction()
-		{
-			sqlite3_exec(odb_.db, "END TRANSACTION;", NULL, NULL, NULL);
-		}
-	private:
-		OPENDB & odb_;
-	};
-
-	Database(std::string const & path): database_(path) { };
-	virtual ~Database();
+	Database(Database &);
+	Database & operator= (Database &);
 
 	OPENDB* grabdb();
-	void freedb(OPENDB* odb)
-	{
-		if (odb)
-			odb->busy = false;
-	}
-
-	bool execute(std::string const & sql, OPENDB * const xodb = NULL);
-
-private:
-	Database(const Database &) {};
-	Database& operator=(const Database &) { return *this; };
+	void freedb(OPENDB & odb);
 
 	std::string database_;
 	OPENDB::collection opendbs_;
 };
+
+class Transaction {
+public:
+	friend class Command;
+
+	Transaction(Database & db);
+	~Transaction();
+
+	void commit();
+
+private:
+	Database & db_;
+	Database::OPENDB *odb_;
+};
+
+class Command
+{
+public:
+	Command(Database & db);
+	Command(Transaction & t);
+	~Command();
+	
+	void execute_nonquery(std::string const & sql);
+	void execute(std::string const & sql);
+	
+	bool next();
+
+	int column_int(int ncol);
+	double column_double(int ncol);
+	std::string column_text(int ncol);
+
+	void free_result();
+	
+	int last_rowid();
+
+	std::string const & get_last_sql() const;
+
+private:
+	std::string last_sql_;
+	sqlite3_stmt *res_;
+
+	bool transaction_;
+	Database & db_;
+	Database::OPENDB *odb_;
+};
+
+}
 
 } // namespace chrasis
 

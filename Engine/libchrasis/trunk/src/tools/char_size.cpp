@@ -33,19 +33,6 @@ using namespace std;
 Point::value_t
 char_size(const Character & chr)
 {
-	/*
-	for (Stroke::const_iterator si = chr.strokes_begin();
-	     si != chr.strokes_end();
-	     ++si)
-	{
-		if (si->point_count() == 0)
-		{
-			si = chr.erase(si);
-			--si;
-		}
-	}
-	*/
-
 	if (chr.stroke_count() == 0 ||
 	    chr.strokes_begin()->point_count() == 0)
 		return 0;

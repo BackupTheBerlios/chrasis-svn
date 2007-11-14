@@ -152,55 +152,48 @@ normalize(const Character & chr)
 }
 
 CHRASIS_API
-character_possibility_t
+ItemPossibility
 recognize(Character const & nchr)
 {
-	static Database
+	static SQLite::Database
 		sys_db( settings::system_database_path() ),
 		usr_db( settings::user_database_path() );
 
-	Database::OPENDB
-		*sys_odb = sys_db.grabdb(),
-		*usr_odb = usr_db.grabdb();
+	SQLite::Command
+		sys_cmd( sys_db ),
+		usr_cmd( usr_db );
 
 	// TODO: parallel with threads?
-	character_possibility_t
-		ret = _recognize(nchr, *sys_odb),
-		ret2 = _recognize(nchr, *usr_odb);
-
-	sys_db.freedb(sys_odb);
-	usr_db.freedb(usr_odb);
-
-	copy(ret2.begin(), ret2.end(),
-		std::insert_iterator< character_possibility_t >(ret, ret.end()));
+	ItemPossibility ret;
+	ret = _recognize(nchr, sys_cmd),
+	ret += _recognize(nchr, usr_cmd);
+	ret.sort(ItemPossibility::SORTING_POSSIBILITY);
 
 	return ret;
 }
 
 CHRASIS_API
-character_possibility_t
-recognize(Character const & nchr, Database::OPENDB & odb)
+ItemPossibility
+recognize(Character const & nchr, SQLite::Command & cmd)
 {
-	return _recognize(nchr, odb);
+	return _recognize(nchr, cmd);
 }
 
 CHRASIS_API
 bool
 learn(Character const & nchr)
 {
-	static Database usr_db( settings::user_database_path() );
-	Database::OPENDB *odb = usr_db.grabdb();
-	int ret = _learn(nchr, *odb);
-	usr_db.freedb(odb);
+	static SQLite::Database usr_db( settings::user_database_path() );
+	SQLite::Command usr_cmd( usr_db );
 
-	return ret;
+	return _learn(nchr, usr_cmd);
 }
 
 CHRASIS_API
 bool
-learn(Character const & nchr, Database::OPENDB & odb)
+learn(Character const & nchr, SQLite::Command & cmd)
 {
-	return _learn(nchr, odb);
+	return _learn(nchr, cmd);
 }
 
 

@@ -37,6 +37,10 @@
 # define CHRASIS_API
 #endif
 
+#ifndef CHRASIS_INTERNAL
+# define CHRASIS_INTERNAL __attribute__ ((visibility ("hidden")))
+#endif
+
 #include <complex>
 #include <cmath>
 #include <list>
@@ -58,6 +62,62 @@
 
 namespace chrasis
 {
+
+class ItemPossibility
+{
+private:
+	struct Item;
+public:
+	typedef double				possibility_t;
+	typedef	std::vector< Item >		container;
+	typedef container::iterator		iterator;
+	typedef container::const_iterator	const_iterator;
+
+	enum SORTING_POLICY {
+		SORTING_POSSIBILITY,
+		SORTING_ID,
+		SORTING_NAME
+	};
+
+	void add_item(possibility_t p, int i, std::string n = std::string());
+
+	void sort(SORTING_POLICY const sp);
+	
+	iterator begin();
+	iterator end();
+	const_iterator begin() const;
+	const_iterator end() const;
+
+	size_t empty() const;
+	size_t size() const;
+
+	ItemPossibility & operator += (ItemPossibility const & rhs);
+
+private:
+	struct Item
+	{
+		Item(possibility_t p, int i, std::string n);
+
+		possibility_t	possibility;
+		int		id;
+		std::string	name;
+	};
+
+	struct PossibilityComparer
+	{
+		bool operator() (Item const & lhs, Item const & rhs);
+	};
+	struct IdComparer
+	{
+		bool operator() (Item const & lhs, Item const & rhs);
+	};
+	struct NameComparer
+	{
+		bool operator() (Item const & lhs, Item const & rhs);
+	};
+
+	container items_;
+};
 
 /**
  * Normalize a single stroke based on distance threshold.
@@ -99,7 +159,7 @@ normalize(Character const & character);
  *
  */
 CHRASIS_API
-character_possibility_t
+ItemPossibility
 recognize(Character const & character);
 
 /**
@@ -113,8 +173,8 @@ recognize(Character const & character);
  * @see Database::OPENDB
  */
 CHRASIS_API
-character_possibility_t
-recognize(Character const & character, Database::OPENDB & odb);
+ItemPossibility
+recognize(Character const & character, SQLite::Command & cmd);
 
 /**
  * Learn the specified character into user database.
@@ -152,7 +212,7 @@ learn(Character const & character);
  */
 CHRASIS_API
 bool
-learn(Character const & character, Database::OPENDB & odb);
+learn(Character const & character, SQLite::Command & cmd);
 
 } // namespace chrasis
 

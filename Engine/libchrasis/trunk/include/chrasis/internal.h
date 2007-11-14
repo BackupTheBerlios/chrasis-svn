@@ -25,88 +25,52 @@
 #ifndef _CHRASIS_INTERNAL_H
 #define _CHRASIS_INTERNAL_H
 
-#define CHRASIS_INTERNAL
-
-#include "character.h"
+#include "chrasis.h"
 
 namespace chrasis
 {
+
+enum CHRASIS_DEBUG_FACILITIES
+{
+	CHRASIS_DEBUG_SQL,
+	CHRASIS_DEBUG_CORE,
+	CHRASIS_DEBUG_SIZE
+};
+
+static inline
+std::vector< std::string >
+_initialize_facilities()
+{
+	std::vector< std::string > ret(CHRASIS_DEBUG_SIZE);
+	
+	ret[CHRASIS_DEBUG_SQL] = "sql";
+	ret[CHRASIS_DEBUG_CORE] = "core";
+	
+	return ret;
+}
+
+static inline
+void
+debug_print(std::string const & dbgstr, CHRASIS_DEBUG_FACILITIES const & fac)
+{
+#ifdef _DEBUG
+	static std::vector< std::string > facility( _initialize_facilities() );
+
+	char * c_debug_env = getenv("LIBCHRASIS_DEBUG");
+	if (c_debug_env == NULL)
+		return;
+
+	std::string debug_env( c_debug_env );
+	if (debug_env.find(facility[fac], 0) != std::string::npos)
+		std::cerr << dbgstr;
+#endif
+}
 
 // database related
 
 #define DEFAULT_DB_FILE		"chr_data.db"
 #define DEFAULT_EMPTYDB_FILE	"empty_db.db"
 #define DEFAULT_SCHEMA_FILE	"db_schema.sql"
-
-// used by recognize() and learn()
-class CharacterImpl
-{
-public:
-	class StrokeImpl
-	{
-	public:
-		typedef Character::Stroke::Point	point_t;
-		typedef	point_t::value_t		value_t;
-		typedef std::vector< StrokeImpl >	container;
-		typedef container::iterator		iterator;
-		typedef container::const_iterator	const_iterator;
-
-		StrokeImpl(int const & ssid,
-			point_t const & lt, point_t const & rb):
-			ss_id_(ssid), lt_(lt), rb_(rb)
-		{ }
-
-		StrokeImpl(int const & ssid,
-			value_t const & ltx, value_t const & lty,
-			value_t const & rbx, value_t const & rby):
-			ss_id_(ssid), lt_(ltx, lty), rb_(rbx, rby)
-		{ }
-
-		int const & get_stroke_shape_id() const { return ss_id_; }
-		point_t const & get_lefttop() const { return lt_; }
-		point_t const & get_rightbottom() const { return rb_; }
-
-	private:
-		int				ss_id_;
-		Character::Stroke::Point	lt_;
-		Character::Stroke::Point	rb_;
-	};
-	
-	typedef StrokeImpl::point_t		point_t;
-	typedef point_t::value_t		value_t;
-	typedef std::vector< CharacterImpl >	container;
-	typedef container::iterator		iterator;
-	typedef container::const_iterator	const_iterator;
-
-	CharacterImpl(std::string const & n = std::string()):
-		name_(n)
-	{ }
-
-	void add_stroke(int const & ssid,
-		point_t const & lt, point_t const & rb)
-	{
-		stroke_impls_.push_back( StrokeImpl(ssid, lt, rb) );
-	}
-	void add_stroke(int const & ssid,
-		value_t const & ltx, value_t const & lty,
-		value_t const & rbx, value_t const & rby)
-	{
-		stroke_impls_.push_back( StrokeImpl(ssid, ltx, lty, rbx, rby) );
-	}
-	
-	int stroke_count() const { return stroke_impls_.size(); }
-	
-	StrokeImpl::iterator strokes_begin() { return stroke_impls_.begin(); }
-	StrokeImpl::iterator strokes_end() { return stroke_impls_.end(); }
-	StrokeImpl::const_iterator strokes_begin() const { return stroke_impls_.begin(); }
-	StrokeImpl::const_iterator strokes_end() const { return stroke_impls_.end(); }
-
-	std::string get_name() const { return name_; }
-	void set_name(std::string const & n) { name_ = n; }
-private:
-	StrokeImpl::container stroke_impls_;
-	std::string name_;
-};
 
 CHRASIS_INTERNAL
 Stroke
@@ -121,27 +85,27 @@ static const int	RESOLUTION		= 10000;		//< sampling resolution
 
 CHRASIS_INTERNAL
 id_container_t
-_get_ids_by_prototype(Stroke const & pstr, Database::OPENDB & odb);
+_get_ids_by_prototype(Stroke const & pstr, SQLite::Command & cmd);
 
 CHRASIS_INTERNAL
 Stroke
-_get_stroke_by_id(int id, Database::OPENDB & odb);
+_get_stroke_by_id(int id, SQLite::Command & cmd);
 
 CHRASIS_INTERNAL
-stroke_possibility_t
-_recognize(Stroke const & nstr, Database::OPENDB & odb);
+ItemPossibility
+_recognize(Stroke const & nstr, SQLite::Command & cmd);
 
 CHRASIS_INTERNAL
 id_container_t
-_get_ids_by_prototype(Character const & pchr, std::vector< stroke_possibility_t > sptv, Database::OPENDB & odb);
+_get_ids_by_prototype(Character const & pchr, SQLite::Command & cmd);
 
 CHRASIS_INTERNAL
-CharacterImpl
-_get_character_by_id(int const & id, Database::OPENDB & odb);
+Character
+_get_character_by_id(int const & id, SQLite::Command & cmd);
 
 CHRASIS_INTERNAL
-character_possibility_t
-_recognize(Character const & nchr, Database::OPENDB & odb);
+ItemPossibility
+_recognize(Character const & nchr, SQLite::Command & cmd);
 
 // used by learn()
 
@@ -150,28 +114,28 @@ static const double	LEARNING_THRESHOLD	= 0.15 * 0.15;		//< 15% of sampling resol
 
 CHRASIS_INTERNAL
 int
-_learn(Stroke const & nstr, Database::OPENDB & odb);
+_learn(Stroke const & nstr, SQLite::Command & cmd);
 
 CHRASIS_INTERNAL
 int
-_remember(Stroke const & nstr, Database::OPENDB & odb);
+_remember(Stroke const & nstr, SQLite::Command & cmd);
 
 CHRASIS_INTERNAL
 int
-_reflect(Stroke const & nstr, int id, Database::OPENDB & odb);
+_reflect(Stroke const & nstr, int ssid, SQLite::Command & cmd);
 
 CHRASIS_INTERNAL
 int
-_learn(Character const & nchr, Database::OPENDB & odb);
+_learn(Character const & nchr, SQLite::Command & cmd);
 
 CHRASIS_INTERNAL
 int
-_remember(CharacterImpl const & chr_impl, id_container_t const & shape_ids, Database::OPENDB & odb);
+_remember(Character const & nchr, SQLite::Command & cmd);
 
 CHRASIS_INTERNAL
 int
-_reflect(CharacterImpl const & chr_impl, int const id, Database::OPENDB & odb);
+_reflect(Character const & nchr, int const cid, SQLite::Command & cmd);
 
-} // namespace chrasis
+} // namespace ::chrasis
 
 #endif

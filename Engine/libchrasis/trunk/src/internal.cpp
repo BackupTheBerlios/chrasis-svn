@@ -25,24 +25,115 @@
 #include <chrasis.h>
 #include <chrasis/internal.h>
 
+#include <limits>
+
 namespace chrasis
 {
 
-static inline
-std::string
-_idiotic_hash(Character const & chr)
+void
+ItemPossibility::add_item(
+	ItemPossibility::possibility_t p,
+	int i,
+	std::string n)
 {
-	std::string ret("*");
-	for (Stroke::const_iterator si = chr.strokes_begin();
-	     si != chr.strokes_end();
-	     ++si)
-	{
-		ret += toString(si->point_count());
-		ret += "*";
-	}
-	return ret;
+	items_.push_back( Item(p, i, n) );
 }
 
+void
+ItemPossibility::sort(ItemPossibility::SORTING_POLICY const sp)
+{
+	switch (sp)
+	{
+	case SORTING_POSSIBILITY:
+		std::sort(items_.begin(), items_.end(), PossibilityComparer());
+		break;
+	case SORTING_ID:
+		std::sort(items_.begin(), items_.end(), IdComparer());
+		break;
+	case SORTING_NAME:
+		std::sort(items_.begin(), items_.end(), NameComparer());
+		break;
+	}
+}
+
+ItemPossibility::iterator
+ItemPossibility::begin()
+{
+	return items_.begin();
+}
+
+ItemPossibility::iterator
+ItemPossibility::end()
+{
+	return items_.end();
+}
+
+ItemPossibility::const_iterator
+ItemPossibility::begin() const
+{
+	return items_.begin();
+}
+
+ItemPossibility::const_iterator
+ItemPossibility::end() const
+{
+	return items_.end();
+}
+
+size_t
+ItemPossibility::empty() const
+{
+	return items_.empty();
+}
+
+size_t
+ItemPossibility::size() const
+{
+	return items_.size();
+}
+
+ItemPossibility &
+ItemPossibility::operator += (ItemPossibility const & rhs)
+{
+	std::copy(rhs.items_.begin(), rhs.items_.end(),
+		std::back_inserter< container >(items_));
+	return *this;
+}
+
+ItemPossibility::Item::Item(
+	ItemPossibility::possibility_t p,
+	int i,
+	std::string n)
+:
+	possibility(p), id(i), name(n)
+{
+}
+
+bool
+ItemPossibility::PossibilityComparer::operator() (
+	ItemPossibility::Item const & lhs,
+	ItemPossibility::Item const & rhs)
+{
+	return lhs.possibility < rhs.possibility;
+}
+
+bool
+ItemPossibility::IdComparer::operator() (
+	ItemPossibility::Item const & lhs,
+	ItemPossibility::Item const & rhs)
+{
+	return lhs.id < rhs.id;
+}
+
+bool
+ItemPossibility::NameComparer::operator() (
+	ItemPossibility::Item const & lhs,
+	ItemPossibility::Item const & rhs)
+{
+	return lhs.name < rhs.name;
+}
+
+CHRASIS_INTERNAL
 Stroke
 _shift(Stroke const & nstr)
 {
@@ -53,7 +144,7 @@ _shift(Stroke const & nstr)
 		return ret;
 	}
 
-	/* adjust the stroke to range [0...RESOLUTION) */
+	// adjust the stroke to range [0...RESOLUTION)
 	Point lt( *(nstr.points_begin()) ), rb( *(nstr.points_begin()) );
 	for (Point::const_iterator pi = nstr.points_begin();
 	     pi != nstr.points_end();
@@ -86,90 +177,79 @@ _shift(Stroke const & nstr)
 	return ret;
 }
 
+CHRASIS_INTERNAL
 id_container_t
-_get_ids_by_prototype(Stroke const & pstr, Database::OPENDB & odb)
+_get_ids_by_prototype(Stroke const & pstr, SQLite::Command & cmd)
 {
 	std::string sql(
 		"SELECT ss_id FROM stroke_shapes WHERE "
 			"pt_cnt IN (" + toString(pstr.point_count()) + ");"
 	);
-
-	sqlite3_stmt *res = NULL;
-
-	sqlite3_prepare(odb.db, sql.c_str(), sql.size(), &res, NULL);
+	cmd.execute(sql);
 
 	id_container_t ret;
-
-	while (sqlite3_step(res) == SQLITE_ROW)
-		ret.push_back( sqlite3_column_int(res, 0) );
-
-	sqlite3_finalize(res);
+	while (cmd.next())
+		ret.push_back( cmd.column_int(0) );
+	cmd.free_result();
 
 	return ret;
 }
 
+CHRASIS_INTERNAL
 Stroke
-_get_stroke_by_id(int id, Database::OPENDB & odb)
+_get_stroke_by_id(int id, SQLite::Command & cmd)
 {
 	std::string sql(
 		"SELECT x, y FROM points WHERE "
 			"ss_id IN (" + toString(id) + ") "
 		"ORDER BY seq ASC;"
 	);
-
-	sqlite3_stmt *res = NULL;
-
-	sqlite3_prepare(odb.db, sql.c_str(), sql.size(), &res, NULL);
+	cmd.execute(sql);
 
 	Stroke ret;
-
-	while (sqlite3_step(res) == SQLITE_ROW)
-		ret.add_point(
-			sqlite3_column_int(res, 0),
-			sqlite3_column_int(res, 1)
-		);
-
-	sqlite3_finalize(res);
+	while (cmd.next())
+		ret.add_point(cmd.column_int(0), cmd.column_int(1));
+	cmd.free_result();
 
 	return ret;
 }
 
-stroke_possibility_t
-_recognize(Stroke const & nstr, Database::OPENDB & odb)
+CHRASIS_INTERNAL
+ItemPossibility
+_recognize(Stroke const & nstr, SQLite::Command & cmd)
 {
 	Stroke snstr( _shift(nstr) );
 
-	id_container_t likely_ids = _get_ids_by_prototype(snstr, odb);
+	id_container_t likely_ids = _get_ids_by_prototype(snstr, cmd);
 
-	stroke_possibility_t ret;
+	ItemPossibility ret;
 
 	for (id_container_t::const_iterator it = likely_ids.begin();
 	     it != likely_ids.end();
 	     ++it)
 	{
-		Stroke likely = _get_stroke_by_id(*it, odb);
-		possibility_t s_possib = 0.0;
+		Stroke likely = _get_stroke_by_id(*it, cmd);
+		ItemPossibility::possibility_t s_possib = 0.0;
 		for (Point::iterator pi = snstr.points_begin(),
 		                     lpi = likely.points_begin();
 		     pi != snstr.points_end() &&
 		     lpi != likely.points_end();
 		     ++pi,
 		     ++lpi)
-			s_possib += std::sqrt(static_cast<possibility_t>(
+			s_possib += std::sqrt(static_cast<ItemPossibility::possibility_t>(
 				(pi->x() - lpi->x()) * (pi->x() - lpi->x()) +
 				(pi->y() - lpi->y()) * (pi->y() - lpi->y())
 			));
-		ret.insert(std::make_pair(*it, s_possib / snstr.point_count()));
+		ret.add_item(s_possib / snstr.point_count(), *it);
 	}
 
+	ret.sort(ItemPossibility::SORTING_POSSIBILITY);
 	return ret;
 }
 
+CHRASIS_INTERNAL
 id_container_t
-_get_ids_by_prototype(
-	Character const & pchr,
-	std::vector< stroke_possibility_t > sptv,
-	Database::OPENDB & odb)
+_get_ids_by_prototype(Character const & pchr, SQLite::Command & cmd)
 {
 	std::string sql(
 		"SELECT c_id FROM characters WHERE "
@@ -184,257 +264,245 @@ _get_ids_by_prototype(
 		int n = si - pchr.strokes_begin();
 		sql +=	"AND c_id IN ( "
 				"SELECT c_id FROM strokes WHERE "
-					"seq IN (" + toString(n) + ") AND "
-					"ss_id IN (";
-		for (stroke_possibility_t::iterator i = sptv[n].begin();
-		     i != sptv[n].end();
-		     ++i)
-		{
-			sql +=			toString(i->first);
-			sql +=			",";
-		}
-		sql = sql.substr(0, sql.size() - 1);
-		sql +=			")"
+					"seq IN (" + toString(n) + ") "
+					"AND ss_id IN ("
+						"SELECT ss_id FROM stroke_shapes WHERE "
+							"pt_cnt IN (" + toString(si->point_count()) + ")"
+					")"
 			") ";
 	}
 	sql +=	";";
-
-	sqlite3_stmt *res = NULL;
-
-	sqlite3_prepare(odb.db, sql.c_str(), sql.size(), &res, NULL);
+	cmd.execute(sql);
 
 	id_container_t ret;
-
-	while (sqlite3_step(res) == SQLITE_ROW)
-		ret.push_back( sqlite3_column_int(res, 0) );
-
-	sqlite3_finalize(res);
+	while (cmd.next())
+		ret.push_back( cmd.column_int(0) );
+	cmd.free_result();
 
 	return ret;
 }
 
-CharacterImpl
-_get_character_by_id(int const & id, Database::OPENDB & odb)
+CHRASIS_INTERNAL
+Character
+_get_character_by_id(int const & id, SQLite::Command & cmd)
 {
 	std::string sql(
 		"SELECT c_name FROM characters WHERE "
 			"c_id IN (" + toString(id) + ")"
 		"LIMIT 1;"
 	);
-
-	sqlite3_stmt *res = NULL;
-
-	sqlite3_prepare(odb.db, sql.c_str(), sql.size(), &res, NULL);
-
-	sqlite3_step(res);
-	const char *tmp_n = (const char *)sqlite3_column_text(res, 0);
-	CharacterImpl ret(tmp_n);
-
-	sqlite3_finalize(res);
+	cmd.execute(sql);
+	Character ret;
+	if (cmd.next())
+		ret.set_name( cmd.column_text(0) );
+	cmd.free_result();
 
 	sql =	"SELECT ss_id, lt_x, lt_y, rb_x, rb_y FROM strokes WHERE "
 			"c_id IN (" + toString(id) + ")"
 		"ORDER BY seq ASC;";
-	sqlite3_prepare(odb.db, sql.c_str(), sql.size(), &res, NULL);
-
-	while (sqlite3_step(res) == SQLITE_ROW)
-		ret.add_stroke(
-			sqlite3_column_int(res, 0),
-			sqlite3_column_int(res, 1),
-			sqlite3_column_int(res, 2),
-			sqlite3_column_int(res, 3),
-			sqlite3_column_int(res, 4)
+	cmd.execute(sql);
+	
+	std::vector< std::pair< Point, Point > > lt_rb_v;
+	id_container_t ssid_v;
+	while (cmd.next())
+	{
+		ssid_v.push_back(cmd.column_int(0));
+		lt_rb_v.push_back(
+			std::make_pair(
+				Point(cmd.column_int(1), cmd.column_int(2)),
+				Point(cmd.column_int(3), cmd.column_int(4))
+			)
 		);
+	}
 
-	sqlite3_finalize(res);
+	id_container_t::const_iterator it;
+	std::vector< std::pair< Point, Point > >::const_iterator it2;
+	for (it = ssid_v.begin(),
+	     it2 = lt_rb_v.begin();
+	     it != ssid_v.end() &&
+	     it2 != lt_rb_v.end();
+	     ++it,
+	     ++it2)
+	{
+		Stroke tmp_str( _get_stroke_by_id(*it, cmd) );
+		
+		// shift and scale the stroke back to its original position
+		Point::value_t lt_x( tmp_str.points_begin()->x() ),
+		               lt_y( tmp_str.points_begin()->y() );
+		for (Point::const_iterator pi = tmp_str.points_begin();
+		     pi != tmp_str.points_end();
+		     ++pi)
+		{
+			if (lt_x > pi->x()) lt_x = pi->x();
+			if (lt_y > pi->y()) lt_y = pi->y();
+		}
+		Point::value_t distance = std::max(
+			abs(it2->first.x() - it2->second.x()),
+			abs(it2->first.y() - it2->second.y())
+		);
+		if (distance == 0)
+			distance = std::numeric_limits< Point::value_t >::max();
+		for (Point::iterator pi = tmp_str.points_begin();
+		     pi != tmp_str.points_end();
+		     ++pi)
+		{
+			pi->x() = (pi->x() - lt_x) * RESOLUTION / distance + it2->first.x();
+			pi->y() = (pi->y() - lt_y) * RESOLUTION / distance + it2->first.y();
+		}
+		
+		ret.add_stroke( tmp_str );
+	}
 
 	return ret;
 }
 
-character_possibility_t
-_recognize(Character const & nchr, Database::OPENDB & odb)
+CHRASIS_INTERNAL
+ItemPossibility
+_recognize(Character const & nchr, SQLite::Command & cmd)
 {
-	std::vector< stroke_possibility_t > sptv;
-	sptv.reserve(nchr.stroke_count());
-	CharacterImpl chr_impl(nchr.get_name());
+	id_container_t likely_ids = _get_ids_by_prototype(nchr, cmd);
 
-	for (Stroke::const_iterator si = nchr.strokes_begin();
-	     si != nchr.strokes_end();
-	     ++si)
-	{
-		Point lt(*si->points_begin()), rb(*si->points_begin());
-		for (Point::const_iterator pi = si->points_begin();
-		     pi != si->points_end();
-		     ++pi)
-		{
-			if (pi->x() < lt.x()) lt.x() = pi->x();
-			if (pi->y() < lt.y()) lt.y() = pi->y();
-			if (pi->x() > rb.x()) rb.x() = pi->x();
-			if (pi->y() > rb.y()) rb.y() = pi->y();
-		}
-		chr_impl.add_stroke(0, lt, rb);
-		sptv.push_back( _recognize(*si, odb) );
-	}
-
-	id_container_t likely_ids = _get_ids_by_prototype(nchr, sptv, odb);
-
-	character_possibility_t ret;
+	ItemPossibility ret;
 
 	for (id_container_t::const_iterator it = likely_ids.begin();
 	     it != likely_ids.end();
 	     ++it)
 	{
-		CharacterImpl likely = _get_character_by_id(*it, odb);
+		Character likely = _get_character_by_id(*it, cmd);
 
-		possibility_t c_possib = 0.0;
+		ItemPossibility::possibility_t c_possib = 0.0;
 
-		CharacterImpl::StrokeImpl::iterator sii, lsii;
-		std::vector< stroke_possibility_t >::iterator sptvi;
-		for (sii = chr_impl.strokes_begin(),
-		     lsii = likely.strokes_begin(),
-		     sptvi = sptv.begin();
-		     sii != chr_impl.strokes_end(),
-		     lsii != likely.strokes_end(),
-		     sptvi != sptv.end();
-		     ++sii,
-		     ++lsii,
-		     ++sptvi)
+		for (Stroke::const_iterator
+			si = nchr.strokes_begin(),
+			lsi = likely.strokes_begin();
+		     si != nchr.strokes_end() &&
+		     lsi != likely.strokes_begin();
+		     ++si,
+		     ++lsi)
 		{
-			Point::value_t
-				slt_x = sii->get_lefttop().x(), lslt_x = lsii->get_lefttop().x(),
-				slt_y = sii->get_lefttop().y(), lslt_y = lsii->get_lefttop().y(),
-				srb_x = sii->get_rightbottom().x(), lsrb_x = lsii->get_rightbottom().x(),
-				srb_y = sii->get_rightbottom().y(), lsrb_y = lsii->get_rightbottom().y();
-			possibility_t possib =
-				(
-					std::sqrt(
-						(slt_x - lslt_x) * (slt_x - lslt_x) +
-						(slt_y - lslt_y) * (slt_y - lslt_y) ) +
-					std::sqrt(
-						(srb_x - lsrb_x) * (srb_x - lsrb_x) +
-						(srb_y - lsrb_y) * (srb_y - lsrb_y) )
-				) / 2.0;
-			possib *= (*sptvi)[lsii->get_stroke_shape_id()];
+			ItemPossibility::possibility_t s_possib = 0.0;
+			for (Point::const_iterator
+				pi = si->points_begin(),
+				lpi = lsi->points_begin();
+			     pi != si->points_end() &&
+			     lpi != lsi->points_end();
+			     ++pi,
+			     ++lpi)
+			{
+				s_possib += std::sqrt(
+					(pi->x() - lpi->x()) * (pi->x() - lpi->x()) +
+					(pi->y() - lpi->y()) * (pi->y() - lpi->y())
+				);
+			}
+			c_possib += s_possib / si->point_count();
 		}
-		ret.insert(std::make_pair(
-			c_possib / likely.stroke_count(),
-			std::make_pair(*it, likely.get_name())
-		));
+		
+		ret.add_item(
+			c_possib / nchr.stroke_count(),
+			*it,
+			likely.get_name()
+		);
 	}
 
+	ret.sort(ItemPossibility::SORTING_POSSIBILITY);
 	return ret;
 }
 
+CHRASIS_INTERNAL
 int
-_learn(Stroke const & nstr, Database::OPENDB & odb)
+_learn(Stroke const & nstr, SQLite::Command & cmd)
 {
-	stroke_possibility_t likely = _recognize(nstr, odb);
+	ItemPossibility likely = _recognize(nstr, cmd);
 
-	if (likely.empty())
-		return _remember(nstr, odb);
-
-	int ss_id = likely.begin()->first;
-	possibility_t possib = likely.begin()->second;
-	for (stroke_possibility_t::const_iterator li = likely.begin();
-	     li != likely.end();
-	     ++li)
-	{
-		if (li->second < possib)
-		{
-			possib = li->second;
-			ss_id = li->first;
-		}
-	}
-
-	if (possib > RESOLUTION * LEARNING_THRESHOLD)
-		return _remember(nstr, odb);
-	return _reflect(nstr, ss_id, odb);
+	if (likely.empty() ||
+	    likely.begin()->possibility > RESOLUTION * LEARNING_THRESHOLD)
+		return _remember(nstr, cmd);
+	return _reflect(nstr, likely.begin()->id, cmd);
 }
 
+CHRASIS_INTERNAL
 int
-_remember(Stroke const & nstr, Database::OPENDB & odb)
+_remember(Stroke const & nstr, SQLite::Command & cmd)
 {
+	Stroke const snstr( _shift(nstr) );
+
 	std::string sql(
-		"INSERT INTO stroke_shapes(pt_cnt) VALUES (" +
-			toString(nstr.point_count()) +
-		");"
+		"INSERT INTO stroke_shapes (pt_cnt) "
+		"VALUES (" + toString(snstr.point_count()) + ");"
 	);
-	sqlite3_exec(odb.db, sql.c_str(), NULL, NULL, NULL);
+	cmd.execute_nonquery(sql);
+	
+	int ssid = cmd.last_rowid();
 
-	int sshape_id = sqlite3_last_insert_rowid(odb.db);
-
-	sql = "";
-	Stroke snstr( _shift(nstr) );
-	for (Point::iterator pi = snstr.points_begin();
+	for (Point::const_iterator pi = snstr.points_begin();
 	     pi != snstr.points_end();
 	     ++pi)
 	{
-		sql += 	"INSERT INTO points(seq,ss_id,x,y) VALUES (" +
-				toString(pi - snstr.points_begin()) + "," +
-				toString(sshape_id) + "," +
-				toString(pi->x()) + "," +
+		sql =	"INSERT INTO points (ss_id, seq, x, y) "
+			"VALUES (" +
+				toString(ssid) + ", " +
+				toString(pi - snstr.points_begin()) + ", " +
+				toString(pi->x()) + ", " +
 				toString(pi->y()) +
-			");";
+			")";
+		cmd.execute_nonquery(sql);
 	}
-	sqlite3_exec(odb.db, sql.c_str(), NULL, NULL, NULL);
-
-	return sshape_id;
+	
+	return ssid;
 }
 
+CHRASIS_INTERNAL
 int
-_reflect(Stroke const & nstr, int id, Database::OPENDB & odb)
+_reflect(Stroke const & nstr, int ssid, SQLite::Command & cmd)
 {
+	// update and get sample count
 	std::string sql(
 		"UPDATE stroke_shapes SET "
 			"smp_cnt = smp_cnt + 1 "
 		"WHERE "
-			"ss_id IN (" + toString(id) + ")"
+			"ss_id IN (" + toString(ssid) + ")"
 		";"
 	);
-
-	sqlite3_stmt *res = NULL;
-	
-	sqlite3_exec(odb.db, sql.c_str(), NULL, NULL, NULL);
+	cmd.execute_nonquery(sql);
 	
 	sql =	"SELECT smp_cnt FROM stroke_shapes WHERE "
-			"ss_id IN (" + toString(id) + ") "
+			"ss_id IN (" + toString(ssid) + ") "
 		"LIMIT 1;";
-	sqlite3_prepare(odb.db, sql.c_str(), sql.size(), &res, NULL);
-
+	cmd.execute(sql);
 	int smp_cnt(0);
-	if (sqlite3_step(res) == SQLITE_ROW)
-		smp_cnt = sqlite3_column_int(res, 0);
-	sqlite3_finalize(res);
+	if (cmd.next())
+		smp_cnt = cmd.column_int(0);
+	cmd.free_result();
 
-	sql = "";
+	// update each point
 	Stroke snstr( _shift(nstr) );
 	for (Point::iterator pi = snstr.points_begin();
 	     pi != snstr.points_end();
 	     ++pi)
 	{
-		sql += 	"UPDATE points SET "
+		sql = 	"UPDATE points SET "
 				"x = x + (" + toString(pi->x()) + " - x) / " + toString(smp_cnt) + ","
 				"y = y + (" + toString(pi->y()) + " - y) / " + toString(smp_cnt) + " "
 			"WHERE "
-				"ss_id = " + toString(id) + " AND "
+				"ss_id = " + toString(ssid) + " AND "
 				"seq = " + toString(pi - snstr.points_begin()) +
 			";";
+		cmd.execute_nonquery(sql);
 	}
-	sqlite3_exec(odb.db, sql.c_str(), NULL, NULL, NULL);
 
+	// adjust the range from (0, 0) to (RES, RES)
 	sql =	"SELECT MIN(x), MIN(y), MAX(x), MAX(y) FROM points WHERE "
-			"ss_id IN (" + toString(id) + ");";
-	sqlite3_prepare(odb.db, sql.c_str(), sql.size(), &res, NULL);
-
+			"ss_id IN (" + toString(ssid) + ");";
+	cmd.execute(sql);
 	int lt_x(0), lt_y(0), rb_x(0), rb_y(0);
-	if (sqlite3_step(res) == SQLITE_ROW)
+	if (cmd.next())
 	{
-		lt_x = sqlite3_column_int(res, 0);
-		lt_y = sqlite3_column_int(res, 1);
-		rb_x = sqlite3_column_int(res, 2);
-		rb_y = sqlite3_column_int(res, 3);
+		lt_x = cmd.column_int(0);
+		lt_y = cmd.column_int(1);
+		rb_x = cmd.column_int(2);
+		rb_y = cmd.column_int(3);
 	}
-	sqlite3_finalize(res);
+	cmd.free_result();
 
 	Point::value_t const distance =
 		std::max(abs(lt_x - rb_x), abs(lt_y - rb_y));
@@ -446,133 +514,126 @@ _reflect(Stroke const & nstr, int id, Database::OPENDB & odb)
 			"x = (x - " + toString(lt_x) + ") * " + toString(ratio) + ","
 			"y = (y - " + toString(lt_y) + ") * " + toString(ratio) + " "
 		"WHERE "
-			"ssid IN (" + toString(id) + ");";
-	sqlite3_exec(odb.db, sql.c_str(), NULL, NULL, NULL);
+			"ss_id IN (" + toString(ssid) + ");";
+	cmd.execute_nonquery(sql);
 
-	return id;
+	return ssid;
 }
 
+CHRASIS_INTERNAL
 int
-_learn(Character const & nchr, Database::OPENDB & odb)
+_learn(Character const & nchr, SQLite::Command & cmd)
 {
-	id_container_t shape_ids;
-	shape_ids.reserve(nchr.stroke_count());
+	if (nchr.get_name() == "")
+		return 0;
 
-	for (Stroke::const_iterator si = nchr.strokes_begin();
-	     si != nchr.strokes_end();
-	     ++si)
-		shape_ids.push_back( _learn(*si, odb) );
+	ItemPossibility likely = _recognize(nchr, cmd);
 
-	CharacterImpl chr_impl(nchr.get_name());
+	if (likely.empty() ||
+	    likely.begin()->possibility > RESOLUTION * LEARNING_THRESHOLD)
+		return _remember(nchr, cmd);
+	return _reflect(nchr, likely.begin()->id, cmd);
+}
+
+CHRASIS_INTERNAL
+int
+_remember(Character const & nchr, SQLite::Command & cmd)
+{
+	std::string sql(
+		"INSERT INTO characters(c_name,s_cnt) VALUES ("
+			"'" + nchr.get_name() + "'," +
+			toString(nchr.stroke_count()) +
+		");"
+	);
+	cmd.execute_nonquery(sql);
+	int c_id = cmd.last_rowid();
+
 	for (Stroke::const_iterator si = nchr.strokes_begin();
 	     si != nchr.strokes_end();
 	     ++si)
 	{
-		Point lt(*si->points_begin()), rb(*si->points_begin());
+		// find boundary
+		int	lt_x( si->points_begin()->x() ),
+			lt_y( si->points_begin()->y() ),
+			rb_x( si->points_begin()->x() ),
+			rb_y( si->points_begin()->y() );
 		for (Point::const_iterator pi = si->points_begin();
 		     pi != si->points_end();
 		     ++pi)
 		{
-			if (pi->x() < lt.x()) lt.x() = pi->x();
-			if (pi->y() < lt.y()) lt.y() = pi->y();
-			if (pi->x() > rb.x()) rb.x() = pi->x();
-			if (pi->y() > rb.y()) rb.y() = pi->y();
+			if (lt_x > pi->x()) lt_x = pi->x();
+			if (lt_y > pi->y()) lt_y = pi->y();
+			if (rb_x < pi->x()) rb_x = pi->x();
+			if (rb_y < pi->y()) rb_y = pi->y();
 		}
-		chr_impl.add_stroke(0, lt, rb);
-	}
 
-	if (nchr.get_name() == "")
-		return 0;
-
-	character_possibility_t likely = _recognize(nchr, odb);
-
-	if (likely.empty() ||
-	    likely.begin()->first > RESOLUTION * LEARNING_THRESHOLD)
-		return _remember(chr_impl, shape_ids, odb);
-	return _reflect(chr_impl, likely.begin()->second.first, odb);
-}
-
-int
-_remember(CharacterImpl const & chr_impl, id_container_t const & shape_ids, Database::OPENDB & odb)
-{
-	std::string sql(
-		"INSERT INTO characters(c_name,s_cnt) VALUES ("
-			"'" + chr_impl.get_name() + "'," +
-			toString(chr_impl.stroke_count()) +
-		");"
-	);
-	sqlite3_exec(odb.db, sql.c_str(), NULL, NULL, NULL);
-
-	int c_id = sqlite3_last_insert_rowid(odb.db);
-
-	sql = "";
-	CharacterImpl::StrokeImpl::const_iterator si;
-	id_container_t::const_iterator ii;
-	for (si = chr_impl.strokes_begin(),
-	     ii = shape_ids.begin();
-	     si != chr_impl.strokes_end(),
-	     ii != shape_ids.end();
-	     ++si,
-	     ++ii)
-	{
-		sql += 	"INSERT INTO strokes(c_id,seq,ss_id,lt_x,lt_y,rb_x,rb_y) VALUES (" +
+		sql =	"INSERT INTO strokes(c_id,seq,ss_id,lt_x,lt_y,rb_x,rb_y) VALUES (" +
 				toString(c_id) + "," +
-				toString(si - chr_impl.strokes_begin()) + "," +
-				toString(*ii) + "," +
-				toString(si->get_lefttop().x()) + "," +
-				toString(si->get_lefttop().y()) + "," +
-				toString(si->get_rightbottom().x()) + "," +
-				toString(si->get_rightbottom().y()) +
+				toString(si - nchr.strokes_begin()) + "," +
+				toString( _learn(*si, cmd) ) + "," +
+				toString( lt_x ) + "," + toString( lt_y ) + "," +
+				toString( rb_x ) + "," + toString( rb_y ) +
 			");";
+		cmd.execute_nonquery(sql);
 	}
-	sqlite3_exec(odb.db, sql.c_str(), NULL, NULL, NULL);
 
 	return c_id;
 }
 
+CHRASIS_INTERNAL
 int
-_reflect(CharacterImpl const & chr_impl, int const id, Database::OPENDB & odb)
+_reflect(Character const & nchr, int const cid, SQLite::Command & cmd)
 {
 	std::string sql(
 		"UPDATE characters SET "
 			"smp_cnt = smp_cnt + 1 "
 		"WHERE "
-			"c_id IN (" + toString(id) + ")"
+			"c_id IN (" + toString(cid) + ")"
 		";"
 	);
-
-	sqlite3_stmt *res = NULL;
-	
-	sqlite3_exec(odb.db, sql.c_str(), NULL, NULL, NULL);
+	cmd.execute_nonquery(sql);
 
 	sql =	"SELECT smp_cnt FROM characters WHERE "
-			"c_id IN (" + toString(id) + ") "
+			"c_id IN (" + toString(cid) + ") "
 		"LIMIT 1;";
-	sqlite3_prepare(odb.db, sql.c_str(), sql.size(), &res, NULL);
-
+	cmd.execute(sql);
 	int smp_cnt(0);
-	if (sqlite3_step(res) == SQLITE_ROW)
-		smp_cnt = sqlite3_column_int(res, 0);
-	sqlite3_finalize(res);
-	
-	sql = "";
-	for (CharacterImpl::StrokeImpl::const_iterator si = chr_impl.strokes_begin();
-	     si != chr_impl.strokes_end();
+	if (cmd.next())
+		smp_cnt = cmd.column_int(0);
+	cmd.free_result();
+
+	for (Character::Stroke::const_iterator si = nchr.strokes_begin();
+	     si != nchr.strokes_end();
 	     ++si)
 	{
+		// find boundary
+		int	lt_x( si->points_begin()->x() ),
+			lt_y( si->points_begin()->y() ),
+			rb_x( si->points_begin()->x() ),
+			rb_y( si->points_begin()->y() );
+		for (Point::const_iterator pi = si->points_begin();
+		     pi != si->points_end();
+		     ++pi)
+		{
+			if (lt_x > pi->x()) lt_x = pi->x();
+			if (lt_y > pi->y()) lt_y = pi->y();
+			if (rb_x < pi->x()) rb_x = pi->x();
+			if (rb_y < pi->y()) rb_y = pi->y();
+		}
+		
 		sql = 	"UPDATE points SET "
-				"lt_x = lt_x + (" + toString(si->get_lefttop().x()) + " - lt_x) / " + toString(smp_cnt) + ","
-				"lt_y = lt_y + (" + toString(si->get_lefttop().y()) + " - lt_y) / " + toString(smp_cnt) + ","
-				"rb_x = rb_x + (" + toString(si->get_rightbottom().x()) + " - rb_x) / " + toString(smp_cnt) + ","
-				"rb_y = rb_y + (" + toString(si->get_rightbottom().y()) + " - rb_y) / " + toString(smp_cnt) + " "
+				"lt_x = lt_x + (" + toString(lt_x) + " - lt_x) / " + toString(smp_cnt) + ","
+				"lt_y = lt_y + (" + toString(lt_y) + " - lt_y) / " + toString(smp_cnt) + ","
+				"rb_x = rb_x + (" + toString(rb_x) + " - rb_x) / " + toString(smp_cnt) + ","
+				"rb_y = rb_y + (" + toString(rb_y) + " - rb_y) / " + toString(smp_cnt) + " "
 			"WHERE "
-				"c_id = " + toString(id) + " AND "
-				"seq = " + toString(si - chr_impl.strokes_begin()) +
+				"c_id = " + toString(cid) + " AND "
+				"seq = " + toString(si - nchr.strokes_begin()) +
 			";";
+		cmd.execute_nonquery(sql);
 	}
-	sqlite3_exec(odb.db, sql.c_str(), NULL, NULL, NULL);
 
-	return id;
+	return cid;
 }
 
 } // namespace chrasis

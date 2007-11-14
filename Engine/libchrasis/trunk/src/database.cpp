@@ -21,16 +21,18 @@
  *
  * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
  */
- 
+
 #include <chrasis.h>
 #include <chrasis/internal.h>
-#include <chrasis/character.h>
 
 namespace chrasis
 {
 
-Database::OPENDB::OPENDB():
-	busy(false)
+namespace SQLite
+{
+
+Database::Database(std::string const & path):
+	database_(path)
 {
 }
 
@@ -50,23 +52,30 @@ Database::~Database()
 	}
 }
 
+Database::OPENDB::OPENDB():
+	busy(false)
+{
+}
+
 Database::OPENDB*
 Database::grabdb()
 {
 	OPENDB::collection::iterator odb = opendbs_.begin();
-	while (odb->busy && odb != opendbs_.end())
+	while (odb != opendbs_.end() && odb->busy)
 		++odb;
 
 	if (odb == opendbs_.end())
 	{
-		opendbs_.push_back(OPENDB());
-		odb = opendbs_.end();
-		--odb;
+		opendbs_.push_front(OPENDB());
+		odb = opendbs_.begin();
 
-		if (sqlite3_open(database_.c_str(), &odb->db))
+		if (sqlite3_open(database_.c_str(), &odb->db) != SQLITE_OK)
 		{
-			std::cerr << "Database: grabdb(): Couldn't open database: "
-				  << sqlite3_errmsg(odb->db) << std::endl;
+			debug_print(
+				"Database::grabdb(): Couldn't open database \"" + database_ + "\".\n" +
+				"\tErrMsg: " + sqlite3_errmsg(odb->db) + "\n",
+				CHRASIS_DEBUG_SQL
+			);
 			sqlite3_close(odb->db);
 			opendbs_.erase(odb);
 			return NULL;
@@ -78,20 +87,128 @@ Database::grabdb()
 	return &(*odb);
 }
 
-bool
-Database::execute(std::string const & sql, Database::OPENDB * const xodb)
+void
+Database::freedb(OPENDB & odb)
 {
-	OPENDB *odb = (xodb == NULL)?grabdb():xodb;
-
-	if (getenv("LIBCHRASIS_DEBUG") != NULL)
-		std::cout << sql << std::endl;
-
-	int rc = sqlite3_exec(odb->db, sql.c_str(), NULL, NULL, NULL);
-
-	if (xodb == NULL)
-		freedb(odb);
-
-	return rc;
+	odb.busy = false;
 }
 
-} // namespace chrasis
+Transaction::Transaction(Database & db):
+	db_(db), odb_(db.grabdb())
+{
+	sqlite3_exec(odb_->db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+}
+
+Transaction::~Transaction()
+{
+	sqlite3_exec(odb_->db, "END TRANSACTION;", NULL, NULL, NULL);
+	db_.freedb(*odb_);
+}
+
+void
+Transaction::commit()
+{
+	sqlite3_exec(odb_->db, "COMMIT TRANSACTION;", NULL, NULL, NULL);
+}
+
+Command::Command(Database & db):
+	db_(db), odb_(db.grabdb()), last_sql_(), transaction_(false)
+{
+}
+
+Command::Command(Transaction & t):
+	db_(t.db_), odb_(t.odb_), last_sql_(), transaction_(true)
+{
+}
+
+Command::~Command()
+{
+	if (!transaction_)
+		db_.freedb(*odb_);
+}
+
+void
+Command::execute_nonquery(std::string const & sql)
+{
+	debug_print(
+		"Command::execute(): sql = [" + sql + "]\n",
+		CHRASIS_DEBUG_SQL
+	);
+
+	char *errmsg;
+	last_sql_ = sql;
+	if (sqlite3_exec(odb_->db, sql.c_str(), NULL, NULL, &errmsg) != SQLITE_OK)
+	{
+		debug_print(
+			"Command::execute_nonquery(): Couldn't execute sql \"" + sql + "\".\n" +
+			"\tErrMsg: " + errmsg + "\n",
+			CHRASIS_DEBUG_SQL
+		);
+	}
+}
+
+void
+Command::execute(std::string const & sql)
+{
+	debug_print(
+		"Command::execute(): sql = [" + sql + "]\n",
+		CHRASIS_DEBUG_SQL
+	);
+
+	last_sql_ = sql;
+	if (sqlite3_prepare_v2(odb_->db, sql.c_str(), sql.size(), &res_, NULL) != SQLITE_OK)
+	{
+		debug_print(std::string(
+			"Command::execute(): Prepare query failed!\n") +
+			"\tErrMsg: " + sqlite3_errmsg(odb_->db) + "\n",
+			CHRASIS_DEBUG_SQL
+		);
+	}
+}
+
+bool
+Command::next()
+{
+	return (sqlite3_step(res_) == SQLITE_ROW);
+}
+
+int
+Command::column_int(int ncol)
+{
+	return sqlite3_column_int(res_, ncol);
+}
+
+double
+Command::column_double(int ncol)
+{
+	return sqlite3_column_double(res_, ncol);
+}
+
+std::string
+Command::column_text(int ncol)
+{
+	const char * s = reinterpret_cast<const char *>(sqlite3_column_text(res_, ncol));
+	return s;
+}
+
+void
+Command::free_result()
+{
+	sqlite3_finalize(res_);
+}
+
+int
+Command::last_rowid()
+{
+	return sqlite3_last_insert_rowid(odb_->db);
+}
+
+std::string const &
+Command::get_last_sql() const
+{
+	return last_sql_;
+}
+
+} // namespace ::chrasis::SQLite
+
+} // namespace ::chrasis

@@ -7,8 +7,8 @@ using namespace chrasis;
 
 int main(int argc, char* argv[])
 {
-	Database db(argv[2]);
-	Database::OPENDB *odb = db.grabdb();
+	SQLite::Database db(argv[2]);
+	SQLite::Command cmd(db);
 
 	Character::container chars = read_chml(argv[1]);
 
@@ -23,17 +23,17 @@ int main(int argc, char* argv[])
 		Character chr(*ci);
 		chr.set_name("");
 
-		character_possibility_t likely = recognize(normalize(chr), *odb);
+		ItemPossibility likely = recognize(normalize(chr), cmd);
 
 		std::cout << "likely:" << std::endl;
-		for (character_possibility_t::iterator it = likely.begin();
+		for (ItemPossibility::const_iterator it = likely.begin();
 		     it != likely.end();
 		     ++it)
 		{
-			std::cout << "\t(" << it->second.first << ") " 
-				  << it->second.second << " [" 
-				  << it->first;
-			std::cout << ((it->second.second == ci->get_name()) ? "] *" : "]") ;
+			std::cout << "\t(" << it->possibility << ") " 
+				  << it->id << " [" 
+				  << it->name;
+			std::cout << ((it->name == ci->get_name()) ? "] *" : "]") ;
 			std::cout << std::endl;
 		}
 	}

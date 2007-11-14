@@ -6,7 +6,7 @@
 using namespace std;
 using namespace chrasis;
 
-void recognize_all(Character::container & chrs, Database::OPENDB & odb)
+void recognize_all(Character::container & chrs, SQLite::Command & cmd)
 {
 	int correct = 0, correct2 = 0;
 
@@ -17,12 +17,12 @@ void recognize_all(Character::container & chrs, Database::OPENDB & odb)
 		Character chr(*ci);
 		chr.set_name("");
 
-		character_possibility_t likely = recognize(normalize(chr), odb);
-		character_possibility_t::iterator candidate = likely.begin();
+		ItemPossibility likely = recognize(normalize(chr), cmd);
+		ItemPossibility::const_iterator candidate = likely.begin();
 
-		learn(normalize(*ci), odb);
+		learn(normalize(*ci), cmd);
 
-		if (candidate->second.second == ci->get_name())
+		if (candidate->name == ci->get_name())
 		{
 			cout << "<span style=\"color: black; font-weight: bold\">"
 			     << ci->get_name()
@@ -34,7 +34,7 @@ void recognize_all(Character::container & chrs, Database::OPENDB & odb)
 		if (likely.size() > 2)
 		{
 			candidate++;
-			if (candidate->second.second == ci->get_name() )
+			if (candidate->name == ci->get_name() )
 			{
 				cout << "<span style=\"color: darkslategrey; font-weight: normal;\">"
 				     << ci->get_name()
@@ -52,11 +52,11 @@ void recognize_all(Character::container & chrs, Database::OPENDB & odb)
 		{
 			cout << "title=\"Candidate: " << likely.size() << " ";
 
-			for (character_possibility_t::iterator i = likely.begin();
+			for (ItemPossibility::const_iterator i = likely.begin();
 			     i != likely.end();
 			     ++i)
 			{
-				cout << i->second.second << "[" << i->first << "] ";
+				cout << i->name << "[" << i->possibility << "] ";
 			}
 
 			cout << "\"";
@@ -80,14 +80,12 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	Database db( argv[1] );
-	Database::OPENDB *odb = db.grabdb();
-	Database::Transaction t(*odb);
+	SQLite::Database db( argv[1] );
+	SQLite::Transaction t(db);
+	SQLite::Command cmd(t);
 
 	Character::container to_be_tested = read_chml(argv[2]);
-	recognize_all(to_be_tested, *odb);
-
-	db.freedb(odb);
+	recognize_all(to_be_tested, cmd);
 
 	return 0;
 }
