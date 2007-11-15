@@ -133,6 +133,23 @@ ItemPossibility::NameComparer::operator() (
 	return lhs.name < rhs.name;
 }
 
+static inline
+std::string
+_idiotic_hash(Character const & nchr)
+{
+	std::string ret;
+	for (Stroke::const_iterator si = nchr.strokes_begin();
+	     si != nchr.strokes_end();
+	     ++si)
+	{
+		ret += "*";
+		ret += toString(si->point_count());
+	}
+	ret += "*";
+
+	return ret;
+}
+
 CHRASIS_INTERNAL
 Stroke
 _shift(Stroke const & nstr)
@@ -257,6 +274,7 @@ _get_ids_by_prototype(Character const & pchr, SQLite::Command & cmd)
 	);
 	if (pchr.get_name() != "")
 		sql +=	"AND c_name IN (\"" + pchr.get_name() + "\") ";
+#if 0
 	for (Stroke::const_iterator si = pchr.strokes_begin();
 	     si != pchr.strokes_end();
 	     ++si)
@@ -271,6 +289,9 @@ _get_ids_by_prototype(Character const & pchr, SQLite::Command & cmd)
 					")"
 			") ";
 	}
+#else
+	sql += 		"AND c_hash IN (\"" + _idiotic_hash(pchr) + "\") ";
+#endif
 	sql +=	";";
 	cmd.execute(sql);
 
@@ -340,16 +361,14 @@ _get_character_by_id(int const & id, SQLite::Command & cmd)
 			abs(it2->first.x() - it2->second.x()),
 			abs(it2->first.y() - it2->second.y())
 		);
-		if (distance == 0)
-			distance = std::numeric_limits< Point::value_t >::max();
 		for (Point::iterator pi = tmp_str.points_begin();
 		     pi != tmp_str.points_end();
 		     ++pi)
 		{
-			pi->x() = (pi->x() - lt_x) * RESOLUTION / distance + it2->first.x();
-			pi->y() = (pi->y() - lt_y) * RESOLUTION / distance + it2->first.y();
+			pi->x() = (pi->x() - lt_x) * distance / RESOLUTION + it2->first.x();
+			pi->y() = (pi->y() - lt_y) * distance / RESOLUTION + it2->first.y();
 		}
-		
+
 		ret.add_stroke( tmp_str );
 	}
 
@@ -369,6 +388,10 @@ _recognize(Character const & nchr, SQLite::Command & cmd)
 	     ++it)
 	{
 		Character likely = _get_character_by_id(*it, cmd);
+		debug_print(
+			std::string("_recognize: c_id = ") + toString(*it) + "\n\t" + toString(nchr) + "\n\t" + toString(likely),
+			CHRASIS_DEBUG_RECOGNIZE
+		);
 
 		ItemPossibility::possibility_t c_possib = 0.0;
 
@@ -376,11 +399,12 @@ _recognize(Character const & nchr, SQLite::Command & cmd)
 			si = nchr.strokes_begin(),
 			lsi = likely.strokes_begin();
 		     si != nchr.strokes_end() &&
-		     lsi != likely.strokes_begin();
+		     lsi != likely.strokes_end();
 		     ++si,
 		     ++lsi)
 		{
 			ItemPossibility::possibility_t s_possib = 0.0;
+
 			for (Point::const_iterator
 				pi = si->points_begin(),
 				lpi = lsi->points_begin();
@@ -389,14 +413,35 @@ _recognize(Character const & nchr, SQLite::Command & cmd)
 			     ++pi,
 			     ++lpi)
 			{
+				debug_print(
+					std::string("\t\t\tp_possib = ") +
+						toString(std::sqrt(
+							(pi->x() - lpi->x()) * (pi->x() - lpi->x()) +
+							(pi->y() - lpi->y()) * (pi->y() - lpi->y())
+						)) + "\n",
+					CHRASIS_DEBUG_RECOGNIZE
+				);
 				s_possib += std::sqrt(
 					(pi->x() - lpi->x()) * (pi->x() - lpi->x()) +
 					(pi->y() - lpi->y()) * (pi->y() - lpi->y())
 				);
 			}
+			debug_print(
+				std::string("\t\ts_possib/n = ") +
+					toString(s_possib) + "/" + toString(si->point_count()) + " = " +
+					toString(s_possib / si->point_count()) + "\n",
+				CHRASIS_DEBUG_RECOGNIZE
+			);
+
 			c_possib += s_possib / si->point_count();
 		}
-		
+		debug_print(
+			std::string("\tc_possib/n = ") +
+				toString(c_possib) + "/" + toString(nchr.stroke_count()) + " = " +
+				toString(c_possib / nchr.stroke_count()) + "\n",
+			CHRASIS_DEBUG_RECOGNIZE
+		);
+
 		ret.add_item(
 			c_possib / nchr.stroke_count(),
 			*it,
@@ -528,6 +573,18 @@ _learn(Character const & nchr, SQLite::Command & cmd)
 		return 0;
 
 	ItemPossibility likely = _recognize(nchr, cmd);
+	debug_print(std::string("_learn: candidate list:\n"), CHRASIS_DEBUG_LEARN);
+	for (ItemPossibility::const_iterator it = likely.begin();
+	     it != likely.end();
+	     ++it)
+	{
+		debug_print(std::string() +
+			"\t" + it->name + " "
+			"[" + toString(it->id) + "] " +
+			"(" + toString(it->possibility) + ")\n",
+			CHRASIS_DEBUG_LEARN
+		);
+	}
 
 	if (likely.empty() ||
 	    likely.begin()->possibility > RESOLUTION * LEARNING_THRESHOLD)
@@ -540,8 +597,9 @@ int
 _remember(Character const & nchr, SQLite::Command & cmd)
 {
 	std::string sql(
-		"INSERT INTO characters(c_name,s_cnt) VALUES ("
+		"INSERT INTO characters(c_name,c_hash,s_cnt) VALUES ("
 			"'" + nchr.get_name() + "'," +
+			"'" + _idiotic_hash(nchr) + "'," +
 			toString(nchr.stroke_count()) +
 		");"
 	);

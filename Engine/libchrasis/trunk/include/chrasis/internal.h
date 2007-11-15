@@ -33,7 +33,8 @@ namespace chrasis
 enum CHRASIS_DEBUG_FACILITIES
 {
 	CHRASIS_DEBUG_SQL,
-	CHRASIS_DEBUG_CORE,
+	CHRASIS_DEBUG_RECOGNIZE,
+	CHRASIS_DEBUG_LEARN,
 	CHRASIS_DEBUG_SIZE
 };
 
@@ -44,7 +45,8 @@ _initialize_facilities()
 	std::vector< std::string > ret(CHRASIS_DEBUG_SIZE);
 	
 	ret[CHRASIS_DEBUG_SQL] = "sql";
-	ret[CHRASIS_DEBUG_CORE] = "core";
+	ret[CHRASIS_DEBUG_RECOGNIZE] = "recognize";
+	ret[CHRASIS_DEBUG_LEARN] = "learn";
 	
 	return ret;
 }
@@ -110,7 +112,7 @@ _recognize(Character const & nchr, SQLite::Command & cmd);
 // used by learn()
 
 // these numbers a basically magics...
-static const double	LEARNING_THRESHOLD	= 0.15 * 0.15;		//< 15% of sampling resolution
+static const double	LEARNING_THRESHOLD	= 0.15;		//< 15% of sampling resolution
 
 CHRASIS_INTERNAL
 int

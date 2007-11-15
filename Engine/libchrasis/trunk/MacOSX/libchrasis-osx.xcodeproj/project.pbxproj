@@ -459,7 +459,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "# shell script goes here\n\nrm -f chr_data.db empty_db.db\n\n# chr_data.db\nsqlite3 chr_data.db < ../data/database_schema_osx.sql\nDYLD_LIBRARY_PATH=./build/tools ./build/tools/learn ../data/chmls/*.chml chr_data.db\n#sqlite3 chr_data.db \"VACUUM;\"\n\n# empty_db.db\nsqlite3 empty_db.db < ../data/database_schema_osx.sql\n\nexit 0";
+			shellScript = "# shell script goes here\n\nrm -f chr_data.db empty_db.db\n\n# chr_data.db\nsqlite3 chr_data.db < ../data/database_schema.sql\nDYLD_LIBRARY_PATH=./build/tools ./build/tools/learn ../data/chmls/*.chml chr_data.db\n#sqlite3 chr_data.db \"VACUUM;\"\n\n# empty_db.db\nsqlite3 empty_db.db < ../data/database_schema.sql\n\nexit 0";
 		};
 /* End PBXShellScriptBuildPhase section */
 

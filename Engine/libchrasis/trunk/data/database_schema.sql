@@ -1,6 +1,7 @@
 CREATE TABLE characters (
 	c_id	INTEGER PRIMARY KEY	AUTOINCREMENT	NOT NULL,
 	c_name	TEXT					NOT NULL,
+	c_hash	TEXT					NOT NULL,
 	s_cnt	INTEGER					NOT NULL,
 	smp_cnt	INTEGER	DEFAULT 1			NOT NULL
 );
@@ -36,10 +37,10 @@ CREATE INDEX pts_ssid_seq_xy ON points (
 	x,
 	y
 );
-CREATE INDEX chr_scnt_name_id ON characters (
+CREATE INDEX chr_scnt_hash_name ON characters (
 	s_cnt,
-	c_name,
-	c_id
+	c_hash,
+	c_name
 );
 CREATE INDEX str_id_ssid_ltrbxy ON strokes (
 	ss_id,
