@@ -247,9 +247,6 @@ operator != (	Character::Stroke::Point const & lhs,
 bool
 operator < (Character const & lhs, Character const & rhs);
 
-// some helper functions for debug
-#ifdef _DEBUG
-
 std::ostream &
 operator << (std::ostream & lhs, Character::Stroke::Point const & rhs);
 
@@ -258,8 +255,6 @@ operator << (std::ostream & lhs, Character::Stroke const & rhs);
 
 std::ostream &
 operator << (std::ostream & lhs, Character const & rhs);
-
-#endif
 
 /// alias for Stroke
 typedef Character::Stroke		Stroke;
