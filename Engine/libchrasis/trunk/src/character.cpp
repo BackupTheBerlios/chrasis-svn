@@ -25,6 +25,8 @@
 #include <chrasis.h>
 #include <chrasis/character.h>
 
+#include <iostream>
+
 namespace chrasis
 {
 
@@ -293,11 +295,6 @@ operator < (Character const & lhs, Character const & rhs)
 	return (lhs.get_name() < rhs.get_name());
 }
 
-// some helper functions for debug
-#ifdef _DEBUG
-
-#include <iostream>
-
 std::ostream &
 operator << (std::ostream & lhs, Character::Stroke::Point const & rhs)
 {
@@ -324,8 +321,6 @@ operator << (std::ostream & lhs, Character const & rhs)
 		lhs << "\t" << *si << std::endl;
 	return lhs;
 }
-
-#endif
 
 } // namespace chrasis
 
