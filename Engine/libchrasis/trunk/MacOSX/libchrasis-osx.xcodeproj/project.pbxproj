@@ -76,6 +76,7 @@
 		86369A3F0CD2A6B700F5F856 /* probability_test in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8636999A0CD29BE200F5F856 /* probability_test */; };
 		86369A400CD2A6BA00F5F856 /* recognize in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8636999F0CD29BED00F5F856 /* recognize */; };
 		86369A840CD2B05100F5F856 /* libchrasis.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */; };
+		86D138E70CF299C3004A0E09 /* character.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86D138E60CF299C3004A0E09 /* character.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,91 +84,91 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 8636999E0CD29BED00F5F856 /* recognize */;
+			remoteGlobalIDString = 8636999E0CD29BED00F5F856;
 			remoteInfo = recognize;
 		};
 		863699C20CD29D9700F5F856 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 863699990CD29BE200F5F856 /* probability_test */;
+			remoteGlobalIDString = 863699990CD29BE200F5F856;
 			remoteInfo = probability_test;
 		};
 		863699C40CD29D9900F5F856 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 863699940CD29BB300F5F856 /* learn */;
+			remoteGlobalIDString = 863699940CD29BB300F5F856;
 			remoteInfo = learn;
 		};
 		863699C60CD29D9B00F5F856 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 8636998A0CD29B8200F5F856 /* join_chml */;
+			remoteGlobalIDString = 8636998A0CD29B8200F5F856;
 			remoteInfo = join_chml;
 		};
 		863699C80CD29D9D00F5F856 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 863699730CD299A400F5F856 /* char_size */;
+			remoteGlobalIDString = 863699730CD299A400F5F856;
 			remoteInfo = char_size;
 		};
 		863699F00CD2A09700F5F856 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 863699E70CD2A01C00F5F856 /* chr_data.db */;
+			remoteGlobalIDString = 863699E70CD2A01C00F5F856;
 			remoteInfo = chr_data.db;
 		};
 		86369A300CD2A61900F5F856 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856 /* libchrasis-osx */;
+			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856;
 			remoteInfo = "libchrasis-osx";
 		};
 		86369A320CD2A61C00F5F856 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856 /* libchrasis-osx */;
+			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856;
 			remoteInfo = "libchrasis-osx";
 		};
 		86369A340CD2A61E00F5F856 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856 /* libchrasis-osx */;
+			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856;
 			remoteInfo = "libchrasis-osx";
 		};
 		86369A360CD2A62100F5F856 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856 /* libchrasis-osx */;
+			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856;
 			remoteInfo = "libchrasis-osx";
 		};
 		86369A380CD2A62500F5F856 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856 /* libchrasis-osx */;
+			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856;
 			remoteInfo = "libchrasis-osx";
 		};
 		86369A4B0CD2A79900F5F856 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 863699BF0CD29D8700F5F856 /* tools */;
+			remoteGlobalIDString = 863699BF0CD29D8700F5F856;
 			remoteInfo = tools;
 		};
 		86369A4D0CD2A7AC00F5F856 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 863699BF0CD29D8700F5F856 /* tools */;
+			remoteGlobalIDString = 863699BF0CD29D8700F5F856;
 			remoteInfo = tools;
 		};
 /* End PBXContainerItemProxy section */
@@ -200,25 +201,26 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		863699430CD2951B00F5F856 /* chrasisio.cpp */ = {isa = PBXFileReference; fileEncoding = "-2147483646"; lastKnownFileType = sourcecode.cpp.cpp; name = chrasisio.cpp; path = ../src/chrasisio.cpp; sourceTree = SOURCE_ROOT; };
-		863699440CD2951B00F5F856 /* database.cpp */ = {isa = PBXFileReference; fileEncoding = "-2147483646"; lastKnownFileType = sourcecode.cpp.cpp; name = database.cpp; path = ../src/database.cpp; sourceTree = SOURCE_ROOT; };
-		863699450CD2951B00F5F856 /* internal.cpp */ = {isa = PBXFileReference; fileEncoding = "-2147483646"; lastKnownFileType = sourcecode.cpp.cpp; name = internal.cpp; path = ../src/internal.cpp; sourceTree = SOURCE_ROOT; };
+		863699430CD2951B00F5F856 /* chrasisio.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = chrasisio.cpp; path = ../src/chrasisio.cpp; sourceTree = SOURCE_ROOT; };
+		863699440CD2951B00F5F856 /* database.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = database.cpp; path = ../src/database.cpp; sourceTree = SOURCE_ROOT; };
+		863699450CD2951B00F5F856 /* internal.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = internal.cpp; path = ../src/internal.cpp; sourceTree = SOURCE_ROOT; };
 		863699490CD2953800F5F856 /* chrasis */ = {isa = PBXFileReference; lastKnownFileType = folder; name = chrasis; path = ../include/chrasis; sourceTree = SOURCE_ROOT; };
-		863699500CD2953800F5F856 /* chrasis.h */ = {isa = PBXFileReference; fileEncoding = "-2147483646"; lastKnownFileType = sourcecode.c.h; name = chrasis.h; path = ../include/chrasis.h; sourceTree = SOURCE_ROOT; };
+		863699500CD2953800F5F856 /* chrasis.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; name = chrasis.h; path = ../include/chrasis.h; sourceTree = SOURCE_ROOT; };
 		8636995F0CD295A500F5F856 /* libchrasis-osx-config.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libchrasis-osx-config.pch"; sourceTree = "<group>"; };
 		863699740CD299A400F5F856 /* char_size */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = char_size; sourceTree = BUILT_PRODUCTS_DIR; };
-		863699790CD299FD00F5F856 /* char_size.cpp */ = {isa = PBXFileReference; fileEncoding = "-2147483646"; lastKnownFileType = sourcecode.cpp.cpp; name = char_size.cpp; path = ../src/tools/char_size.cpp; sourceTree = SOURCE_ROOT; };
-		8636997A0CD299FD00F5F856 /* chmlcodec.cpp */ = {isa = PBXFileReference; fileEncoding = "-2147483646"; lastKnownFileType = sourcecode.cpp.cpp; name = chmlcodec.cpp; path = ../src/tools/chmlcodec.cpp; sourceTree = SOURCE_ROOT; };
+		863699790CD299FD00F5F856 /* char_size.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = char_size.cpp; path = ../src/tools/char_size.cpp; sourceTree = SOURCE_ROOT; };
+		8636997A0CD299FD00F5F856 /* chmlcodec.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = chmlcodec.cpp; path = ../src/tools/chmlcodec.cpp; sourceTree = SOURCE_ROOT; };
 		8636998B0CD29B8200F5F856 /* join_chml */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = join_chml; sourceTree = BUILT_PRODUCTS_DIR; };
 		863699950CD29BB300F5F856 /* learn */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = learn; sourceTree = BUILT_PRODUCTS_DIR; };
 		8636999A0CD29BE200F5F856 /* probability_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = probability_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		8636999F0CD29BED00F5F856 /* recognize */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = recognize; sourceTree = BUILT_PRODUCTS_DIR; };
-		863699AC0CD29CCF00F5F856 /* compact_db.cpp */ = {isa = PBXFileReference; fileEncoding = "-2147483646"; lastKnownFileType = sourcecode.cpp.cpp; name = compact_db.cpp; path = ../src/tools/compact_db.cpp; sourceTree = SOURCE_ROOT; };
-		863699AD0CD29CCF00F5F856 /* join_chml.cpp */ = {isa = PBXFileReference; fileEncoding = "-2147483646"; lastKnownFileType = sourcecode.cpp.cpp; name = join_chml.cpp; path = ../src/tools/join_chml.cpp; sourceTree = SOURCE_ROOT; };
-		863699AE0CD29CCF00F5F856 /* learn.cpp */ = {isa = PBXFileReference; fileEncoding = "-2147483646"; lastKnownFileType = sourcecode.cpp.cpp; name = learn.cpp; path = ../src/tools/learn.cpp; sourceTree = SOURCE_ROOT; };
-		863699AF0CD29CCF00F5F856 /* probability_test.cpp */ = {isa = PBXFileReference; fileEncoding = "-2147483646"; lastKnownFileType = sourcecode.cpp.cpp; name = probability_test.cpp; path = ../src/tools/probability_test.cpp; sourceTree = SOURCE_ROOT; };
-		863699B00CD29CCF00F5F856 /* recognize.cpp */ = {isa = PBXFileReference; fileEncoding = "-2147483646"; lastKnownFileType = sourcecode.cpp.cpp; name = recognize.cpp; path = ../src/tools/recognize.cpp; sourceTree = SOURCE_ROOT; };
+		863699AC0CD29CCF00F5F856 /* compact_db.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = compact_db.cpp; path = ../src/tools/compact_db.cpp; sourceTree = SOURCE_ROOT; };
+		863699AD0CD29CCF00F5F856 /* join_chml.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = join_chml.cpp; path = ../src/tools/join_chml.cpp; sourceTree = SOURCE_ROOT; };
+		863699AE0CD29CCF00F5F856 /* learn.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = learn.cpp; path = ../src/tools/learn.cpp; sourceTree = SOURCE_ROOT; };
+		863699AF0CD29CCF00F5F856 /* probability_test.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = probability_test.cpp; path = ../src/tools/probability_test.cpp; sourceTree = SOURCE_ROOT; };
+		863699B00CD29CCF00F5F856 /* recognize.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = recognize.cpp; path = ../src/tools/recognize.cpp; sourceTree = SOURCE_ROOT; };
 		86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libchrasis.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		86D138E60CF299C3004A0E09 /* character.cpp */ = {isa = PBXFileReference; fileEncoding = "-2147483646"; lastKnownFileType = sourcecode.cpp.cpp; name = character.cpp; path = ../src/character.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -275,6 +277,7 @@
 		8636992F0CD2946C00F5F856 = {
 			isa = PBXGroup;
 			children = (
+				86D138E60CF299C3004A0E09 /* character.cpp */,
 				863699AC0CD29CCF00F5F856 /* compact_db.cpp */,
 				863699AD0CD29CCF00F5F856 /* join_chml.cpp */,
 				863699AE0CD29CCF00F5F856 /* learn.cpp */,
@@ -516,6 +519,7 @@
 				86369A250CD2A5CF00F5F856 /* chrasisio.cpp in Sources */,
 				86369A260CD2A5CF00F5F856 /* database.cpp in Sources */,
 				86369A270CD2A5CF00F5F856 /* internal.cpp in Sources */,
+				86D138E70CF299C3004A0E09 /* character.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

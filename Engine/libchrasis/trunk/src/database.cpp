@@ -156,7 +156,7 @@ Command::execute(std::string const & sql)
 	);
 
 	last_sql_ = sql;
-	if (sqlite3_prepare_v2(odb_->db, sql.c_str(), sql.size(), &res_, NULL) != SQLITE_OK)
+	if (sqlite3_prepare(odb_->db, sql.c_str(), sql.size(), &res_, NULL) != SQLITE_OK)
 	{
 		debug_print(std::string(
 			"Command::execute(): Prepare query failed!\n") +
