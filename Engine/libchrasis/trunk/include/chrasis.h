@@ -33,9 +33,10 @@
 #ifndef _CHRASIS_H
 #define _CHRASIS_H
 
-#ifdef _WINDOWS
-# include "win32-config.h"
-#endif
+#include <chrasis/platform.h>
+#include <chrasis/character.h>
+#include <chrasis/global.h>
+#include <chrasis/database.h>
 
 #ifndef CHRASIS_API
 # define CHRASIS_API
@@ -45,26 +46,10 @@
 # define CHRASIS_INTERNAL __attribute__ ((visibility ("hidden")))
 #endif
 
-#include <complex>
-#include <cmath>
-#include <list>
-#include <map>
-#include <string>
-#include <vector>
-#include <iterator>
-#include <iostream>
-#include <sstream>
-#include <fstream>
-
-#include <chrasis/character.h>
-#include <chrasis/global.h>
-#include <chrasis/platform.h>
-#include <chrasis/database.h>
-
 namespace chrasis
 {
 
-class ItemPossibilityList
+class CHRASIS_API ItemPossibilityList
 {
 private:
 	struct Item;

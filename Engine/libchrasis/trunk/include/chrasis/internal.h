@@ -68,18 +68,6 @@ debug_print(std::string const & dbgstr, CHRASIS_DEBUG_FACILITIES const & fac)
 #endif
 }
 
-// database related
-
-#ifndef DEFAULT_DB_FILE
-# define DEFAULT_DB_FILE	"chr_data.db"
-#endif
-#ifndef DEFAULT_EMPTYDB_FILE
-# define DEFAULT_EMPTYDB_FILE	"empty_db.db"
-#endif
-#ifndef DEFAULT_SCHEMA_FILE
-# define DEFAULT_SCHEMA_FILE	"db_schema.sql"
-#endif
-
 CHRASIS_INTERNAL
 Stroke
 _shift(Stroke const & nstr);

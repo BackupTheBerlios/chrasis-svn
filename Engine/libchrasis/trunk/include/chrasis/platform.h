@@ -30,8 +30,31 @@
 #warning "try #include <chrasis.h> instead."
 #endif
 
+#include <string>
+
 namespace chrasis
 {
+
+#ifdef WIN32
+  // CHRASIS_API defined depends on export status
+# ifdef LIBCHRASISWIN32_EXPORTS
+#  define CHRASIS_API __declspec(dllexport)
+# else
+#  define CHRASIS_API __declspec(dllimport)
+# endif
+
+  // there's no "__attribute__ ((visibility("hidden")))" on Win32
+# define CHRASIS_INTERNAL
+
+  // for M_PI and such
+# define _USE_MATH_DEFINES
+
+#endif // ifdef WIN32
+
+// specify the db files
+#define DEFAULT_DB_FILE		"chr_data.db"
+#define DEFAULT_EMPTYDB_FILE	"empty_db.db"
+#define DEFAULT_SCHEMA_FILE	"database_schema.sql"
 
 namespace platform
 {

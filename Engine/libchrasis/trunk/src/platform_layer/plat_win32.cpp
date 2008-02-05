@@ -22,7 +22,7 @@
  * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
  */
 
-#ifdef _WINDOWS
+#ifdef WIN32
 
 #include <chrasis.h>
 
@@ -30,6 +30,8 @@
 #include <io.h>
 #include <direct.h>
 #include <sys/stat.h>
+
+#include <fstream>
 
 namespace chrasis
 {
@@ -151,4 +153,4 @@ initialize_userdir()
 
 } // namespace chrasis
 
-#endif // ifdef _WINDOWS
+#endif // ifdef WIN32

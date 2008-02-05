@@ -31,6 +31,7 @@
 #endif
 
 #include <sqlite3.h>
+#include <list>
 
 namespace chrasis
 {
@@ -42,7 +43,7 @@ class Database;
 class Transaction;
 class Command;
 
-class Database
+class CHRASIS_API Database
 {
 public:	
 	friend class Transaction;
@@ -71,7 +72,7 @@ private:
 	OPENDB::collection opendbs_;
 };
 
-class Transaction {
+class CHRASIS_API Transaction {
 public:
 	friend class Command;
 
@@ -85,7 +86,7 @@ private:
 	Database::OPENDB *odb_;
 };
 
-class Command
+class CHRASIS_API Command
 {
 public:
 	Command(Database & db);

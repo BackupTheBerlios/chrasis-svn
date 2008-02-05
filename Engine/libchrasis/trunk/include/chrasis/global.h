@@ -30,6 +30,9 @@
 #warning "try #include <chrasis.h> instead."
 #endif
 
+#include <iostream>
+#include <sstream>
+
 namespace chrasis
 {
 

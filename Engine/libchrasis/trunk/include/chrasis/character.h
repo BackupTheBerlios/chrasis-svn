@@ -32,6 +32,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <vector>
 
 namespace chrasis
 {
@@ -40,7 +41,7 @@ namespace chrasis
  * A Character is the basic unit of recognition.
  */
 
-class Character
+class CHRASIS_API Character
 {
 public:
 	class Stroke
