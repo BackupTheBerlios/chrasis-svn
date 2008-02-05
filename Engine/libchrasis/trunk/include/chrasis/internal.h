@@ -70,9 +70,15 @@ debug_print(std::string const & dbgstr, CHRASIS_DEBUG_FACILITIES const & fac)
 
 // database related
 
-#define DEFAULT_DB_FILE		"chr_data.db"
-#define DEFAULT_EMPTYDB_FILE	"empty_db.db"
-#define DEFAULT_SCHEMA_FILE	"db_schema.sql"
+#ifndef DEFAULT_DB_FILE
+# define DEFAULT_DB_FILE	"chr_data.db"
+#endif
+#ifndef DEFAULT_EMPTYDB_FILE
+# define DEFAULT_EMPTYDB_FILE	"empty_db.db"
+#endif
+#ifndef DEFAULT_SCHEMA_FILE
+# define DEFAULT_SCHEMA_FILE	"db_schema.sql"
+#endif
 
 CHRASIS_INTERNAL
 Stroke
@@ -94,7 +100,7 @@ Stroke
 _get_stroke_by_id(int id, SQLite::Command & cmd);
 
 CHRASIS_INTERNAL
-ItemPossibility
+ItemPossibilityList
 _recognize(Stroke const & nstr, SQLite::Command & cmd);
 
 CHRASIS_INTERNAL
@@ -106,7 +112,7 @@ Character
 _get_character_by_id(int const & id, SQLite::Command & cmd);
 
 CHRASIS_INTERNAL
-ItemPossibility
+ItemPossibilityList
 _recognize(Character const & nchr, SQLite::Command & cmd);
 
 // used by learn()

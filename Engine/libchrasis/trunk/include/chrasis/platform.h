@@ -22,8 +22,8 @@
  * $Id$
  */
 
-#ifndef _SETTINGS_H
-#define _SETTINGS_H
+#ifndef _PLATFORM_H
+#define _PLATFORM_H
 
 #ifndef _CHRASIS_H
 #warning "shouldn't be including this file directly!"
@@ -33,7 +33,7 @@
 namespace chrasis
 {
 
-namespace settings
+namespace platform
 {
 
 /**
@@ -76,7 +76,7 @@ CHRASIS_API
 bool
 initialize_userdir();
 
-} // namespace settings
+} // namespace platform
 
 } // namespace chrasis
 

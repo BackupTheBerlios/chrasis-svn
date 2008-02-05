@@ -33,6 +33,10 @@
 #ifndef _CHRASIS_H
 #define _CHRASIS_H
 
+#ifdef _WINDOWS
+# include "win32-config.h"
+#endif
+
 #ifndef CHRASIS_API
 # define CHRASIS_API
 #endif
@@ -52,18 +56,15 @@
 #include <sstream>
 #include <fstream>
 
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include <chrasis/character.h>
 #include <chrasis/global.h>
-#include <chrasis/settings.h>
+#include <chrasis/platform.h>
 #include <chrasis/database.h>
 
 namespace chrasis
 {
 
-class ItemPossibility
+class ItemPossibilityList
 {
 private:
 	struct Item;
@@ -91,7 +92,7 @@ public:
 	size_t empty() const;
 	size_t size() const;
 
-	ItemPossibility & operator += (ItemPossibility const & rhs);
+	ItemPossibilityList & operator += (ItemPossibilityList const & rhs);
 
 private:
 	struct Item
@@ -159,7 +160,7 @@ normalize(Character const & character);
  *
  */
 CHRASIS_API
-ItemPossibility
+ItemPossibilityList
 recognize(Character const & character);
 
 /**
@@ -173,7 +174,7 @@ recognize(Character const & character);
  * @see Database::OPENDB
  */
 CHRASIS_API
-ItemPossibility
+ItemPossibilityList
 recognize(Character const & character, SQLite::Command & cmd);
 
 /**

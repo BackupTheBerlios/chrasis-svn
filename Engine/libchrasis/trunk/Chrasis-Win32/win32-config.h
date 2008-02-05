@@ -19,51 +19,23 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA
  *
- * $Id$
+ * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
  */
 
-#ifndef _GLOBAL_H
-#define _GLOBAL_H
-
-#ifndef _CHRASIS_H
-#warning "shouldn't be including this file directly!"
-#warning "try #include <chrasis.h> instead."
+// CHRASIS_API defined depends on export status
+#ifdef LIBCHRASISWIN32_EXPORTS
+# define CHRASIS_API __declspec(dllexport)
+#else
+# define CHRASIS_API __declspec(dllimport)
 #endif
 
-namespace chrasis
-{
+// there's no "__attribute__ ((visibility("hidden")))" on Win32
+#define CHRASIS_INTERNAL
 
-typedef std::vector< int >		id_container_t;
+// for M_PI and such
+#define _USE_MATH_DEFINES
 
-template <typename T>
-static inline
-std::string
-toString(T const & v)
-{
-	std::ostringstream oss;
-	oss << v;
-	return oss.str();
-}
-
-template <typename T>
-static inline
-T
-fromString(std::string const & v)
-{
-	std::istringstream iss(v);
-	T ret;
-	iss >> ret;
-	return ret;
-}
-
-template <typename T>
-static inline
-T
-abs(const T v)
-{
-	return (v < T()) ? -v : v;
-}
-
-} // namespace chrasis
-
-#endif
+// specify the db files
+#define DEFAULT_DB_FILE		"chr_data.db"
+#define DEFAULT_EMPTYDB_FILE	"empty_db.db"
+#define DEFAULT_SCHEMA_FILE	"database_schema.sql"

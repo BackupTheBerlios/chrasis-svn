@@ -26,13 +26,14 @@
 #include <chrasis/internal.h>
 
 #include <limits>
+#include <algorithm>
 
 namespace chrasis
 {
 
 void
-ItemPossibility::add_item(
-	ItemPossibility::possibility_t p,
+ItemPossibilityList::add_item(
+	ItemPossibilityList::possibility_t p,
 	int i,
 	std::string n)
 {
@@ -40,7 +41,7 @@ ItemPossibility::add_item(
 }
 
 void
-ItemPossibility::sort(ItemPossibility::SORTING_POLICY const sp)
+ItemPossibilityList::sort(ItemPossibilityList::SORTING_POLICY const sp)
 {
 	switch (sp)
 	{
@@ -56,52 +57,52 @@ ItemPossibility::sort(ItemPossibility::SORTING_POLICY const sp)
 	}
 }
 
-ItemPossibility::iterator
-ItemPossibility::begin()
+ItemPossibilityList::iterator
+ItemPossibilityList::begin()
 {
 	return items_.begin();
 }
 
-ItemPossibility::iterator
-ItemPossibility::end()
+ItemPossibilityList::iterator
+ItemPossibilityList::end()
 {
 	return items_.end();
 }
 
-ItemPossibility::const_iterator
-ItemPossibility::begin() const
+ItemPossibilityList::const_iterator
+ItemPossibilityList::begin() const
 {
 	return items_.begin();
 }
 
-ItemPossibility::const_iterator
-ItemPossibility::end() const
+ItemPossibilityList::const_iterator
+ItemPossibilityList::end() const
 {
 	return items_.end();
 }
 
 size_t
-ItemPossibility::empty() const
+ItemPossibilityList::empty() const
 {
 	return items_.empty();
 }
 
 size_t
-ItemPossibility::size() const
+ItemPossibilityList::size() const
 {
 	return items_.size();
 }
 
-ItemPossibility &
-ItemPossibility::operator += (ItemPossibility const & rhs)
+ItemPossibilityList &
+ItemPossibilityList::operator += (ItemPossibilityList const & rhs)
 {
 	std::copy(rhs.items_.begin(), rhs.items_.end(),
 		std::back_inserter< container >(items_));
 	return *this;
 }
 
-ItemPossibility::Item::Item(
-	ItemPossibility::possibility_t p,
+ItemPossibilityList::Item::Item(
+	ItemPossibilityList::possibility_t p,
 	int i,
 	std::string n)
 :
@@ -110,25 +111,25 @@ ItemPossibility::Item::Item(
 }
 
 bool
-ItemPossibility::PossibilityComparer::operator() (
-	ItemPossibility::Item const & lhs,
-	ItemPossibility::Item const & rhs)
+ItemPossibilityList::PossibilityComparer::operator() (
+	ItemPossibilityList::Item const & lhs,
+	ItemPossibilityList::Item const & rhs)
 {
 	return lhs.possibility < rhs.possibility;
 }
 
 bool
-ItemPossibility::IdComparer::operator() (
-	ItemPossibility::Item const & lhs,
-	ItemPossibility::Item const & rhs)
+ItemPossibilityList::IdComparer::operator() (
+	ItemPossibilityList::Item const & lhs,
+	ItemPossibilityList::Item const & rhs)
 {
 	return lhs.id < rhs.id;
 }
 
 bool
-ItemPossibility::NameComparer::operator() (
-	ItemPossibility::Item const & lhs,
-	ItemPossibility::Item const & rhs)
+ItemPossibilityList::NameComparer::operator() (
+	ItemPossibilityList::Item const & lhs,
+	ItemPossibilityList::Item const & rhs)
 {
 	return lhs.name < rhs.name;
 }
@@ -232,35 +233,35 @@ _get_stroke_by_id(int id, SQLite::Command & cmd)
 }
 
 CHRASIS_INTERNAL
-ItemPossibility
+ItemPossibilityList
 _recognize(Stroke const & nstr, SQLite::Command & cmd)
 {
 	Stroke snstr( _shift(nstr) );
 
 	id_container_t likely_ids = _get_ids_by_prototype(snstr, cmd);
 
-	ItemPossibility ret;
+	ItemPossibilityList ret;
 
 	for (id_container_t::const_iterator it = likely_ids.begin();
 	     it != likely_ids.end();
 	     ++it)
 	{
 		Stroke likely = _get_stroke_by_id(*it, cmd);
-		ItemPossibility::possibility_t s_possib = 0.0;
+		ItemPossibilityList::possibility_t s_possib = 0.0;
 		for (Point::iterator pi = snstr.points_begin(),
 		                     lpi = likely.points_begin();
 		     pi != snstr.points_end() &&
 		     lpi != likely.points_end();
 		     ++pi,
 		     ++lpi)
-			s_possib += std::sqrt(static_cast<ItemPossibility::possibility_t>(
+			s_possib += std::sqrt(static_cast<ItemPossibilityList::possibility_t>(
 				(pi->x() - lpi->x()) * (pi->x() - lpi->x()) +
 				(pi->y() - lpi->y()) * (pi->y() - lpi->y())
 			));
 		ret.add_item(s_possib / snstr.point_count(), *it);
 	}
 
-	ret.sort(ItemPossibility::SORTING_POSSIBILITY);
+	ret.sort(ItemPossibilityList::SORTING_POSSIBILITY);
 	return ret;
 }
 
@@ -376,12 +377,12 @@ _get_character_by_id(int const & id, SQLite::Command & cmd)
 }
 
 CHRASIS_INTERNAL
-ItemPossibility
+ItemPossibilityList
 _recognize(Character const & nchr, SQLite::Command & cmd)
 {
 	id_container_t likely_ids = _get_ids_by_prototype(nchr, cmd);
 
-	ItemPossibility ret;
+	ItemPossibilityList ret;
 
 	for (id_container_t::const_iterator it = likely_ids.begin();
 	     it != likely_ids.end();
@@ -393,7 +394,7 @@ _recognize(Character const & nchr, SQLite::Command & cmd)
 			CHRASIS_DEBUG_RECOGNIZE
 		);
 
-		ItemPossibility::possibility_t c_possib = 0.0;
+		ItemPossibilityList::possibility_t c_possib = 0.0;
 
 		for (Stroke::const_iterator
 			si = nchr.strokes_begin(),
@@ -403,7 +404,7 @@ _recognize(Character const & nchr, SQLite::Command & cmd)
 		     ++si,
 		     ++lsi)
 		{
-			ItemPossibility::possibility_t s_possib = 0.0;
+			ItemPossibilityList::possibility_t s_possib = 0.0;
 
 			for (Point::const_iterator
 				pi = si->points_begin(),
@@ -415,16 +416,16 @@ _recognize(Character const & nchr, SQLite::Command & cmd)
 			{
 				debug_print(
 					std::string("\t\t\tp_possib = ") +
-						toString(std::sqrt(
+						toString(std::sqrt(static_cast<double>(
 							(pi->x() - lpi->x()) * (pi->x() - lpi->x()) +
 							(pi->y() - lpi->y()) * (pi->y() - lpi->y())
-						)) + "\n",
+						))) + "\n",
 					CHRASIS_DEBUG_RECOGNIZE
 				);
-				s_possib += std::sqrt(
+				s_possib += std::sqrt(static_cast<double>(
 					(pi->x() - lpi->x()) * (pi->x() - lpi->x()) +
 					(pi->y() - lpi->y()) * (pi->y() - lpi->y())
-				);
+				));
 			}
 			debug_print(
 				std::string("\t\ts_possib/n = ") +
@@ -449,7 +450,7 @@ _recognize(Character const & nchr, SQLite::Command & cmd)
 		);
 	}
 
-	ret.sort(ItemPossibility::SORTING_POSSIBILITY);
+	ret.sort(ItemPossibilityList::SORTING_POSSIBILITY);
 	return ret;
 }
 
@@ -457,7 +458,7 @@ CHRASIS_INTERNAL
 int
 _learn(Stroke const & nstr, SQLite::Command & cmd)
 {
-	ItemPossibility likely = _recognize(nstr, cmd);
+	ItemPossibilityList likely = _recognize(nstr, cmd);
 
 	if (likely.empty() ||
 	    likely.begin()->possibility > RESOLUTION * LEARNING_THRESHOLD)
@@ -572,9 +573,9 @@ _learn(Character const & nchr, SQLite::Command & cmd)
 	if (nchr.get_name() == "")
 		return 0;
 
-	ItemPossibility likely = _recognize(nchr, cmd);
+	ItemPossibilityList likely = _recognize(nchr, cmd);
 	debug_print(std::string("_learn: candidate list:\n"), CHRASIS_DEBUG_LEARN);
-	for (ItemPossibility::const_iterator it = likely.begin();
+	for (ItemPossibilityList::const_iterator it = likely.begin();
 	     it != likely.end();
 	     ++it)
 	{

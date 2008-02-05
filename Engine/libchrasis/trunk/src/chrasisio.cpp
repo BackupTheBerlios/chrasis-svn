@@ -152,28 +152,28 @@ normalize(const Character & chr)
 }
 
 CHRASIS_API
-ItemPossibility
+ItemPossibilityList
 recognize(Character const & nchr)
 {
 	static SQLite::Database
-		sys_db( settings::system_database_path() ),
-		usr_db( settings::user_database_path() );
+		sys_db( platform::system_database_path() ),
+		usr_db( platform::user_database_path() );
 
 	SQLite::Command
 		sys_cmd( sys_db ),
 		usr_cmd( usr_db );
 
 	// TODO: parallel with threads?
-	ItemPossibility ret;
+	ItemPossibilityList ret;
 	ret = _recognize(nchr, sys_cmd),
 	ret += _recognize(nchr, usr_cmd);
-	ret.sort(ItemPossibility::SORTING_POSSIBILITY);
+	ret.sort(ItemPossibilityList::SORTING_POSSIBILITY);
 
 	return ret;
 }
 
 CHRASIS_API
-ItemPossibility
+ItemPossibilityList
 recognize(Character const & nchr, SQLite::Command & cmd)
 {
 	return _recognize(nchr, cmd);
@@ -183,7 +183,7 @@ CHRASIS_API
 bool
 learn(Character const & nchr)
 {
-	static SQLite::Database usr_db( settings::user_database_path() );
+	static SQLite::Database usr_db( platform::user_database_path() );
 	SQLite::Command usr_cmd( usr_db );
 
 	return _learn(nchr, usr_cmd);
@@ -195,75 +195,5 @@ learn(Character const & nchr, SQLite::Command & cmd)
 {
 	return _learn(nchr, cmd);
 }
-
-
-namespace settings
-{
-
-CHRASIS_API
-std::string
-system_database_path()
-{
-	return CHRASIS_DATADIR "/" DEFAULT_DB_FILE;
-}
-
-CHRASIS_API
-std::string
-empty_database_path()
-{
-	return CHRASIS_DATADIR "/" DEFAULT_EMPTYDB_FILE;
-}
-
-CHRASIS_API
-std::string
-user_database_path()
-{
-	std::string userdir = getenv("HOME");
-	return userdir + "/.chrasis/" DEFAULT_DB_FILE;
-}
-
-CHRASIS_API
-std::string
-database_schema_path()
-{
-	return CHRASIS_DATADIR "/" DEFAULT_SCHEMA_FILE;
-}
-
-CHRASIS_API
-bool
-initialize_userdir()
-{
-	std::string userdir = getenv("HOME");
-	userdir += "/.chrasis";
-
-	if ( mkdir( userdir.c_str(), 0755 ) != 0 )
-	{
-		struct stat st;
-		stat( userdir.c_str(), &st );
-
-		if ( !S_ISDIR(st.st_mode) )
-		{
-			std::cerr << "Failed to create \"" << userdir << "\"." << std::endl;
-			return false;
-		}
-	}
-
-	if ( access( user_database_path().c_str(), W_OK) != 0 )
-	{
-		std::ifstream fin(
-			empty_database_path().c_str(),
-			std::ios_base::binary);
-		std::ofstream fout(
-			user_database_path().c_str(),
-			std::ios_base::binary);
-		fout << fin.rdbuf();
-		fin.close();
-		fout.close();
-	}
-
-	return true;
-}
-
-} // namespace settings
 
 } // namespace chrasis

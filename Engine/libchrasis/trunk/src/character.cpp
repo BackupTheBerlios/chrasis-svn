@@ -71,7 +71,7 @@ Character::Stroke::Point::arg() const
 double
 Character::Stroke::Point::abs() const
 {
-	return std::sqrt(x_*x_ + y_*y_);
+	return std::sqrt(static_cast<double>(x_*x_ + y_*y_));
 }
 
 Character::Stroke::Point::value_t
@@ -171,10 +171,10 @@ Character::Stroke::length() const
 	     ++pi,
 	     ++pii)
 	{
-		length += std::sqrt(
+		length += std::sqrt(static_cast<double>(
 			(pi->x() - pii->x()) * (pi->x() - pii->x()) +
 			(pi->y() - pii->y()) * (pi->y() - pii->y())
-		);
+		));
 	}
 	return length;
 }

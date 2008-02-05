@@ -38,7 +38,7 @@ chrasis_headers_hidden = \
 	include/chrasis/character.h \
 	include/chrasis/database.h \
 	include/chrasis/global.h \
-	include/chrasis/settings.h
+	include/chrasis/platform.h
 chrasis_headers = \
 	include/chrasis.h
 

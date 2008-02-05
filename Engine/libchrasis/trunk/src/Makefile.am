@@ -4,6 +4,8 @@ SUBDIRS = . @TOOLS_SUBDIRS@
 DIST_SUBDIRS = . tools
 
 libchrasis_la_SOURCES = \
+	platform_layer/plat_win32.cpp \
+	platform_layer/plat_posix.cpp \
 	database.cpp \
 	chrasisio.cpp \
 	internal.cpp \
