@@ -61,6 +61,7 @@ private:
 		sqlite3 *db;
 		bool busy;
 	};
+	EXTERN template class CHRASIS_API std::list< OPENDB >;
 
 	Database(Database &);
 	Database & operator= (Database &);

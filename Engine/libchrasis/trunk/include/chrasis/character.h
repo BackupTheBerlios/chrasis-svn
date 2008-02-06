@@ -44,10 +44,10 @@ namespace chrasis
 class CHRASIS_API Character
 {
 public:
-	class Stroke
+	class CHRASIS_API Stroke
 	{
 	public:
-		class Point
+		class CHRASIS_API Point
 		{
 		public:
 			typedef int				value_t;	///< value type of point x, y
@@ -62,7 +62,7 @@ public:
 			 * @param x x coordinate
 			 * @param y y coordinate
 			 */
-			Point(value_t const x, value_t const y);
+			Point(value_t const x = 0, value_t const y = 0);
 
 			value_t & x();			///< x-coordinate
 			value_t & y();			///< y-coordinate

@@ -38,9 +38,11 @@ namespace chrasis
 #ifdef WIN32
   // CHRASIS_API defined depends on export status
 # ifdef LIBCHRASISWIN32_EXPORTS
-#  define CHRASIS_API __declspec(dllexport)
+#  define CHRASIS_API	__declspec(dllexport)
+#  define EXTERN
 # else
-#  define CHRASIS_API __declspec(dllimport)
+#  define CHRASIS_API	__declspec(dllimport)
+#  define EXTERN	extern
 # endif
 
   // there's no "__attribute__ ((visibility("hidden")))" on Win32

@@ -38,6 +38,10 @@
 #include <chrasis/global.h>
 #include <chrasis/database.h>
 
+#ifndef EXTERN
+# define EXTERN
+#endif
+
 #ifndef CHRASIS_API
 # define CHRASIS_API
 #endif
