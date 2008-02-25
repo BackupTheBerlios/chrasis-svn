@@ -23,10 +23,10 @@ int main(int argc, char* argv[])
 		Character chr(*ci);
 		chr.set_name("");
 
-		ItemPossibility likely = recognize(normalize(chr), cmd);
+		ItemPossibilityList likely = recognize(normalize(chr), cmd);
 
 		std::cout << "likely:" << std::endl;
-		for (ItemPossibility::const_iterator it = likely.begin();
+		for (ItemPossibilityList::const_iterator it = likely.begin();
 		     it != likely.end();
 		     ++it)
 		{
