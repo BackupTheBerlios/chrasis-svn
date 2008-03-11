@@ -28,7 +28,13 @@
 
 #ifdef _POSIX
 
-#include <unistd.h>
+#include "chrasis.h"
+#include "chrasis/internal.h"
+
+#include <sys/stat.h>
+#include <sys/types.h>
+
+#include <fstream>
 
 namespace chrasis
 {
@@ -86,12 +92,8 @@ initialize_userdir()
 
 	if ( access( user_database_path().c_str(), W_OK) != 0 )
 	{
-		std::ifstream fin(
-			empty_database_path().c_str(),
-			std::ios_base::binary);
-		std::ofstream fout(
-			user_database_path().c_str(),
-			std::ios_base::binary);
+		std::ifstream fin(empty_database_path().c_str(), std::ios_base::binary);
+		std::ofstream fout(user_database_path().c_str(), std::ios_base::binary);
 		fout << fin.rdbuf();
 		fin.close();
 		fout.close();

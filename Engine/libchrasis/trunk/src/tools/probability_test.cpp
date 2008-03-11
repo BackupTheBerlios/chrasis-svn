@@ -17,8 +17,8 @@ void recognize_all(Character::container & chrs, SQLite::Command & cmd)
 		Character chr(*ci);
 		chr.set_name("");
 
-		ItemPossibility likely = recognize(normalize(chr), cmd);
-		ItemPossibility::const_iterator candidate = likely.begin();
+		ItemPossibilityList likely = recognize(normalize(chr), cmd);
+		ItemPossibilityList::const_iterator candidate = likely.begin();
 
 		learn(normalize(*ci), cmd);
 
@@ -52,7 +52,7 @@ void recognize_all(Character::container & chrs, SQLite::Command & cmd)
 		{
 			cout << "title=\"Candidate: " << likely.size() << " ";
 
-			for (ItemPossibility::const_iterator i = likely.begin();
+			for (ItemPossibilityList::const_iterator i = likely.begin();
 			     i != likely.end();
 			     ++i)
 			{

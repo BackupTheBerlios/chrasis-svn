@@ -1,0 +1,32 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-03-12 04:37+0800\n"
+"PO-Revision-Date: 2008-03-12 04:37+0800\n"
+"Last-Translator: Victor Tseng <palatis@gmail.com>\n"
+"Language-Team: Traditional Chiense <zh@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/scim-chrasis.cpp:78
+msgid "Chinese Handwriting Recognition As-Is"
+msgstr ""
+
+#: ../src/scim-chrasis.cpp:79
+msgid "A Chinese handwriting character recognition utility."
+msgstr ""
+
+#: ../src/scim-chrasis.cpp:223
+msgid "Chrasis Writing Pad"
+msgstr ""
+
+#: ../src/scim-chrasis.cpp:225
+msgid "Show/Hide Chinese handwriting recognition pad"
+msgstr ""
