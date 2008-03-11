@@ -63,11 +63,11 @@
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
-/* Runtime is under POSIX environment */
-#undef UNDER_POSIX
-
 /* Version number of package */
 #undef VERSION
+
+/* Runtime is under POSIX environment */
+#undef _POSIX
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const

@@ -147,6 +147,15 @@ Character::Stroke::points_end() const
 	return points_.end();
 }
 
+
+Character::Stroke::Point::iterator
+Character::Stroke::points_erase(
+	Character::Stroke::Point::iterator const pfrom,
+	Character::Stroke::Point::iterator const pto)
+{
+	return points_.erase(pfrom, pto);
+}
+
 size_t
 Character::Stroke::point_count() const
 {

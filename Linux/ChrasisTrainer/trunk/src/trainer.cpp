@@ -28,6 +28,7 @@
 
 #include <sstream>
 #include <string>
+#include <set>
 
 inline
 std::string
@@ -360,38 +361,22 @@ Trainer::update_candidate_list()
 {
 	refliststore_->clear();
 
-	chrasis::character_possibility_t likely(recognize(normalize(cur_char_)));
+	chrasis::ItemPossibility likely(recognize(normalize(cur_char_)));
+	likely.sort(chrasis::ItemPossibility::SORTING_POSSIBILITY);
 
 	// if a character appeared twice, only show the one with higher possibility.
-	std::map< std::string, int > uniq_map;
-	for (chrasis::character_possibility_t::iterator it = likely.begin();
+	std::set< std::string > char_bank;
+	for (chrasis::ItemPossibility::const_iterator it = likely.begin();
 	     it != likely.end();
 	     ++it)
 	{
-		if ( uniq_map[it->second.second] == 0 ||
-		     uniq_map[it->second.second] > it->first )
-			uniq_map[it->second.second] = it->first;
-	}
-	std::multimap< int, std::string > diff_map;
-	for (std::map< std::string, int >::iterator it = uniq_map.begin();
-	     it != uniq_map.end();
-	     ++it)
-	{
-		diff_map.insert(
-			std::make_pair(
-				it->second,
-				it->first
-			)
-		);
-	}
-	
-	for (std::multimap< int, std::string >::iterator it = diff_map.begin();
-	     it != diff_map.end();
-	     ++it)
-	{
-		Gtk::TreeModel::Row row = *(refliststore_->append());
-		row[col_char_] = it->second;
-		row[col_diff_] = it->first;
+		if (char_bank.find(it->name) == char_bank.end())
+		{
+			Gtk::TreeModel::Row row = *(refliststore_->append());
+			row[col_char_] = it->name;
+			row[col_diff_] = it->possibility;
+		}
+		char_bank.insert(it->name);
 	}
 }
 
@@ -400,7 +385,7 @@ Trainer::learn_curchar()
 {
 	std::string fn(std::string("raw_data/") + utf8_to_hex(cur_char_.get_name()) + ".chml");
 
-	chrasis::Character::collection cc = chrasis::read_chml(fn);
+	chrasis::Character::container cc = chrasis::read_chml(fn);
 	cc.push_back(cur_char_);
 	chrasis::write_chml(cc, fn);
 

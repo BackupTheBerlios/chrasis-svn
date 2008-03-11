@@ -19,7 +19,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA
  *
- * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
+ * $Id: chmlcodec.h 53 2007-10-27 23:33:29Z palatis $
  */
 
 #ifndef _CHMLCODEC_H
@@ -27,11 +27,13 @@
 
 #include <chrasis/character.h>
 
+#include <iostream>
+
 namespace chrasis
 {
 
-Character::collection read_chml(std::string);
-void write_chml(Character::collection &, std::string);
+Character::container read_chml(std::string);
+void write_chml(Character::container &, std::string);
 
 }
 

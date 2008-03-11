@@ -53,6 +53,10 @@ namespace chrasis
 
 #endif // ifdef WIN32
 
+#ifndef CHRASIS_API
+# define CHRASIS_API
+#endif
+
 // specify the db files
 #define DEFAULT_DB_FILE		"chr_data.db"
 #define DEFAULT_EMPTYDB_FILE	"empty_db.db"

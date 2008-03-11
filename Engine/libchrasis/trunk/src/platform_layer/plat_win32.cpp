@@ -22,6 +22,10 @@
  * $Id: chmlcodec.h 18 2006-09-19 21:18:42Z palatis $
  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #ifdef WIN32
 
 #include <chrasis.h>

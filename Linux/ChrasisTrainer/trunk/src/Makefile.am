@@ -5,8 +5,8 @@ noinst_HEADERS = trainer.h chrasistrainer.h chmlcodec.h
 include_HEADERS = trainer.h
 
 chrasistrainer_SOURCES = main.cpp trainer.cpp chmlcodec.cpp
-chrasistrainer_LDADD = @GTKMM_LIBS@ @CHRASIS_LIBS@ @LIBXMLPP_LIBS@
-chrasistrainer_CXXFLAGS = @GTKMM_CFLAGS@ @CHRASIS_CFLAGS@ @LIBXMLPP_CFLAGS@
+chrasistrainer_LDADD = @GTKMM_LIBS@ @CHRASIS_LIBS@ @LIBXML_LIBS@
+chrasistrainer_CXXFLAGS = @GTKMM_CFLAGS@ @CHRASIS_CFLAGS@ @LIBXML_CFLAGS@
 
 # tried to use precompiled headers, but failed.
 #pch: common.h.gch

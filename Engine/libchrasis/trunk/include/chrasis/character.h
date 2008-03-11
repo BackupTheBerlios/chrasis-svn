@@ -126,6 +126,14 @@ public:
 		Point::const_iterator points_end() const;
 
 		/**
+		 * erase the segment of the points with the range of [pfrom ... pto)
+		 * @param pfrom the inclusive begining of the point to be erased
+		 * #param pto the exclusive ending of the point to be erased
+		 * @return the element immediately following the one that was erased
+		 */
+		Point::iterator points_erase(Point::iterator const pfrom, Point::iterator const pto);
+
+		/**
 		 * get the number of points of the stroke
 		 * @return number of points of the stroke
 		 */

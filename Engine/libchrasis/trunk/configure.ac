@@ -90,15 +90,15 @@ case "$target" in
 	;;
 esac
 
-AC_DEFINE_UNQUOTED(UNDER_POSIX, ${os_is_posix}, [Runtime is under POSIX environment])
+AC_DEFINE_UNQUOTED(_POSIX, ${os_is_posix}, [Runtime is under POSIX environment])
 
 case "${ac_arg_debug}" in
 yes)
 	LIBDEBUG="true"
 	AC_DEFINE(ENABLE_DEBUG, 1,
 		[Define to 1 if you want native library runtime debugging code enabled])
-	CFLAGS="$(CFLAGS) -g -D_DEBUG -pg"
-	CXXFLAGS="$(CXXFLAGS) -g -D_DEBUG -pg"
+	CFLAGS="$(CFLAGS) -g -D_DEBUG"
+	CXXFLAGS="$(CXXFLAGS) -g -D_DEBUG"
 	;;
 *)
 	LIBDEBUG="false"
