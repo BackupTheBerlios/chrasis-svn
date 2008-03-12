@@ -1,5 +1,8 @@
 MAINTRAINERCLEANFILES	= Makefile.in
 
+icondir			= $(SCIM_ICONDIR)
+icon_DATA		= scim-chrasis.png
+
 INCLUDES		= -I$(top_builddir) \
 			  -I$(top_srcdir) \
 			  -I$(top_srcdir)/intl \
