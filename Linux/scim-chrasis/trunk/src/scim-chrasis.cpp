@@ -28,6 +28,8 @@
 # include "config.h"
 #endif
 
+#include <chrasis.h>
+
 #include <wctype.h>
 #include <gtk/gtk.h>
 
@@ -65,10 +67,17 @@ using namespace scim;
 
 #define SCIM_CHRASIS_ICON			(SCIM_ICONDIR "/chrasis.png")
 
+static void	send_key_event(GtkButton *button);
 static gboolean	main_window_delete_callback (GtkWidget *widget, GdkEvent *event, gpointer data);
+static void	button_sendkey_pressed_callback (GtkWidget *button, gpointer user_data);
+static void	button_sendkey_released_callback (GtkWidget *button, gpointer user_data);
+static gboolean	button_repeat_timeout (gpointer data);
 static gboolean	drawingarea_expose_callback (GtkWidget *drawingarea, GdkEventExpose *event, gpointer user_data);
-static void	drawingarea_mousedown_callback (GtkWidget *drawingarea, gpointer user_data);
-static void	drawingarea_mouseup_callback (GtkWidget *drawingarea, gpointer user_data);
+static gboolean	drawingarea_mousedown_callback (GtkWidget *drawingarea, GdkEventButton *event, gpointer user_data);
+static gboolean	drawingarea_mouseup_callback (GtkWidget *drawingarea, GdkEventButton *event, gpointer user_data);
+static gboolean drawingarea_mousemotion_callback(GtkWidget *drawingarea, GdkEventMotion *event, gpointer user_data);
+static gboolean drawingarea_recognize_timeout (gpointer data);
+static gboolean drawingarea_clear_timeout (gpointer data);
 static gboolean	helper_agent_input_handler (GIOChannel *source, GIOCondition condition, gpointer user_data);
 static void	slot_exit (const HelperAgent *, int ic, const String &uuid);
 static void	slot_update_screen (const HelperAgent *, int ic, const String &uuid, int screen);
@@ -87,6 +96,8 @@ static HelperInfo	helper_info(	String ("bf0a3c4d-244e-467f-b44e-27d74c840c30"),
 					String (SCIM_CHRASIS_ICON),
 					"",
 					SCIM_HELPER_STAND_ALONE | SCIM_HELPER_NEED_SCREEN_INFO);
+
+static chrasis::Character::container chars;
 
 // Module Interface
 extern "C" {
@@ -134,6 +145,11 @@ extern "C" {
 				String(SCIM_CONFIG_HELPER_CHRASIS_MAIN_WINDOW_YPOS),
 				static_cast<int>(main_window_ypos));
 
+			if (num_of_chars < 1)
+				num_of_chars = 1;
+			else if (num_of_chars > 8)
+				num_of_chars = 8;
+
 			run(display);
 
 			config->write(
@@ -161,9 +177,7 @@ helper_agent_input_handler (GIOChannel *source, GIOCondition condition, gpointer
 			agent->filter_event();
 	}
 	else if (condition == G_IO_ERR || condition == G_IO_HUP)
-	{
 		gtk_main_quit();
-	}
 
 	return TRUE;
 }
@@ -206,26 +220,142 @@ slot_trigger_property (const HelperAgent *agent, int ic, const String &uuid, con
 static gboolean
 drawingarea_expose_callback (GtkWidget *drawingarea, GdkEventExpose *event, gpointer user_data)
 {
-	int white(0xffffff), silver(0xc0c0c0);
+	chrasis::Character *c = static_cast<chrasis::Character *>(user_data);
 
-	GdkGC *gc_white = gdk_gc_new(drawingarea->window);
-	gdk_gc_set_rgb_fg_color(gc_white, reinterpret_cast<GdkColor *>(&white));
-	gdk_draw_rectangle(
-		drawingarea->window, gc_white,
-		TRUE,
-		0, 0,
-		100, 100);
+	GdkColor black, white, silver, grey;
+	black.red = black.green = black.blue = 0x0000;
+	white.red = white.green = white.blue = 0xffff;
+	silver.red = silver.green = silver.blue = 0xc000;
+	grey.red = grey.green = grey.blue = 0x5555;
 
-	GdkGC *gc_silver = gdk_gc_new(drawingarea->window);
-	gdk_gc_set_rgb_fg_color(gc_silver, reinterpret_cast<GdkColor *>(&silver));
-	gdk_draw_line(
-		drawingarea->window, gc_silver,
-		50, 0,
-		50, 100);
-	gdk_draw_line(
-		drawingarea->window, gc_silver,
-		0, 50,
-		100, 50);
+	GdkGC *gc = gdk_gc_new(drawingarea->window);
+
+	gdk_gc_set_rgb_fg_color(gc, &white);
+	gdk_draw_rectangle(drawingarea->window, gc, TRUE, 0, 0, 120, 120);
+
+	gdk_gc_set_rgb_fg_color(gc, &silver);
+	gdk_gc_set_line_attributes(gc, 1, GDK_LINE_ON_OFF_DASH, GDK_CAP_ROUND, GDK_JOIN_ROUND);
+	gdk_draw_line(drawingarea->window, gc, 60, 0, 60, 120);
+	gdk_draw_line(drawingarea->window, gc, 0, 60, 120, 60);
+
+	gdk_gc_set_rgb_fg_color(gc, &black);
+	gdk_gc_set_line_attributes(gc, 1, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
+	gdk_draw_rectangle(drawingarea->window, gc, FALSE, 0, 0, 119, 119);
+
+	gdk_gc_set_rgb_fg_color(gc, &grey);
+	gdk_gc_set_line_attributes(gc, 3, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
+
+	if (g_object_get_data (G_OBJECT (drawingarea), "draw_character") == (gpointer) 1)
+	{
+		for (chrasis::Stroke::iterator si = c->strokes_begin();
+		     si != c->strokes_end();
+		     ++si)
+			for (chrasis::Point::iterator pi = si->points_begin();
+			     pi != si->points_end() - 1;
+			     ++pi)
+				gdk_draw_line(drawingarea->window, gc,
+					static_cast<int>(pi->x()), static_cast<int>(pi->y()),
+					static_cast<int>((pi+1)->x()), static_cast<int>((pi+1)->y())
+				);
+	}
+
+	g_object_unref(G_OBJECT(gc));
+}
+
+double last_x, last_y;
+
+static gboolean
+drawingarea_mousedown_callback (GtkWidget *drawingarea, GdkEventButton *event, gpointer user_data)
+{
+	if (event->button == 1)
+	{
+		guint idr = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (drawingarea), "drawingarea_recognize_timeout_id"));
+		guint idc = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (drawingarea), "drawingarea_clear_timeout_id"));
+		g_source_remove (idr);
+		g_source_remove (idc);
+
+		chrasis::Character *c = static_cast<chrasis::Character *>(user_data);
+
+		c->new_stroke();
+		c->add_point(event->x, event->y);
+		last_x = event->x;
+		last_y = event->y;
+
+		GdkColor grey;
+		grey.red = grey.green = grey.blue = 0x5555;
+
+		GdkGC *gc = gdk_gc_new(drawingarea->window);
+		gdk_gc_set_rgb_fg_color(gc, &grey);
+		gdk_gc_set_line_attributes(gc, 3, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
+		gdk_draw_line(drawingarea->window, gc,
+			static_cast<gint>(event->x), static_cast<gint>(event->y),
+			static_cast<gint>(event->x), static_cast<gint>(event->y));
+		g_object_unref(G_OBJECT(gc));
+
+		return TRUE;
+	}
+	return FALSE;
+}
+
+static gboolean
+drawingarea_mouseup_callback (GtkWidget *drawingarea, GdkEventButton *event, gpointer user_data)
+{
+	if (event->button == 1)
+	{
+		guint idr = g_timeout_add(4000, drawingarea_recognize_timeout, user_data);
+		guint idc = g_timeout_add(4000, drawingarea_clear_timeout, (gpointer) drawingarea);
+		g_object_set_data(G_OBJECT(drawingarea), "drawingarea_recognize_timeout_id", (gpointer) idr);
+		g_object_set_data(G_OBJECT(drawingarea), "drawingarea_clear_timeout_id", (gpointer) idc);
+
+		return TRUE;
+	}
+	return FALSE;
+}
+
+static gboolean
+drawingarea_mousemotion_callback(GtkWidget *drawingarea, GdkEventMotion *event, gpointer user_data)
+{
+	if (event->state & GDK_BUTTON1_MASK)
+	{
+		chrasis::Character *c = static_cast<chrasis::Character *>(user_data);
+
+		c->add_point(event->x, event->y);
+
+		GdkColor grey;
+		grey.red = grey.green = grey.blue = 0x5555;
+
+		GdkGC *gc = gdk_gc_new(drawingarea->window);
+		gdk_gc_set_rgb_fg_color(gc, &grey);
+		gdk_gc_set_line_attributes(gc, 3, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
+		gdk_draw_line(drawingarea->window, gc,
+			static_cast<gint>(last_x), static_cast<gint>(last_y),
+			static_cast<gint>(event->x), static_cast<gint>(event->y));
+		g_object_unref(G_OBJECT(gc));
+
+		last_x = event->x;
+		last_y = event->y;
+
+		return TRUE;
+	}
+	return FALSE;
+}
+
+static void
+button_sendkey_pressed_callback (GtkWidget *button, gpointer user_data)
+{
+	send_key_event(GTK_BUTTON(button));
+
+	guint id = g_timeout_add (600, button_repeat_timeout, button);
+	g_object_set_data (G_OBJECT (button), "button_repeat_timeout_id", (gpointer) id);
+	g_object_set_data (G_OBJECT (button), "initial_pressed", (gpointer) 1);
+}
+
+static void
+button_sendkey_released_callback (GtkWidget *button, gpointer user_data)
+{
+	guint id = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (button), "button_repeat_timeout_id"));
+	g_source_remove (id);
+	g_object_set_data (G_OBJECT (button), "initial_pressed", (gpointer) 0);
 }
 
 static gboolean
@@ -233,6 +363,68 @@ main_window_delete_callback (GtkWidget *widget, GdkEvent *event, gpointer data)
 {
     gtk_window_get_position (GTK_WINDOW (widget), &main_window_xpos, &main_window_ypos);
     return FALSE;
+}
+
+static void
+send_key_event(GtkButton *button)
+{
+	if (helper_agent.get_connection_number () < 0) return;
+
+	uint32 code = static_cast <uint32> (GPOINTER_TO_INT (g_object_get_data (G_OBJECT (button), "element_keycode")));
+	uint16 mask = static_cast <uint16> (GPOINTER_TO_INT ((size_t)g_object_get_data (G_OBJECT (button), "element_keymask")));
+	KeyEvent key (code, (mask & ~SCIM_KEY_ReleaseMask));
+	KeyEvent key_release (code, mask | SCIM_KEY_ReleaseMask);
+        if (!key.empty ())
+	{
+		helper_agent.send_key_event (-1, "", key);
+		helper_agent.send_key_event (-1, "", key_release);
+	}
+}
+
+static gboolean
+button_repeat_timeout (gpointer data)
+{
+    GtkButton *button = GTK_BUTTON (data);
+
+    send_key_event(button);
+
+    if (g_object_get_data (G_OBJECT (button), "initial_pressed") == (gpointer) 1) {
+        guint id = g_timeout_add (1000/15, button_repeat_timeout, button);
+        g_object_set_data (G_OBJECT (button), "button_repeat_timeout_id", (gpointer) id);
+        g_object_set_data (G_OBJECT (button), "initial_pressed", (gpointer) 0);
+        return FALSE;
+    }
+    return TRUE;
+}
+
+static gboolean
+drawingarea_recognize_timeout (gpointer data)
+{
+	chrasis::Character *c = static_cast<chrasis::Character *>(data);
+
+	chrasis::platform::initialize_userdir();
+
+	chrasis::ItemPossibilityList likely(recognize(normalize(*c)));
+	likely.sort(chrasis::ItemPossibilityList::SORTING_POSSIBILITY);
+
+	if (!likely.empty())
+		helper_agent.commit_string (-1, "", scim::utf8_mbstowcs (likely.begin()->name));
+
+	*c = chrasis::Character();
+
+	return FALSE;
+}
+
+static gboolean
+drawingarea_clear_timeout (gpointer data)
+{
+	GtkDrawingArea *da = GTK_DRAWING_AREA(data);
+
+	g_object_set_data(G_OBJECT(da), "draw_character", (gpointer) 0);
+	gtk_widget_queue_draw(GTK_WIDGET(da));
+	g_object_set_data(G_OBJECT(da), "draw_character", (gpointer) 1);
+
+	return FALSE;
 }
 
 static void
@@ -247,18 +439,100 @@ create_main_window()
 	g_signal_connect(G_OBJECT(main_window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 	g_signal_connect(G_OBJECT(main_window), "delete_event", G_CALLBACK(main_window_delete_callback), NULL);
 
-	GtkWidget *hbox = gtk_hbox_new (FALSE, 4);
+	GtkWidget *hbox = gtk_hbox_new (FALSE, 0);
 	gtk_widget_show(hbox);
 	gtk_container_add(GTK_CONTAINER(main_window), hbox);
+
+	chars.resize(num_of_chars);
 
 	for (int i=0;i<num_of_chars;++i)
 	{
 		GtkWidget *da = gtk_drawing_area_new();
-		gtk_drawing_area_size(GTK_DRAWING_AREA(da), 100, 100);
-		g_signal_connect(G_OBJECT(da), "expose_event", G_CALLBACK(drawingarea_expose_callback), NULL);
+		gtk_widget_set_size_request(da, 120, 120);
+		g_signal_connect(G_OBJECT(da), "expose-event", G_CALLBACK(drawingarea_expose_callback), &chars[i]);
+		gtk_widget_add_events(da, GDK_BUTTON_PRESS_MASK);
+		gtk_widget_add_events(da, GDK_BUTTON_RELEASE_MASK);
+		gtk_widget_add_events(da, GDK_POINTER_MOTION_MASK);
+		g_signal_connect(G_OBJECT(da), "button-press-event", G_CALLBACK(drawingarea_mousedown_callback), &chars[i]);
+		g_signal_connect(G_OBJECT(da), "button-release-event", G_CALLBACK(drawingarea_mouseup_callback), &chars[i]);
+		g_signal_connect(G_OBJECT(da), "motion-notify-event", G_CALLBACK(drawingarea_mousemotion_callback), &chars[i]);
+		g_object_set_data(G_OBJECT(da), "draw_character", (gpointer) 1);
 		gtk_widget_show(da);
 		gtk_box_pack_start(GTK_BOX(hbox), da, FALSE, FALSE, 0);
 	}
+
+	GtkWidget *table = gtk_table_new(1, 2, TRUE);
+	gtk_widget_show(table);
+
+	GtkWidget *button_backsp = gtk_button_new_with_label(_("BackSp"));
+	KeyEvent key_backsp ("BackSpace");
+	g_object_set_data(G_OBJECT(button_backsp), "element_keycode", (gpointer) ((size_t) key_backsp.code));
+	g_object_set_data(G_OBJECT(button_backsp), "element_keymask", (gpointer) ((size_t) key_backsp.mask));
+	g_signal_connect(G_OBJECT(button_backsp), "pressed", G_CALLBACK(button_sendkey_pressed_callback), NULL);
+	g_signal_connect(G_OBJECT(button_backsp), "released", G_CALLBACK(button_sendkey_released_callback), NULL);
+	gtk_widget_show(button_backsp);
+
+	GtkWidget *button_del = gtk_button_new_with_label(_("Del"));
+	KeyEvent key_del ("Delete");
+	g_object_set_data(G_OBJECT(button_del), "element_keycode", (gpointer) ((size_t) key_del.code));
+	g_object_set_data(G_OBJECT(button_del), "element_keymask", (gpointer) ((size_t) key_del.mask));
+	g_signal_connect(G_OBJECT(button_del), "pressed", G_CALLBACK(button_sendkey_pressed_callback), NULL);
+	g_signal_connect(G_OBJECT(button_del), "released", G_CALLBACK(button_sendkey_released_callback), NULL);
+	gtk_widget_show(button_del);
+
+	GtkWidget *button_tab = gtk_button_new_with_label(_("Tab"));
+	KeyEvent key_tab ("Tab");
+	g_object_set_data(G_OBJECT(button_tab), "element_keycode", (gpointer) ((size_t) key_tab.code));
+	g_object_set_data(G_OBJECT(button_tab), "element_keymask", (gpointer) ((size_t) key_tab.mask));
+	g_signal_connect(G_OBJECT(button_tab), "pressed", G_CALLBACK(button_sendkey_pressed_callback), NULL);
+	g_signal_connect(G_OBJECT(button_tab), "released", G_CALLBACK(button_sendkey_released_callback), NULL);
+	gtk_widget_show(button_tab);
+
+	GtkWidget *button_enter = gtk_button_new_with_label(_("Enter"));
+	KeyEvent key_enter ("Return");
+	g_object_set_data(G_OBJECT(button_enter), "element_keycode", (gpointer) ((size_t) key_enter.code));
+	g_object_set_data(G_OBJECT(button_enter), "element_keymask", (gpointer) ((size_t) key_enter.mask));
+	g_signal_connect(G_OBJECT(button_enter), "pressed", G_CALLBACK(button_sendkey_pressed_callback), NULL);
+	g_signal_connect(G_OBJECT(button_enter), "released", G_CALLBACK(button_sendkey_released_callback), NULL);
+	gtk_widget_show(button_enter);
+
+	GtkWidget *button_space = gtk_button_new_with_label(_("Space"));
+	KeyEvent key_space ("KP_Space");
+	g_object_set_data(G_OBJECT(button_space), "element_keycode", (gpointer) ((size_t) key_space.code));
+	g_object_set_data(G_OBJECT(button_space), "element_keymask", (gpointer) ((size_t) key_space.mask));
+	g_signal_connect(G_OBJECT(button_space), "pressed", G_CALLBACK(button_sendkey_pressed_callback), NULL);
+	g_signal_connect(G_OBJECT(button_space), "released", G_CALLBACK(button_sendkey_released_callback), NULL);
+	gtk_widget_show(button_space);
+
+	GtkWidget *hbox2 = gtk_hbox_new(FALSE, 0);
+	gtk_widget_show(hbox2);
+
+	GtkWidget *button_left = gtk_button_new_with_label(_("<-"));
+	KeyEvent key_left ("KP_Left");
+	g_object_set_data(G_OBJECT(button_left), "element_keycode", (gpointer) ((size_t) key_left.code));
+	g_object_set_data(G_OBJECT(button_left), "element_keymask", (gpointer) ((size_t) key_left.mask));
+	g_signal_connect(G_OBJECT(button_left), "pressed", G_CALLBACK(button_sendkey_pressed_callback), NULL);
+	g_signal_connect(G_OBJECT(button_left), "released", G_CALLBACK(button_sendkey_released_callback), NULL);
+	gtk_widget_show(button_left);
+
+	GtkWidget *button_right = gtk_button_new_with_label(_("->"));
+	KeyEvent key_right ("KP_Right");
+	g_object_set_data(G_OBJECT(button_right), "element_keycode", (gpointer) ((size_t) key_right.code));
+	g_object_set_data(G_OBJECT(button_right), "element_keymask", (gpointer) ((size_t) key_right.mask));
+	g_signal_connect(G_OBJECT(button_right), "pressed", G_CALLBACK(button_sendkey_pressed_callback), NULL);
+	g_signal_connect(G_OBJECT(button_right), "released", G_CALLBACK(button_sendkey_released_callback), NULL);
+	gtk_widget_show(button_right);
+
+	gtk_table_attach_defaults(GTK_TABLE(table), button_backsp,	0, 1, 0, 1);
+	gtk_table_attach_defaults(GTK_TABLE(table), button_del,		1, 2, 0, 1);
+	gtk_table_attach_defaults(GTK_TABLE(table), button_tab,		0, 1, 1, 2);
+	gtk_table_attach_defaults(GTK_TABLE(table), button_enter,	1, 2, 1, 2);
+	gtk_table_attach_defaults(GTK_TABLE(table), button_space,	0, 1, 2, 3);
+	gtk_table_attach_defaults(GTK_TABLE(table), hbox2,		1, 2, 2, 3);
+	gtk_box_pack_start(GTK_BOX(hbox2), button_left, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox2), button_right, TRUE, TRUE, 0);
+
+	gtk_box_pack_start(GTK_BOX(hbox), table, FALSE, FALSE, 0);
 
 	gint scrh = gdk_screen_get_height (gtk_widget_get_screen (main_window));
 	gint scrw = gdk_screen_get_width  (gtk_widget_get_screen (main_window));
@@ -316,7 +590,7 @@ run (const String &display)
 		props.push_back (prop);
 		helper_agent.register_properties (props);
 
-		g_io_add_watch(ch, G_IO_IN, helper_agent_input_handler, (gpointer) &helper_agent);
+		g_io_add_watch (ch, G_IO_IN, helper_agent_input_handler, (gpointer) &helper_agent);
 		g_io_add_watch (ch, G_IO_ERR, helper_agent_input_handler, (gpointer) &helper_agent);
 		g_io_add_watch (ch, G_IO_HUP, helper_agent_input_handler, (gpointer) &helper_agent);
 	}
