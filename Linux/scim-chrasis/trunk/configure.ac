@@ -1,12 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
-
-AC_PREREQ(2.59)
-
 AC_INIT([scim-chrasis], [0.0.1], [palatis@gmail.com])
 AC_CONFIG_SRCDIR([src/scim-chrasis.cpp])
-
-AC_SUBST(PACKAGE_VERSION)
-AC_DEFINE_UNQUOTED(SCIM_CHRASIS_VERSION, "$PACKAGE_VERSION", [The release version of Chrasis Trainer.])
 
 SCIM_VERSION=1.2.0
 GTK_VERSION=2.4.0
@@ -33,19 +27,20 @@ AC_SUBST(SCIM_CHRASIS_AGE)
 
 GETTEXT_PACKAGE=scim-chrasis
 AC_SUBST(GETTEXT_PACKAGE)
-AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["$GETTEXT_PACKAGE"], [Gettext package])
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Gettext domain])
 
 # Init automake stuff
-AM_INIT_AUTOMAKE([1.9])
+AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER([config.h])
 
 # Init gettext
 ALL_LINGUAS="zh_TW"
 AM_GNU_GETTEXT
 
-# Standard Checks
-IT_PROG_INTLTOOL([0.33], [no-xml])
-AC_HEADER_STDC
+# Check intltool
+IT_PROG_INTLTOOL
+
+# Standard checks
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_LIBTOOL
@@ -56,6 +51,9 @@ AC_LANG([C++])
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T
+
+AC_HEADER_STDC
+AC_CHECK_HEADERS([libintl.h])
 
 # Check for modules
 PKG_CHECK_MODULES(CHRASIS, chrasis)

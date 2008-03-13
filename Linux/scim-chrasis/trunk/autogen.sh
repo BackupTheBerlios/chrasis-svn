@@ -8,8 +8,8 @@ if [ "x${ACLOCAL_DIR}" != "x" ]; then
   ACLOCAL_ARG=-I ${ACLOCAL_DIR}
 fi
 
-AUTOMAKE=${AUTOMAKE:-automake$AM_VERSION} libtoolize -c --automake 
-AUTOMAKE=${AUTOMAKE:-automake$AM_VERSION} intltoolize -c --automake
+AUTOMAKE=${AUTOMAKE:-automake$AM_VERSION} libtoolize -c --automake --force
+AUTOMAKE=${AUTOMAKE:-automake$AM_VERSION} intltoolize -c --automake --force
 ${ACLOCAL:-aclocal$AM_VERSION} ${ACLOCAL_ARG}
 ${AUTOHEADER:-autoheader$AC_VERSION}
 ${AUTOMAKE:-automake$AM_VERSION} --add-missing --copy --include-deps

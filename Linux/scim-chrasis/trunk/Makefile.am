@@ -28,7 +28,7 @@ EXTRA_DIST		= config.rpath \
 			  autogen.sh
 
 AUTOMAKE_OPTIONS 	= gnu
-SUBDIRS 		= po src
+SUBDIRS 		= po src intl
 
 MAINTAINERCLEANFILES 	= Makefile.in \
 			  aclocal.m4 \
