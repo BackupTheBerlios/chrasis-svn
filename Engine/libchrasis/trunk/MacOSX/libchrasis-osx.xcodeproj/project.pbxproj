@@ -76,6 +76,7 @@
 		86369A3F0CD2A6B700F5F856 /* probability_test in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8636999A0CD29BE200F5F856 /* probability_test */; };
 		86369A400CD2A6BA00F5F856 /* recognize in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8636999F0CD29BED00F5F856 /* recognize */; };
 		86369A840CD2B05100F5F856 /* libchrasis.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */; };
+		8665D4140D8A5254002CCF7B /* plat_posix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8665D4130D8A5254002CCF7B /* plat_posix.cpp */; };
 		86D138E70CF299C3004A0E09 /* character.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86D138E60CF299C3004A0E09 /* character.cpp */; };
 /* End PBXBuildFile section */
 
@@ -220,7 +221,8 @@
 		863699AF0CD29CCF00F5F856 /* probability_test.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = probability_test.cpp; path = ../src/tools/probability_test.cpp; sourceTree = SOURCE_ROOT; };
 		863699B00CD29CCF00F5F856 /* recognize.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = recognize.cpp; path = ../src/tools/recognize.cpp; sourceTree = SOURCE_ROOT; };
 		86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libchrasis.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		86D138E60CF299C3004A0E09 /* character.cpp */ = {isa = PBXFileReference; fileEncoding = "-2147483646"; lastKnownFileType = sourcecode.cpp.cpp; name = character.cpp; path = ../src/character.cpp; sourceTree = SOURCE_ROOT; };
+		8665D4130D8A5254002CCF7B /* plat_posix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = plat_posix.cpp; path = ../src/platform_layer/plat_posix.cpp; sourceTree = SOURCE_ROOT; };
+		86D138E60CF299C3004A0E09 /* character.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = character.cpp; path = ../src/character.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -277,6 +279,7 @@
 		8636992F0CD2946C00F5F856 = {
 			isa = PBXGroup;
 			children = (
+				8665D4130D8A5254002CCF7B /* plat_posix.cpp */,
 				86D138E60CF299C3004A0E09 /* character.cpp */,
 				863699AC0CD29CCF00F5F856 /* compact_db.cpp */,
 				863699AD0CD29CCF00F5F856 /* join_chml.cpp */,
@@ -432,10 +435,12 @@
 		863699310CD2946C00F5F856 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 863699320CD2946C00F5F856 /* Build configuration list for PBXProject "libchrasis-osx" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 0;
 			mainGroup = 8636992F0CD2946C00F5F856;
 			productRefGroup = 8636993F0CD294A700F5F856 /* Products */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				86369A1C0CD2A54E00F5F856 /* libchrasis-osx */,
 				863699730CD299A400F5F856 /* char_size */,
@@ -520,6 +525,7 @@
 				86369A260CD2A5CF00F5F856 /* database.cpp in Sources */,
 				86369A270CD2A5CF00F5F856 /* internal.cpp in Sources */,
 				86D138E70CF299C3004A0E09 /* character.cpp in Sources */,
+				8665D4140D8A5254002CCF7B /* plat_posix.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -869,6 +875,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREFIX_HEADER = "libchrasis-osx-config.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = _POSIX;
 				INSTALL_PATH = /usr/lib;
 				OTHER_LDFLAGS = "-lsqlite3";
 				PREBINDING = NO;
@@ -888,6 +895,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREFIX_HEADER = "libchrasis-osx-config.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = _POSIX;
 				INSTALL_PATH = /usr/lib;
 				OTHER_LDFLAGS = "-lsqlite3";
 				PREBINDING = NO;
