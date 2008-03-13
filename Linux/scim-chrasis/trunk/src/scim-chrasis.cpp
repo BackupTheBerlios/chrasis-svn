@@ -66,8 +66,11 @@ using namespace scim;
 #define SCIM_CONFIG_HELPER_CHRASIS_RECOGNIZE_DELAY	"/Helper/Chrasis/RecognizeDelay"
 #define SCIM_CONFIG_HELPER_CHRASIS_MAIN_WINDOW_XPOS	"/Helper/Chrasis/MainWindowXPos"
 #define SCIM_CONFIG_HELPER_CHRASIS_MAIN_WINDOW_YPOS	"/Helper/Chrasis/MainWindowYPos"
+#define SCIM_CONFIG_HELPER_CHRASIS_SAVE_CHML		"/Helper/Chrasis/SaveCHML"
 
-#define SCIM_CHRASIS_ICON			(SCIM_ICONDIR "/chrasis.png")
+#define SCIM_CHRASIS_UUID	"bf0a3c4d-244e-467f-b44e-27d74c840c30"
+#define SCIM_CHRASIS_ICON	(SCIM_ICONDIR "/scim-chrasis.png")
+//#define SCIM_CHRASIS_CHML_FILE	(SCIM_CONFIGDIR "/scim-chrasis.chml")
 
 static void	send_key_event(GtkButton *button);
 static gboolean	main_window_delete_callback (GtkWidget *widget, GdkEvent *event, gpointer data);
@@ -76,12 +79,13 @@ static void	button_sendkey_pressed_callback (GtkWidget *button, gpointer user_da
 static void	button_sendkey_released_callback (GtkWidget *button, gpointer user_data);
 static void	button_options_clicked_callback (GtkWidget *button, gpointer user_data);
 static gboolean	button_repeat_timeout (gpointer data);
+static void	combo_box_popdown_callback (GtkWidget *combo_box, gpointer user_data);
+static void	combo_box_popup_callback (GtkWidget *combo_box, gpointer user_data);
 static gboolean	drawingarea_expose_callback (GtkWidget *drawingarea, GdkEventExpose *event, gpointer user_data);
 static gboolean	drawingarea_mousedown_callback (GtkWidget *drawingarea, GdkEventButton *event, gpointer user_data);
 static gboolean	drawingarea_mouseup_callback (GtkWidget *drawingarea, GdkEventButton *event, gpointer user_data);
 static gboolean drawingarea_mousemotion_callback(GtkWidget *drawingarea, GdkEventMotion *event, gpointer user_data);
-static gboolean drawingarea_recognize_timeout (gpointer data);
-static gboolean drawingarea_clear_timeout (gpointer data);
+static gboolean	combo_box_recognize_timeout (gpointer user_data);
 static gboolean	helper_agent_input_handler (GIOChannel *source, GIOCondition condition, gpointer user_data);
 static void	slot_exit (const HelperAgent *, int ic, const String &uuid);
 static void	slot_update_screen (const HelperAgent *, int ic, const String &uuid, int screen);
@@ -92,19 +96,22 @@ static void	run (const String &display);
 static HelperAgent	helper_agent;
 static GtkWidget	*main_window;
 
-static gint num_of_chars	= 4;
-static gint drawingarea_size	= 120;
-static gint recognize_delay	= 3000;
-static gint main_window_xpos	= 0;
-static gint main_window_ypos	= 0;
+static gint	num_of_chars		= 4;
+static gint	drawingarea_size	= 120;
+static gint	recognize_delay		= 3000;
+static gint	main_window_xpos	= 0;
+static gint	main_window_ypos	= 0;
+static gboolean	save_chml		= 0;
 
-static HelperInfo	helper_info(	String ("bf0a3c4d-244e-467f-b44e-27d74c840c30"),
+static HelperInfo	helper_info(	String (SCIM_CHRASIS_UUID),
 					"",
 					String (SCIM_CHRASIS_ICON),
 					"",
 					SCIM_HELPER_STAND_ALONE | SCIM_HELPER_NEED_SCREEN_INFO);
 
 static chrasis::Character::container chars;
+
+static const int LINE_WIDTH = 2;
 
 // Module Interface
 extern "C" {
@@ -140,7 +147,7 @@ extern "C" {
 	{
 		SCIM_DEBUG_MAIN(1) << "chrasis_LTX_scim_helper_module_run_helper ()\n";
 
-		if (uuid == "bf0a3c4d-244e-467f-b44e-27d74c840c30")
+		if (uuid == SCIM_CHRASIS_UUID)
 		{
 			num_of_chars = config->read(
 				String(SCIM_CONFIG_HELPER_CHRASIS_NUM_OF_CHARS),
@@ -157,6 +164,9 @@ extern "C" {
 			main_window_ypos = config->read(
 				String(SCIM_CONFIG_HELPER_CHRASIS_MAIN_WINDOW_YPOS),
 				static_cast<int>(main_window_ypos));
+			save_chml = config->read(
+				String(SCIM_CONFIG_HELPER_CHRASIS_SAVE_CHML),
+				static_cast<bool>(save_chml));
 
 			run(display);
 
@@ -175,6 +185,9 @@ extern "C" {
 			config->write(
 				String(SCIM_CONFIG_HELPER_CHRASIS_MAIN_WINDOW_YPOS),
 				static_cast<int>(main_window_ypos));
+			config->write(
+				String(SCIM_CONFIG_HELPER_CHRASIS_SAVE_CHML),
+				static_cast<bool>(save_chml));
 		}
 
 		SCIM_DEBUG_MAIN(1) << "exit chrasis_LTX_scim_helper_module_run_helper ()\n";
@@ -257,7 +270,7 @@ drawingarea_expose_callback (GtkWidget *drawingarea, GdkEventExpose *event, gpoi
 	gdk_draw_rectangle(drawingarea->window, gc, FALSE, 0, 0, drawingarea_size-1, drawingarea_size-1);
 
 	gdk_gc_set_rgb_fg_color(gc, &grey);
-	gdk_gc_set_line_attributes(gc, 3, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
+	gdk_gc_set_line_attributes(gc, LINE_WIDTH, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
 
 	if (g_object_get_data (G_OBJECT (drawingarea), "draw_character") == (gpointer) 1)
 	{
@@ -283,11 +296,6 @@ drawingarea_mousedown_callback (GtkWidget *drawingarea, GdkEventButton *event, g
 {
 	if (event->button == 1)
 	{
-		guint idr = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (drawingarea), "drawingarea_recognize_timeout_id"));
-		guint idc = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (drawingarea), "drawingarea_clear_timeout_id"));
-		g_source_remove (idr);
-		g_source_remove (idc);
-
 		chrasis::Character *c = static_cast<chrasis::Character *>(user_data);
 
 		c->new_stroke();
@@ -306,6 +314,10 @@ drawingarea_mousedown_callback (GtkWidget *drawingarea, GdkEventButton *event, g
 			static_cast<gint>(event->x), static_cast<gint>(event->y));
 		g_object_unref(G_OBJECT(gc));
 
+		GtkWidget *combo_box = GTK_WIDGET (g_object_get_data (G_OBJECT (drawingarea), "combo_box_candidate_list"));
+		guint id = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (combo_box), "combo_box_recognize_timeout_id"));
+		g_source_remove (id);
+
 		return TRUE;
 	}
 	return FALSE;
@@ -316,10 +328,28 @@ drawingarea_mouseup_callback (GtkWidget *drawingarea, GdkEventButton *event, gpo
 {
 	if (event->button == 1)
 	{
-		guint idr = g_timeout_add(recognize_delay, drawingarea_recognize_timeout, user_data);
-		guint idc = g_timeout_add(recognize_delay, drawingarea_clear_timeout, (gpointer) drawingarea);
-		g_object_set_data(G_OBJECT(drawingarea), "drawingarea_recognize_timeout_id", (gpointer) idr);
-		g_object_set_data(G_OBJECT(drawingarea), "drawingarea_clear_timeout_id", (gpointer) idc);
+		chrasis::Character *c = static_cast<chrasis::Character *>(user_data);
+
+		chrasis::platform::initialize_userdir();
+
+		chrasis::ItemPossibilityList likely(recognize(normalize(*c)));
+		likely.sort(chrasis::ItemPossibilityList::SORTING_POSSIBILITY);
+		
+		GtkWidget *combo_box = GTK_WIDGET (g_object_get_data (G_OBJECT (drawingarea), "combo_box_candidate_list"));
+		while (gtk_combo_box_get_active (GTK_COMBO_BOX(combo_box)) != -1)
+		{
+			gtk_combo_box_remove_text (GTK_COMBO_BOX (combo_box), 0);
+			gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
+		}
+
+		for (chrasis::ItemPossibilityList::const_iterator li = likely.begin();
+		     li != likely.end();
+		     ++li)
+			gtk_combo_box_append_text (GTK_COMBO_BOX (combo_box), li->name.c_str());
+		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0 );
+
+		guint id = g_timeout_add(recognize_delay, combo_box_recognize_timeout, (gpointer) drawingarea);
+		g_object_set_data(G_OBJECT(combo_box), "combo_box_recognize_timeout_id", (gpointer) id);
 
 		return TRUE;
 	}
@@ -340,7 +370,7 @@ drawingarea_mousemotion_callback(GtkWidget *drawingarea, GdkEventMotion *event, 
 
 		GdkGC *gc = gdk_gc_new(drawingarea->window);
 		gdk_gc_set_rgb_fg_color(gc, &grey);
-		gdk_gc_set_line_attributes(gc, 3, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
+		gdk_gc_set_line_attributes(gc, LINE_WIDTH, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
 		gdk_draw_line(drawingarea->window, gc,
 			static_cast<gint>(last_x), static_cast<gint>(last_y),
 			static_cast<gint>(event->x), static_cast<gint>(event->y));
@@ -352,6 +382,20 @@ drawingarea_mousemotion_callback(GtkWidget *drawingarea, GdkEventMotion *event, 
 		return TRUE;
 	}
 	return FALSE;
+}
+
+static void
+combo_box_popdown_callback (GtkWidget *combo_box, gpointer user_data)
+{
+	guint id = g_timeout_add(recognize_delay, combo_box_recognize_timeout, user_data);
+	g_object_set_data(G_OBJECT(combo_box), "combo_box_recognize_timeout_id", (gpointer) id);
+}
+
+static void
+combo_box_popup_callback (GtkWidget *combo_box, gpointer user_data)
+{
+	guint id = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (combo_box), "combo_box_recognize_timeout_id"));
+	g_source_remove (id);
 }
 
 static void
@@ -422,31 +466,32 @@ button_repeat_timeout (gpointer data)
 }
 
 static gboolean
-drawingarea_recognize_timeout (gpointer data)
+combo_box_recognize_timeout (gpointer user_data)
 {
-	chrasis::Character *c = static_cast<chrasis::Character *>(data);
+	GtkWidget *drawingarea = GTK_WIDGET (user_data);
+	GtkWidget *combo_box = GTK_WIDGET(g_object_get_data(G_OBJECT(drawingarea), "combo_box_candidate_list"));
 
-	chrasis::platform::initialize_userdir();
+	// send text
+	gchar * text(NULL);
+	if ((text = gtk_combo_box_get_active_text (GTK_COMBO_BOX (combo_box))) != NULL)
+		helper_agent.commit_string(-1, "", scim::utf8_mbstowcs(text));
 
-	chrasis::ItemPossibilityList likely(recognize(normalize(*c)));
-	likely.sort(chrasis::ItemPossibilityList::SORTING_POSSIBILITY);
+	// clear combobox
+	gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0 );
+	while (gtk_combo_box_get_active (GTK_COMBO_BOX(combo_box)) != -1)
+	{
+		gtk_combo_box_remove_text (GTK_COMBO_BOX (combo_box), 0);
+		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
+	}
 
-	if (!likely.empty())
-		helper_agent.commit_string (-1, "", scim::utf8_mbstowcs (likely.begin()->name));
+	// clear drawingarea
+	g_object_set_data(G_OBJECT(drawingarea), "draw_character", (gpointer) 0);
+	gtk_widget_queue_draw(drawingarea);
+	g_object_set_data(G_OBJECT(drawingarea), "draw_character", (gpointer) 1);
 
+	// clear character buffer
+	chrasis::Character *c = static_cast<chrasis::Character *>(g_object_get_data(G_OBJECT(drawingarea), "character"));
 	*c = chrasis::Character();
-
-	return FALSE;
-}
-
-static gboolean
-drawingarea_clear_timeout (gpointer data)
-{
-	GtkDrawingArea *da = GTK_DRAWING_AREA(data);
-
-	g_object_set_data(G_OBJECT(da), "draw_character", (gpointer) 0);
-	gtk_widget_queue_draw(GTK_WIDGET(da));
-	g_object_set_data(G_OBJECT(da), "draw_character", (gpointer) 1);
 
 	return FALSE;
 }
@@ -457,14 +502,12 @@ button_options_clicked_callback (GtkWidget *button, gpointer user_data)
 	GtkWidget *dialog = gtk_dialog_new_with_buttons (
 		_("Chrasis Options"), NULL,
 		GTK_DIALOG_MODAL,
-		GTK_STOCK_OK,
-		GTK_RESPONSE_ACCEPT,
-		GTK_STOCK_CANCEL,
-		GTK_RESPONSE_REJECT,
+		GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+		GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
 		NULL);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
 
-	GtkWidget *table = gtk_table_new(3, 2, FALSE);
+	GtkWidget *table = gtk_table_new(4, 2, FALSE);
 	gtk_widget_show(table);
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), table, FALSE, FALSE, 0);
 
@@ -477,7 +520,7 @@ button_options_clicked_callback (GtkWidget *button, gpointer user_data)
 	gtk_misc_set_alignment (GTK_MISC (label), 1, 0.5);
 	gtk_misc_set_padding (GTK_MISC (label), 2, 0);
 
-	GtkWidget * spin_button_num_of_chars = gtk_spin_button_new_with_range (1, 8, 1);
+	GtkWidget *spin_button_num_of_chars = gtk_spin_button_new_with_range (1, 8, 1);
 	gtk_widget_show (spin_button_num_of_chars);
 	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spin_button_num_of_chars), TRUE);
 	gtk_spin_button_set_snap_to_ticks (GTK_SPIN_BUTTON (spin_button_num_of_chars), TRUE);
@@ -494,7 +537,7 @@ button_options_clicked_callback (GtkWidget *button, gpointer user_data)
 	gtk_misc_set_alignment (GTK_MISC (label), 1, 0.5);
 	gtk_misc_set_padding (GTK_MISC (label), 2, 0);
 
-	GtkWidget * spin_button_drawingarea_size = gtk_spin_button_new_with_range (50, 500, 1);
+	GtkWidget *spin_button_drawingarea_size = gtk_spin_button_new_with_range (50, 500, 1);
 	gtk_widget_show (spin_button_drawingarea_size);
 	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spin_button_drawingarea_size), TRUE);
 	gtk_spin_button_set_snap_to_ticks (GTK_SPIN_BUTTON (spin_button_drawingarea_size), TRUE);
@@ -511,7 +554,7 @@ button_options_clicked_callback (GtkWidget *button, gpointer user_data)
 	gtk_misc_set_alignment (GTK_MISC (label), 1, 0.5);
 	gtk_misc_set_padding (GTK_MISC (label), 2, 0);
 
-	GtkWidget * spin_button_recognize_delay = gtk_spin_button_new_with_range (100, 60000, 1);
+	GtkWidget *spin_button_recognize_delay = gtk_spin_button_new_with_range (100, 60000, 1);
 	gtk_widget_show (spin_button_recognize_delay);
 	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spin_button_recognize_delay), TRUE);
 	gtk_spin_button_set_snap_to_ticks (GTK_SPIN_BUTTON (spin_button_recognize_delay), TRUE);
@@ -520,17 +563,25 @@ button_options_clicked_callback (GtkWidget *button, gpointer user_data)
 
 	gtk_table_attach_defaults(GTK_TABLE(table), label,				0, 1, 2, 3);
 	gtk_table_attach_defaults(GTK_TABLE(table), spin_button_recognize_delay,	1, 2, 2, 3);
+	
+	// Save CHML
+	GtkWidget *check_button_save_chml = gtk_check_button_new_with_mnemonic(_("Save written character to file."));
+	gtk_widget_show(check_button_save_chml);
+	gtk_table_attach_defaults(GTK_TABLE(table), check_button_save_chml,		0, 2, 3, 4);
 
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin_button_num_of_chars), num_of_chars);
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin_button_drawingarea_size), drawingarea_size);
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin_button_recognize_delay), recognize_delay);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check_button_save_chml), save_chml);
 
 	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
 		num_of_chars = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_button_num_of_chars));
 		drawingarea_size = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_button_drawingarea_size));
 		recognize_delay = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_button_recognize_delay));
-
+		save_chml = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (check_button_save_chml));
+		
 		g_object_set_data(G_OBJECT(main_window), "noquit-on-destroy", (gpointer) 1);
+		gtk_window_get_position (GTK_WINDOW (main_window), &main_window_xpos, &main_window_ypos);
 		gtk_widget_destroy(main_window);
 		g_object_set_data(G_OBJECT(main_window), "noquit-on-destroy", (gpointer) 0);
 
@@ -560,8 +611,16 @@ create_main_window()
 
 	for (int i=0;i<num_of_chars;++i)
 	{
+		GtkWidget *vbox = gtk_vbox_new(FALSE, 0);
+		gtk_widget_show(vbox);
+
+		GtkWidget *combo_box = gtk_combo_box_new_text();
+		gtk_widget_show(combo_box);
+
 		GtkWidget *da = gtk_drawing_area_new();
 		gtk_widget_set_size_request(da, drawingarea_size, drawingarea_size);
+		gtk_widget_show(da);
+
 		g_signal_connect(G_OBJECT(da), "expose-event", G_CALLBACK(drawingarea_expose_callback), &chars[i]);
 		gtk_widget_add_events(da, GDK_BUTTON_PRESS_MASK);
 		gtk_widget_add_events(da, GDK_BUTTON_RELEASE_MASK);
@@ -570,8 +629,16 @@ create_main_window()
 		g_signal_connect(G_OBJECT(da), "button-release-event", G_CALLBACK(drawingarea_mouseup_callback), &chars[i]);
 		g_signal_connect(G_OBJECT(da), "motion-notify-event", G_CALLBACK(drawingarea_mousemotion_callback), &chars[i]);
 		g_object_set_data(G_OBJECT(da), "draw_character", (gpointer) 1);
-		gtk_widget_show(da);
-		gtk_box_pack_start(GTK_BOX(hbox), da, FALSE, FALSE, 0);
+		g_object_set_data(G_OBJECT(da), "combo_box_candidate_list", (gpointer) combo_box);
+		g_object_set_data(G_OBJECT(da), "character", (gpointer) &chars[i]);
+
+		gtk_combo_box_set_focus_on_click(GTK_COMBO_BOX(combo_box), FALSE);
+		g_signal_connect(G_OBJECT(combo_box), "popdown", G_CALLBACK(combo_box_popdown_callback), (gpointer) da);
+		g_signal_connect(G_OBJECT(combo_box), "popup", G_CALLBACK(combo_box_popup_callback), (gpointer) da);
+
+		gtk_box_pack_start(GTK_BOX(vbox), combo_box, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), da, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
 	}
 
 	GtkWidget *table = gtk_table_new(4, 2, TRUE);
