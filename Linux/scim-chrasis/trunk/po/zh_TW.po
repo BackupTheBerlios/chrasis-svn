@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-12 04:37+0800\n"
+"POT-Creation-Date: 2008-03-14 01:36+0800\n"
 "PO-Revision-Date: 2008-03-12 04:37+0800\n"
 "Last-Translator: Victor Tseng <palatis@gmail.com>\n"
 "Language-Team: Traditional Chiense <zh@li.org>\n"
@@ -15,18 +15,76 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/scim-chrasis.cpp:78
+#: ../src/scim-chrasis.cpp:128
 msgid "Chinese Handwriting Recognition As-Is"
-msgstr ""
+msgstr "就醬寫"
 
-#: ../src/scim-chrasis.cpp:79
+#: ../src/scim-chrasis.cpp:129
 msgid "A Chinese handwriting character recognition utility."
+msgstr "中文手寫辨識工具"
+
+#: ../src/scim-chrasis.cpp:632
+msgid "Chrasis Options"
+msgstr "Chrasis 選項"
+
+#. Number of Characters
+#: ../src/scim-chrasis.cpp:646
+msgid "_Writing areas:"
+msgstr "寫字區 (_W)："
+
+#. Drawing Area Size
+#: ../src/scim-chrasis.cpp:662
+msgid "Writing area _size:"
+msgstr "寫字區大小 (_s)："
+
+#. Recognize Delay
+#: ../src/scim-chrasis.cpp:678
+msgid "Recognize _delay (ms):"
+msgstr "辨識延遲（毫秒）(_d)："
+
+#. Save CHML
+#: ../src/scim-chrasis.cpp:694
+msgid "Save written character to file."
+msgstr "將手寫資料存至檔案。"
+
+#. KUSO: copy/paste programming start
+#: ../src/scim-chrasis.cpp:812
+msgid "BackSp"
 msgstr ""
 
-#: ../src/scim-chrasis.cpp:223
+#: ../src/scim-chrasis.cpp:820
+msgid "Del"
+msgstr ""
+
+#: ../src/scim-chrasis.cpp:828
+msgid "Tab"
+msgstr ""
+
+#: ../src/scim-chrasis.cpp:836
+msgid "Enter"
+msgstr ""
+
+#: ../src/scim-chrasis.cpp:844
+msgid "Space"
+msgstr ""
+
+#: ../src/scim-chrasis.cpp:855
+msgid "<-"
+msgstr ""
+
+#: ../src/scim-chrasis.cpp:863
+msgid "->"
+msgstr ""
+
+#. KUSO: copy/paste programming end
+#: ../src/scim-chrasis.cpp:872
+msgid "Options..."
+msgstr "選項..."
+
+#: ../src/scim-chrasis.cpp:936
 msgid "Chrasis Writing Pad"
-msgstr ""
+msgstr "Chrasis 寫字板"
 
-#: ../src/scim-chrasis.cpp:225
+#: ../src/scim-chrasis.cpp:938
 msgid "Show/Hide Chinese handwriting recognition pad"
-msgstr ""
+msgstr "顯示/隱藏中文手寫辨識寫字板"
