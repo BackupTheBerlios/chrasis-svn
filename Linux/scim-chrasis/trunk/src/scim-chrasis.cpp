@@ -53,6 +53,8 @@
   #define bind_textdomain_codeset(domain,codeset)
 #endif
 
+#include <set>
+
 using namespace scim;
 
 #define scim_module_init			chrasis_LTX_scim_module_init
@@ -67,6 +69,7 @@ using namespace scim;
 #define SCIM_CONFIG_HELPER_CHRASIS_MAIN_WINDOW_XPOS	"/Helper/Chrasis/MainWindowXPos"
 #define SCIM_CONFIG_HELPER_CHRASIS_MAIN_WINDOW_YPOS	"/Helper/Chrasis/MainWindowYPos"
 #define SCIM_CONFIG_HELPER_CHRASIS_SAVE_CHML		"/Helper/Chrasis/SaveCHML"
+#define SCIM_CONFIG_HELPER_CHRASIS_LEARN_CHARACTER	"/Helper/Chrasis/LearnCharacter"
 
 #define SCIM_CHRASIS_UUID	"bf0a3c4d-244e-467f-b44e-27d74c840c30"
 #define SCIM_CHRASIS_ICON	(SCIM_ICONDIR "/scim-chrasis.png")
@@ -102,6 +105,7 @@ static gint	recognize_delay		= 3000;
 static gint	main_window_xpos	= 0;
 static gint	main_window_ypos	= 0;
 static gboolean	save_chml		= FALSE;
+static gboolean learn_character		= FALSE;
 
 static HelperInfo	helper_info(	String (SCIM_CHRASIS_UUID),
 					"",
@@ -167,6 +171,9 @@ extern "C" {
 			save_chml = config->read(
 				String(SCIM_CONFIG_HELPER_CHRASIS_SAVE_CHML),
 				static_cast<bool>(save_chml));
+			learn_character = config->read(
+				String(SCIM_CONFIG_HELPER_CHRASIS_LEARN_CHARACTER),
+				static_cast<bool>(learn_character));
 
 			run(display);
 
@@ -188,6 +195,9 @@ extern "C" {
 			config->write(
 				String(SCIM_CONFIG_HELPER_CHRASIS_SAVE_CHML),
 				static_cast<bool>(save_chml));
+			config->write(
+				String(SCIM_CONFIG_HELPER_CHRASIS_LEARN_CHARACTER),
+				static_cast<bool>(learn_character));
 		}
 
 		SCIM_DEBUG_MAIN(1) << "exit chrasis_LTX_scim_helper_module_run_helper ()\n";
@@ -351,6 +361,59 @@ drawingarea_mousedown_callback (GtkWidget *drawingarea, GdkEventButton *event, g
 	return FALSE;
 }
 
+static void
+menu_cleaner (GtkWidget *child, gpointer)
+{
+	gtk_widget_destroy (child);
+}
+
+static void
+_populate_candidate_list(GtkMenu *menu, GtkButton *button, chrasis::Character const & c)
+{
+	chrasis::platform::initialize_userdir();
+
+	// clear candidate list menu
+	gtk_container_foreach (GTK_CONTAINER (menu), menu_cleaner, NULL);
+
+	// set new candidate list menu
+	chrasis::ItemPossibilityList likely(recognize(normalize(c)));
+	likely.sort(chrasis::ItemPossibilityList::SORTING_POSSIBILITY);
+	GtkWidget *item;
+	if (!likely.empty())
+	{
+		gtk_button_set_label (GTK_BUTTON (button), likely.begin()->name.c_str());
+		std::set< std::string > char_bank;
+		for (chrasis::ItemPossibilityList::const_iterator li = likely.begin();
+		     li != likely.end();
+		     ++li)
+		{
+			if (char_bank.find(li->name) == char_bank.end())
+			{
+				item = gtk_menu_item_new_with_label(li->name.c_str());
+				gtk_widget_show(item);
+				gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+			}
+			char_bank.insert(li->name);
+		}
+	}
+	else
+		gtk_button_set_label (GTK_BUTTON (button), " ");
+
+	item = gtk_separator_menu_item_new();
+	gtk_widget_show(item);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+
+	item = gtk_menu_item_new_with_mnemonic(_("Clear"));
+	gtk_widget_show(item);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+	g_object_set_data (G_OBJECT (menu), "menu_item_clear", (gpointer) item);
+
+	item = gtk_menu_item_new_with_mnemonic(_("Incorrect"));
+	gtk_widget_show(item);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+	g_object_set_data (G_OBJECT (menu), "menu_item_incorrect", (gpointer) item);
+}
+
 static gboolean
 drawingarea_mouseup_callback (GtkWidget *drawingarea, GdkEventButton *event, gpointer user_data)
 {
@@ -358,37 +421,13 @@ drawingarea_mouseup_callback (GtkWidget *drawingarea, GdkEventButton *event, gpo
 	{
 		chrasis::Character *c = static_cast<chrasis::Character *>(user_data);
 
-		chrasis::platform::initialize_userdir();
-
 		GtkWidget *button = GTK_WIDGET (g_object_get_data (G_OBJECT (drawingarea), "button_candidate_list"));
 		GtkWidget *menu = GTK_WIDGET (g_object_get_data (G_OBJECT (button), "menu_candidate_list"));
 
-		chrasis::ItemPossibilityList likely(recognize(normalize(*c)));
-		likely.sort(chrasis::ItemPossibilityList::SORTING_POSSIBILITY);
-
-		// clear menu
-		GtkWidget *item;
-		while ((item = gtk_menu_get_active(GTK_MENU(menu))) != NULL)
-			gtk_widget_destroy(item);
-
-		// set new menu
-		if (!likely.empty())
-		{
-			gtk_button_set_label(GTK_BUTTON(button), likely.begin()->name.c_str());
-			for (chrasis::ItemPossibilityList::const_iterator li = likely.begin();
-			     li != likely.end();
-			     ++li)
-			{
-				item = gtk_menu_item_new_with_label(li->name.c_str());
-				gtk_widget_show(item);
-				gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-			}
-		}
-		else
-			gtk_button_set_label(GTK_BUTTON(button), " ");
+		_populate_candidate_list (GTK_MENU (menu), GTK_BUTTON (button), *c);
 
 		guint id = g_timeout_add(recognize_delay, recognize_timeout, (gpointer) drawingarea);
-		g_object_set_data(G_OBJECT(menu), "recognize_timeout_id", (gpointer) id);
+		g_object_set_data (G_OBJECT (menu), "recognize_timeout_id", (gpointer) id);
 
 		return TRUE;
 	}
@@ -408,7 +447,7 @@ candidate_menu_popup_handler (GtkWidget *menu, GdkEvent *event)
 
 		if (event_button->button != 1)
 			return FALSE;
-		if (gtk_menu_get_active(GTK_MENU(menu)) == NULL)
+		if (gtk_menu_get_active (GTK_MENU (menu)) == NULL)
 			return FALSE;
 
 		guint id = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (menu), "recognize_timeout_id"));
@@ -426,13 +465,65 @@ menu_choosen_callback (GtkWidget *menu, gpointer user_data)
 {
 	GtkWidget *button = GTK_WIDGET(g_object_get_data(G_OBJECT(user_data), "button_candidate_list"));
 	GtkWidget *item = gtk_menu_get_active(GTK_MENU(menu));
-	GtkWidget *item_learn = GTK_WIDGET(g_object_get_data(G_OBJECT(menu), "menu_item_learn"));
+	GtkWidget *item_incorrect = GTK_WIDGET(g_object_get_data(G_OBJECT(menu), "menu_item_incorrect"));
+	GtkWidget *item_clear = GTK_WIDGET(g_object_get_data(G_OBJECT(menu), "menu_item_clear"));
 
-	GtkWidget *label = gtk_bin_get_child(GTK_BIN(item));
-	gtk_button_set_label(GTK_BUTTON(button), gtk_label_get_text(GTK_LABEL(label)));
+	if (item == item_incorrect)
+	{
+		GtkWidget *dialog = gtk_dialog_new_with_buttons (
+			_("Correct Character"), NULL,
+			GTK_DIALOG_MODAL,
+			GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+			GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+			NULL);
+		gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
+
+		GtkWidget *label = gtk_label_new_with_mnemonic (_("Input correct character:"));
+		gtk_widget_show(label);
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), label, FALSE, FALSE, 0);
+
+		GtkWidget *entry = gtk_entry_new();
+		gtk_widget_show(entry);
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), entry, FALSE, FALSE, 0);
+
+		if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT &&
+		    String (gtk_entry_get_text (GTK_ENTRY (entry))) != "")
+		{
+			chrasis::Character *c = static_cast<chrasis::Character *>(g_object_get_data(G_OBJECT(menu), "character"));
+			chrasis::Character nc(normalize(*c));
+			nc.set_name (String (gtk_entry_get_text (GTK_ENTRY (entry))));
+			learn(nc);
+
+			_populate_candidate_list (GTK_MENU (menu), GTK_BUTTON (button), *c);
+
+			item = gtk_menu_get_active (GTK_MENU (menu));
+			item_incorrect = GTK_WIDGET(g_object_get_data(G_OBJECT(menu), "menu_item_incorrect"));
+		}
+		else
+			gtk_menu_shell_select_first (GTK_MENU_SHELL (menu), TRUE);
+
+		gtk_widget_destroy (dialog);
+
+		if (item == item_incorrect)
+		{
+			gtk_button_set_label (GTK_BUTTON (button), " ");
+			guint id = g_timeout_add(recognize_delay, recognize_timeout, user_data);
+			g_object_set_data (G_OBJECT (menu), "recognize_timeout_id", (gpointer) id);
+			return;
+		}
+	}
+	else if (item == item_clear)
+	{
+		gtk_button_set_label (GTK_BUTTON (button), " ");
+		recognize_timeout(user_data);	// invoke this to clear drawing area and candidate list
+		return;
+	}
+
+	GtkWidget *label = gtk_bin_get_child (GTK_BIN (item));
+	gtk_button_set_label (GTK_BUTTON (button), gtk_label_get_text (GTK_LABEL (label)));
 
 	guint id = g_timeout_add(recognize_delay, recognize_timeout, user_data);
-	g_object_set_data(G_OBJECT(menu), "recognize_timeout_id", (gpointer) id);
+	g_object_set_data (G_OBJECT (menu), "recognize_timeout_id", (gpointer) id);
 }
 
 static void
@@ -504,14 +595,14 @@ button_repeat_timeout (gpointer data)
 }
 
 static inline void
-_write_char_to_file (chrasis::Character const & c, gchar const * const name)
+_write_char_to_file (chrasis::Character const & c)
 {
 	String fn = scim_get_home_dir() + String(SCIM_CHRASIS_CHML_FILE);
 	std::ofstream fout(fn.c_str(), std::ios_base::out | std::ios_base::app);
 
 	if (fout)
 	{
-		fout << "<character name=\"" << name << "\">\n";
+		fout << "<character name=\"" << c.get_name() << "\">\n";
 		for (chrasis::Stroke::const_iterator si = c.strokes_begin();
 		     si != c.strokes_end();
 		     ++si)
@@ -537,15 +628,17 @@ recognize_timeout (gpointer user_data)
 	chrasis::Character *c = static_cast<chrasis::Character *>(g_object_get_data(G_OBJECT(drawingarea), "character"));
 
 	// send text
-	gchar const * text(NULL);
-	if ((text = gtk_button_get_label (GTK_BUTTON (button))) != NULL)
+	gchar const * text = gtk_button_get_label (GTK_BUTTON (button));
+	if (text != NULL)
 	{
 		String s_text(text);
 		if (s_text != " ")
 		{
-			// save the character to file
+			c->set_name(s_text);
 			if (save_chml)
-				_write_char_to_file (*c, text);
+				_write_char_to_file (*c);
+			if (learn_character)
+				learn(normalize(*c));
 
 			helper_agent.commit_string(-1, "", scim::utf8_mbstowcs(text));
 		}
@@ -554,9 +647,7 @@ recognize_timeout (gpointer user_data)
 	// clear menu
 	gtk_button_set_label(GTK_BUTTON(button), " ");
 	GtkWidget *menu = GTK_WIDGET (g_object_get_data (G_OBJECT (button), "menu_candidate_list"));
-	GtkWidget *item;
-	while ((item = gtk_menu_get_active(GTK_MENU(menu))) != NULL)
-		gtk_widget_destroy(item);
+	gtk_container_foreach (GTK_CONTAINER (menu), menu_cleaner, NULL);
 
 	// clear drawingarea
 	g_object_set_data(G_OBJECT(drawingarea), "draw_character", (gpointer) 0);
@@ -575,12 +666,12 @@ button_options_clicked_callback (GtkWidget *button, gpointer user_data)
 	GtkWidget *dialog = gtk_dialog_new_with_buttons (
 		_("Chrasis Options"), NULL,
 		GTK_DIALOG_MODAL,
-		GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-		GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+		GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
 		NULL);
-	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_CLOSE);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 8);
 
-	GtkWidget *table = gtk_table_new(4, 2, FALSE);
+	GtkWidget *table = gtk_table_new(5, 2, FALSE);
 	gtk_widget_show(table);
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), table, FALSE, FALSE, 0);
 
@@ -635,34 +726,40 @@ button_options_clicked_callback (GtkWidget *button, gpointer user_data)
 	gtk_table_attach_defaults(GTK_TABLE(table), spin_button_recognize_delay,	1, 2, 2, 3);
 	
 	// Save CHML
-	GtkWidget *check_button_save_chml = gtk_check_button_new_with_mnemonic(_("Save written character to file."));
+	GtkWidget *check_button_save_chml = gtk_check_button_new_with_mnemonic(_("Save written character to _file."));
 	gtk_widget_show(check_button_save_chml);
 	gtk_table_attach_defaults(GTK_TABLE(table), check_button_save_chml,		0, 2, 3, 4);
+
+	// Learn Character
+	GtkWidget *check_button_learn_character = gtk_check_button_new_with_mnemonic(_("_Learn recognized character into database."));
+	gtk_widget_show(check_button_learn_character);
+	gtk_table_attach_defaults(GTK_TABLE(table), check_button_learn_character,	0, 2, 4, 5);
 
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin_button_num_of_chars), num_of_chars);
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin_button_drawingarea_size), drawingarea_size);
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (spin_button_recognize_delay), recognize_delay);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check_button_save_chml), save_chml);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check_button_learn_character), learn_character);
 
-	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT)
-	{
-		gint new_num_of_chars = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_button_num_of_chars));
-		gint new_drawingarea_size = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_button_drawingarea_size));
-		recognize_delay = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_button_recognize_delay));
-		save_chml = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (check_button_save_chml));
+	gtk_dialog_run (GTK_DIALOG (dialog));
+
+	gint new_num_of_chars = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_button_num_of_chars));
+	gint new_drawingarea_size = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_button_drawingarea_size));
+	recognize_delay = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (spin_button_recognize_delay));
+	save_chml = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (check_button_save_chml));
+	learn_character = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (check_button_learn_character));
 		
-		if (num_of_chars != new_num_of_chars || drawingarea_size != new_drawingarea_size)
-		{
-			g_object_set_data(G_OBJECT(main_window), "noquit-on-destroy", (gpointer) 1);
-			gtk_window_get_position (GTK_WINDOW (main_window), &main_window_xpos, &main_window_ypos);
-			gtk_widget_destroy(main_window);
-			g_object_set_data(G_OBJECT(main_window), "noquit-on-destroy", (gpointer) 0);
+	if (num_of_chars != new_num_of_chars || drawingarea_size != new_drawingarea_size)
+	{
+		g_object_set_data(G_OBJECT(main_window), "noquit-on-destroy", (gpointer) 1);
+		gtk_window_get_position (GTK_WINDOW (main_window), &main_window_xpos, &main_window_ypos);
+		gtk_widget_destroy(main_window);
+		g_object_set_data(G_OBJECT(main_window), "noquit-on-destroy", (gpointer) 0);
 
-			num_of_chars = new_num_of_chars;
-			drawingarea_size = new_drawingarea_size;
+		num_of_chars = new_num_of_chars;
+		drawingarea_size = new_drawingarea_size;
 
-			create_main_window();
-		}
+		create_main_window();
 	}
 
 	gtk_widget_destroy (dialog);
@@ -713,6 +810,7 @@ create_main_window()
 		gtk_menu_shell_set_take_focus (GTK_MENU_SHELL(menu), FALSE);
 		g_signal_connect(G_OBJECT(menu), "cancel", G_CALLBACK(menu_choosen_callback), (gpointer) da);
 		g_signal_connect(G_OBJECT(menu), "selection-done", G_CALLBACK(menu_choosen_callback), (gpointer) da);
+		g_object_set_data(G_OBJECT(menu), "character", (gpointer) &chars[i]);
 
 		g_object_set_data(G_OBJECT(button), "menu_candidate_list", (gpointer) menu);
 		g_signal_connect_swapped(button, "button-press-event", G_CALLBACK(candidate_menu_popup_handler), menu);
@@ -864,4 +962,6 @@ run (const String &display)
 	}
 
 	gtk_main();
+
+	delete [] argv;
 }

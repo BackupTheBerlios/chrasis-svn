@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-14 01:36+0800\n"
+"POT-Creation-Date: 2008-03-16 02:12+0800\n"
 "PO-Revision-Date: 2008-03-12 04:37+0800\n"
 "Last-Translator: Victor Tseng <palatis@gmail.com>\n"
 "Language-Team: Traditional Chiense <zh@li.org>\n"
@@ -15,76 +15,97 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/scim-chrasis.cpp:128
+#: ../src/scim-chrasis.cpp:127
 msgid "Chinese Handwriting Recognition As-Is"
 msgstr "就醬寫"
 
-#: ../src/scim-chrasis.cpp:129
+#: ../src/scim-chrasis.cpp:128
 msgid "A Chinese handwriting character recognition utility."
 msgstr "中文手寫辨識工具"
 
-#: ../src/scim-chrasis.cpp:632
+#: ../src/scim-chrasis.cpp:406
+msgid "Clear"
+msgstr "清除"
+
+#: ../src/scim-chrasis.cpp:411
+msgid "Incorrect"
+msgstr "錯誤"
+
+#: ../src/scim-chrasis.cpp:474
+msgid "Correct Character"
+msgstr "校正文字"
+
+#: ../src/scim-chrasis.cpp:481
+msgid "Input correct character:"
+msgstr "請輸入正確的字："
+
+#: ../src/scim-chrasis.cpp:666
 msgid "Chrasis Options"
 msgstr "Chrasis 選項"
 
 #. Number of Characters
-#: ../src/scim-chrasis.cpp:646
+#: ../src/scim-chrasis.cpp:680
 msgid "_Writing areas:"
 msgstr "寫字區 (_W)："
 
 #. Drawing Area Size
-#: ../src/scim-chrasis.cpp:662
+#: ../src/scim-chrasis.cpp:696
 msgid "Writing area _size:"
 msgstr "寫字區大小 (_s)："
 
 #. Recognize Delay
-#: ../src/scim-chrasis.cpp:678
+#: ../src/scim-chrasis.cpp:712
 msgid "Recognize _delay (ms):"
 msgstr "辨識延遲（毫秒）(_d)："
 
 #. Save CHML
-#: ../src/scim-chrasis.cpp:694
-msgid "Save written character to file."
-msgstr "將手寫資料存至檔案。"
+#: ../src/scim-chrasis.cpp:728
+msgid "Save written character to _file."
+msgstr "將手寫資料儲存至檔案"
+
+#. Learn Character
+#: ../src/scim-chrasis.cpp:733
+msgid "_Learn recognized character into database."
+msgstr "將辨識結果學習至資料庫"
+
+#: ../src/scim-chrasis.cpp:772 ../src/scim-chrasis.cpp:951
+msgid "Chrasis Writing Pad"
+msgstr "Chrasis 寫字板"
 
 #. KUSO: copy/paste programming start
-#: ../src/scim-chrasis.cpp:812
+#: ../src/scim-chrasis.cpp:827
 msgid "BackSp"
 msgstr ""
 
-#: ../src/scim-chrasis.cpp:820
+#: ../src/scim-chrasis.cpp:835
 msgid "Del"
 msgstr ""
 
-#: ../src/scim-chrasis.cpp:828
+#: ../src/scim-chrasis.cpp:843
 msgid "Tab"
 msgstr ""
 
-#: ../src/scim-chrasis.cpp:836
+#: ../src/scim-chrasis.cpp:851
 msgid "Enter"
 msgstr ""
 
-#: ../src/scim-chrasis.cpp:844
+#: ../src/scim-chrasis.cpp:859
 msgid "Space"
 msgstr ""
 
-#: ../src/scim-chrasis.cpp:855
+#: ../src/scim-chrasis.cpp:870
 msgid "<-"
 msgstr ""
 
-#: ../src/scim-chrasis.cpp:863
+#: ../src/scim-chrasis.cpp:878
 msgid "->"
 msgstr ""
 
 #. KUSO: copy/paste programming end
-#: ../src/scim-chrasis.cpp:872
+#: ../src/scim-chrasis.cpp:887
 msgid "Options..."
 msgstr "選項..."
 
-#: ../src/scim-chrasis.cpp:936
-msgid "Chrasis Writing Pad"
-msgstr "Chrasis 寫字板"
-
-#: ../src/scim-chrasis.cpp:938
+#: ../src/scim-chrasis.cpp:953
 msgid "Show/Hide Chinese handwriting recognition pad"
 msgstr "顯示/隱藏中文手寫辨識寫字板"
