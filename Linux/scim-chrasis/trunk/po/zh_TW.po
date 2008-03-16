@@ -41,7 +41,7 @@ msgstr "請輸入正確的字："
 
 #: ../src/scim-chrasis.cpp:666
 msgid "Chrasis Options"
-msgstr "Chrasis 選項"
+msgstr "就醬寫選項"
 
 #. Number of Characters
 #: ../src/scim-chrasis.cpp:680
@@ -70,7 +70,7 @@ msgstr "將辨識結果學習至資料庫"
 
 #: ../src/scim-chrasis.cpp:772 ../src/scim-chrasis.cpp:951
 msgid "Chrasis Writing Pad"
-msgstr "Chrasis 寫字板"
+msgstr "就醬寫字板"
 
 #. KUSO: copy/paste programming start
 #: ../src/scim-chrasis.cpp:827
@@ -83,11 +83,11 @@ msgstr ""
 
 #: ../src/scim-chrasis.cpp:843
 msgid "Tab"
-msgstr ""
+msgstr "↹"
 
 #: ../src/scim-chrasis.cpp:851
 msgid "Enter"
-msgstr ""
+msgstr "↵"
 
 #: ../src/scim-chrasis.cpp:859
 msgid "Space"
@@ -95,11 +95,11 @@ msgstr ""
 
 #: ../src/scim-chrasis.cpp:870
 msgid "<-"
-msgstr ""
+msgstr "←"
 
 #: ../src/scim-chrasis.cpp:878
 msgid "->"
-msgstr ""
+msgstr "→"
 
 #. KUSO: copy/paste programming end
 #: ../src/scim-chrasis.cpp:887
