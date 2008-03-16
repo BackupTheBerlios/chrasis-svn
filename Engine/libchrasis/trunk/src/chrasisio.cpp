@@ -49,9 +49,14 @@ normalize( const Stroke & orig_stroke, int const dist_threshold )
 			for (Point::iterator pi = normalized.begin();
 			     pi != normalized.end();)
 			{
-				Point::iterator pf = pi, pm = pi+1, pl = pi+2;
-				if (pm == normalized.end() || pl == normalized.end())
+				Point::iterator pf = pi;
+				Point::iterator pm = pf + 1;
+				if (pm == normalized.end())
 					break;
+				Point::iterator pl = pm + 1;
+				if (pl == normalized.end())
+					break;
+
 				double angle = std::min(
 					abs((*pf - *pm).arg() - (*pm - *pl).arg()),
 					abs((*pf - *pm).arg() + (*pm - *pl).arg())
