@@ -11,6 +11,9 @@
 
 @implementation OVIMChrasisController
 
+- (BOOL) shouldLearnRecognized { return learn_recognized; }
+- (BOOL) shouldSaveWrittenCharacter { return save_chml; }
+
 - (float) titleBarHeight
 {
     NSRect frame = NSMakeRect (0, 0, 100, 100);
@@ -236,15 +239,12 @@
 	if ([popup selectedItem] == [view popupCandidateListItemIncorrect])
 	{
 		NSLog (@"incorrect character!");
-		[self unregisterRecognizeTimer: view];
 		[self registerRecognizeTimer: viewToBeLearned];
 		viewToBeLearned = view;
+		[self unregisterRecognizeTimer: view];
 
 		[panel_learning center];
 		[panel_learning makeKeyAndOrderFront: nil];
-
-		// learn the character and re-recognize here
-		[sender selectItemAtIndex: 0];
 	}
 	else if ([popup selectedItem] == [view popupCandidateListItemClear])
 	{
@@ -284,13 +284,17 @@
 		NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
 		[standardUserDefaults setFloat: [panel_writing_pad frame].origin.x forKey: @"writing_pad_x"];
 		[standardUserDefaults setFloat: [panel_writing_pad frame].origin.y forKey: @"writing_pad_y"];
+		[standardUserDefaults synchronize];
 		[[NSApplication sharedApplication] terminate: self];
 	}
 }
 
 - (IBAction) learning_panel_confirmed: (id)sender {
 	[panel_learning close];
-	// learn and re-recognize here
+	NSString *name = [textfield_correct_character stringValue];
+	if (![name isEqualToString: @""])
+		[viewToBeLearned learnCharacter: name];
+	[viewToBeLearned updateCandidateList];
 }
 
 @end

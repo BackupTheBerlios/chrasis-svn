@@ -9,6 +9,8 @@
 #import "ChrasisDrawingView.h"
 #import "OVIMChrasisController.h"
 
+#import <fstream>
+
 @implementation ChrasisDrawingView
 
 @synthesize popupCandidateList;
@@ -36,14 +38,60 @@
 	[self display];
 }
 
+- (void)learnCharacter: (NSString *)name {
+	chrasis::Character nc(normalize(*character));
+	nc.set_name([name UTF8String]);
+	chrasis::learn(nc);
+}
+
+- (void)updateCandidateList {
+	[popupCandidateList removeAllItems];
+
+	chrasis::platform::initialize_userdir();
+	chrasis::ItemPossibilityList likely(recognize(normalize(*character)));
+	likely.sort(chrasis::ItemPossibilityList::SORTING_POSSIBILITY);
+
+	for (chrasis::ItemPossibilityList::const_iterator li = likely.begin();
+		 li != likely.end();
+		 ++li)
+		[popupCandidateList addItemWithTitle: [NSString stringWithUTF8String: li->name.c_str()]];
+
+	[[popupCandidateList menu] addItem: [NSMenuItem separatorItem]];
+	popupCandidateListItemClear = [[popupCandidateList menu] addItemWithTitle: NSLocalizedString(@"Clear", @"Candidate List MenuItem - Clear") action: nil keyEquivalent: @""];
+	popupCandidateListItemIncorrect = [[popupCandidateList menu] addItemWithTitle: NSLocalizedString(@"Incorrect", @"Candidate List MenuItem - Incorrect") action: nil keyEquivalent: @""];
+}
+
 - (void) recognizeTimerTick: (NSTimer *)timer {
 	[displayServer sendStringToCurrentComposingBuffer: [popupCandidateList titleOfSelectedItem]];
-
 	recognizeTimer = nil;
 
 #ifdef OVIMCHRASIS_DEBUG
 	NSLog(@"recognizeTimerTick: sending %@", [popupCandidateList titleOfSelectedItem]);
 #endif
+
+	if ([controller shouldLearnRecognized])
+		[self learnCharacter: [popupCandidateList titleOfSelectedItem]];
+
+	if ([controller shouldSaveWrittenCharacter])
+	{
+		NSString *filename = [[NSString stringWithCString: getenv("HOME")] stringByAppendingString: @"/.chrasis/OVIMChrasis-saved-characters.chml"];
+		std::ofstream fout([filename UTF8String], std::ios_base::out | std::ios_base::app);
+
+		fout << "<character name=\"" << [[popupCandidateList titleOfSelectedItem] UTF8String]<< "\">" << std::endl;
+		for (chrasis::Character::Stroke::const_iterator si = character->strokes_begin();
+			 si != character->strokes_end();
+			 ++si)
+		{
+			fout << "  <stroke>" << std::endl;
+			for (chrasis::Character::Stroke::Point::const_iterator pi = si->points_begin();
+				 pi != si->points_end();
+				 ++pi)
+				fout << "    <point x=\"" << pi->x() << "\" y=\"" << pi->y() << "\"/>" << std::endl;
+			fout << "  </stroke>" << std::endl;
+		}
+		fout << "</character>" << std::endl;
+		fout.close();
+	}
 
 	[self clearCharacterData];
 }
@@ -63,22 +111,7 @@
 	character->add_point(p.x, p.y);
 
 	// put recognize code here
-	[popupCandidateList removeAllItems];
-
-	chrasis::platform::initialize_userdir();
-	chrasis::ItemPossibilityList likely(recognize(normalize(*character)));
-	likely.sort(chrasis::ItemPossibilityList::SORTING_POSSIBILITY);
-
-	UInt32 utf8 = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF8);
-
-	for (chrasis::ItemPossibilityList::const_iterator li = likely.begin();
-		 li != likely.end();
-		 ++li)
-		[popupCandidateList addItemWithTitle: [NSString stringWithCString: li->name.c_str() encoding: utf8]];
-
-	[[popupCandidateList menu] addItem: [NSMenuItem separatorItem]];
-	popupCandidateListItemClear = [[popupCandidateList menu] addItemWithTitle: @"Clear" action: nil keyEquivalent: @""];
-	popupCandidateListItemIncorrect = [[popupCandidateList menu] addItemWithTitle: @"Incorrect" action: nil keyEquivalent: @""];
+	[self updateCandidateList];
 
 	[self display];
 

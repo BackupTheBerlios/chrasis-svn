@@ -63,8 +63,8 @@
 	int num_writing_areas;
 	int writing_area_size;
 	int recognize_delay;
-	bool save_chml;
-	bool learn_recognized;
+	BOOL save_chml;
+	BOOL learn_recognized;
 
 	ChrasisDrawingView *viewToBeLearned;
 	
@@ -77,6 +77,8 @@
 
 - (void) registerRecognizeTimer: (ChrasisDrawingView *)view;
 - (void) unregisterRecognizeTimer: (ChrasisDrawingView *)view;
+- (BOOL) shouldLearnRecognized;
+- (BOOL) shouldSaveWrittenCharacter;
 
 - (IBAction) candidate_list_item_selected: (id)sender;
 

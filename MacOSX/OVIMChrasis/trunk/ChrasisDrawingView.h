@@ -19,7 +19,7 @@
 	NSMenuItem *popupCandidateListItemIncorrect;
 
 	CGFloat dash[2];
-	
+
 	chrasis::Character *character;
 	
 	NSTimer *recognizeTimer;
@@ -39,7 +39,11 @@
 - (BOOL)isFlipped;
 - (BOOL)acceptsFirstResponder;
 
+- (void)awakeFromNib;
+
 - (void)clearCharacterData;
+- (void)learnCharacter: (NSString *)name;
+- (void)updateCandidateList;
 
 - (void)recognizeTimerTick: (NSTimer *)timer;
 - (void)mouseDown: (NSEvent *)event;
