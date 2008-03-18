@@ -66,8 +66,6 @@
 		86369A200CD2A5AA00F5F856 /* libchrasis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */; };
 		86369A210CD2A5AB00F5F856 /* libchrasis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */; };
 		86369A220CD2A5AB00F5F856 /* libchrasis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */; };
-		86369A230CD2A5BD00F5F856 /* chrasis in Headers */ = {isa = PBXBuildFile; fileRef = 863699490CD2953800F5F856 /* chrasis */; settings = {ATTRIBUTES = (Public, ); }; };
-		86369A240CD2A5BD00F5F856 /* chrasis.h in Headers */ = {isa = PBXBuildFile; fileRef = 863699500CD2953800F5F856 /* chrasis.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		86369A250CD2A5CF00F5F856 /* chrasisio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699430CD2951B00F5F856 /* chrasisio.cpp */; };
 		86369A260CD2A5CF00F5F856 /* database.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699440CD2951B00F5F856 /* database.cpp */; };
 		86369A270CD2A5CF00F5F856 /* internal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699450CD2951B00F5F856 /* internal.cpp */; };
@@ -75,8 +73,14 @@
 		86369A3E0CD2A6B300F5F856 /* learn in CopyFiles */ = {isa = PBXBuildFile; fileRef = 863699950CD29BB300F5F856 /* learn */; };
 		86369A3F0CD2A6B700F5F856 /* probability_test in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8636999A0CD29BE200F5F856 /* probability_test */; };
 		86369A400CD2A6BA00F5F856 /* recognize in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8636999F0CD29BED00F5F856 /* recognize */; };
-		86369A840CD2B05100F5F856 /* libchrasis.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */; };
 		8665D4140D8A5254002CCF7B /* plat_posix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8665D4130D8A5254002CCF7B /* plat_posix.cpp */; };
+		86B7D3030D8FD17F00D3460B /* plat_win32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86B7D3020D8FD17F00D3460B /* plat_win32.cpp */; };
+		86B7D4A40D9009E400D3460B /* internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D3420D8FD65500D3460B /* internal.h */; };
+		86B7D4A50D9009E400D3460B /* global.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D3410D8FD65500D3460B /* global.h */; };
+		86B7D4A60D9009E400D3460B /* database.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D3400D8FD65500D3460B /* database.h */; };
+		86B7D4A70D9009E400D3460B /* chrasis.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D33D0D8FD61D00D3460B /* chrasis.h */; };
+		86B7D4A80D9009E400D3460B /* character.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D33F0D8FD65500D3460B /* character.h */; };
+		86B7D4A90D9009F800D3460B /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D3430D8FD65500D3460B /* platform.h */; };
 		86D138E70CF299C3004A0E09 /* character.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86D138E60CF299C3004A0E09 /* character.cpp */; };
 /* End PBXBuildFile section */
 
@@ -195,7 +199,6 @@
 			dstPath = ../tools;
 			dstSubfolderSpec = 16;
 			files = (
-				86369A840CD2B05100F5F856 /* libchrasis.dylib in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,8 +208,6 @@
 		863699430CD2951B00F5F856 /* chrasisio.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = chrasisio.cpp; path = ../src/chrasisio.cpp; sourceTree = SOURCE_ROOT; };
 		863699440CD2951B00F5F856 /* database.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = database.cpp; path = ../src/database.cpp; sourceTree = SOURCE_ROOT; };
 		863699450CD2951B00F5F856 /* internal.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = internal.cpp; path = ../src/internal.cpp; sourceTree = SOURCE_ROOT; };
-		863699490CD2953800F5F856 /* chrasis */ = {isa = PBXFileReference; lastKnownFileType = folder; name = chrasis; path = ../include/chrasis; sourceTree = SOURCE_ROOT; };
-		863699500CD2953800F5F856 /* chrasis.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; name = chrasis.h; path = ../include/chrasis.h; sourceTree = SOURCE_ROOT; };
 		8636995F0CD295A500F5F856 /* libchrasis-osx-config.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libchrasis-osx-config.pch"; sourceTree = "<group>"; };
 		863699740CD299A400F5F856 /* char_size */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = char_size; sourceTree = BUILT_PRODUCTS_DIR; };
 		863699790CD299FD00F5F856 /* char_size.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = char_size.cpp; path = ../src/tools/char_size.cpp; sourceTree = SOURCE_ROOT; };
@@ -222,6 +223,16 @@
 		863699B00CD29CCF00F5F856 /* recognize.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = recognize.cpp; path = ../src/tools/recognize.cpp; sourceTree = SOURCE_ROOT; };
 		86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libchrasis.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		8665D4130D8A5254002CCF7B /* plat_posix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = plat_posix.cpp; path = ../src/platform_layer/plat_posix.cpp; sourceTree = SOURCE_ROOT; };
+		86B7D3020D8FD17F00D3460B /* plat_win32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = plat_win32.cpp; path = ../src/platform_layer/plat_win32.cpp; sourceTree = SOURCE_ROOT; };
+		86B7D31A0D8FD44900D3460B /* Chrasis-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Chrasis-Info.plist"; sourceTree = "<group>"; };
+		86B7D33D0D8FD61D00D3460B /* chrasis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = chrasis.h; path = ../include/chrasis.h; sourceTree = SOURCE_ROOT; };
+		86B7D33F0D8FD65500D3460B /* character.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = character.h; path = ../include/chrasis/character.h; sourceTree = SOURCE_ROOT; };
+		86B7D3400D8FD65500D3460B /* database.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = database.h; path = ../include/chrasis/database.h; sourceTree = SOURCE_ROOT; };
+		86B7D3410D8FD65500D3460B /* global.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = global.h; path = ../include/chrasis/global.h; sourceTree = SOURCE_ROOT; };
+		86B7D3420D8FD65500D3460B /* internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = internal.h; path = ../include/chrasis/internal.h; sourceTree = SOURCE_ROOT; };
+		86B7D3430D8FD65500D3460B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platform.h; path = ../include/chrasis/platform.h; sourceTree = SOURCE_ROOT; };
+		86B7D4B20D900A7F00D3460B /* chr_data.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = chr_data.db; sourceTree = "<group>"; };
+		86B7D4B30D900AA600D3460B /* empty_db.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = empty_db.db; sourceTree = "<group>"; };
 		86D138E60CF299C3004A0E09 /* character.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = character.cpp; path = ../src/character.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -279,28 +290,19 @@
 		8636992F0CD2946C00F5F856 = {
 			isa = PBXGroup;
 			children = (
-				8665D4130D8A5254002CCF7B /* plat_posix.cpp */,
-				86D138E60CF299C3004A0E09 /* character.cpp */,
-				863699AC0CD29CCF00F5F856 /* compact_db.cpp */,
-				863699AD0CD29CCF00F5F856 /* join_chml.cpp */,
-				863699AE0CD29CCF00F5F856 /* learn.cpp */,
-				863699AF0CD29CCF00F5F856 /* probability_test.cpp */,
-				863699B00CD29CCF00F5F856 /* recognize.cpp */,
-				863699790CD299FD00F5F856 /* char_size.cpp */,
-				8636997A0CD299FD00F5F856 /* chmlcodec.cpp */,
-				863699490CD2953800F5F856 /* chrasis */,
-				863699500CD2953800F5F856 /* chrasis.h */,
-				863699430CD2951B00F5F856 /* chrasisio.cpp */,
-				863699440CD2951B00F5F856 /* database.cpp */,
-				863699450CD2951B00F5F856 /* internal.cpp */,
+				86B7D3350D8FD59200D3460B /* Sources */,
+				86B7D2FE0D8FD10D00D3460B /* Headers */,
 				8636993F0CD294A700F5F856 /* Products */,
 				8636995F0CD295A500F5F856 /* libchrasis-osx-config.pch */,
+				86B7D31A0D8FD44900D3460B /* Chrasis-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
 		8636993F0CD294A700F5F856 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				86B7D4B30D900AA600D3460B /* empty_db.db */,
+				86B7D4B20D900A7F00D3460B /* chr_data.db */,
 				863699740CD299A400F5F856 /* char_size */,
 				8636998B0CD29B8200F5F856 /* join_chml */,
 				863699950CD29BB300F5F856 /* learn */,
@@ -311,6 +313,71 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		86B7D2FE0D8FD10D00D3460B /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				86B7D3330D8FD55500D3460B /* chrasis */,
+				86B7D33D0D8FD61D00D3460B /* chrasis.h */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		86B7D2FF0D8FD11D00D3460B /* libchrasis */ = {
+			isa = PBXGroup;
+			children = (
+				86B7D3010D8FD15900D3460B /* platform_layer */,
+				863699450CD2951B00F5F856 /* internal.cpp */,
+				863699440CD2951B00F5F856 /* database.cpp */,
+				863699430CD2951B00F5F856 /* chrasisio.cpp */,
+				86D138E60CF299C3004A0E09 /* character.cpp */,
+			);
+			name = libchrasis;
+			sourceTree = "<group>";
+		};
+		86B7D3000D8FD13F00D3460B /* tools */ = {
+			isa = PBXGroup;
+			children = (
+				863699790CD299FD00F5F856 /* char_size.cpp */,
+				863699AC0CD29CCF00F5F856 /* compact_db.cpp */,
+				8636997A0CD299FD00F5F856 /* chmlcodec.cpp */,
+				863699AD0CD29CCF00F5F856 /* join_chml.cpp */,
+				863699AE0CD29CCF00F5F856 /* learn.cpp */,
+				863699B00CD29CCF00F5F856 /* recognize.cpp */,
+				863699AF0CD29CCF00F5F856 /* probability_test.cpp */,
+			);
+			name = tools;
+			sourceTree = "<group>";
+		};
+		86B7D3010D8FD15900D3460B /* platform_layer */ = {
+			isa = PBXGroup;
+			children = (
+				86B7D3020D8FD17F00D3460B /* plat_win32.cpp */,
+				8665D4130D8A5254002CCF7B /* plat_posix.cpp */,
+			);
+			name = platform_layer;
+			sourceTree = "<group>";
+		};
+		86B7D3330D8FD55500D3460B /* chrasis */ = {
+			isa = PBXGroup;
+			children = (
+				86B7D33F0D8FD65500D3460B /* character.h */,
+				86B7D3400D8FD65500D3460B /* database.h */,
+				86B7D3410D8FD65500D3460B /* global.h */,
+				86B7D3420D8FD65500D3460B /* internal.h */,
+				86B7D3430D8FD65500D3460B /* platform.h */,
+			);
+			name = chrasis;
+			sourceTree = "<group>";
+		};
+		86B7D3350D8FD59200D3460B /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				86B7D2FF0D8FD11D00D3460B /* libchrasis */,
+				86B7D3000D8FD13F00D3460B /* tools */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -318,8 +385,12 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				86369A230CD2A5BD00F5F856 /* chrasis in Headers */,
-				86369A240CD2A5BD00F5F856 /* chrasis.h in Headers */,
+				86B7D4A40D9009E400D3460B /* internal.h in Headers */,
+				86B7D4A50D9009E400D3460B /* global.h in Headers */,
+				86B7D4A60D9009E400D3460B /* database.h in Headers */,
+				86B7D4A70D9009E400D3460B /* chrasis.h in Headers */,
+				86B7D4A80D9009E400D3460B /* character.h in Headers */,
+				86B7D4A90D9009F800D3460B /* platform.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -462,12 +533,16 @@
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/data/chmls/*.chml",
+				"$(SRCROOT)/data/database_schema.sql",
 			);
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/chr_data.db",
+				"$(DERIVED_FILE_DIR)/empty_db.db",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "# shell script goes here\n\nrm -f chr_data.db empty_db.db\n\n# chr_data.db\nsqlite3 chr_data.db < ../data/database_schema.sql\nDYLD_LIBRARY_PATH=./build/tools ./build/tools/learn ../data/chmls/*.chml chr_data.db\n#sqlite3 chr_data.db \"VACUUM;\"\n\n# empty_db.db\nsqlite3 empty_db.db < ../data/database_schema.sql\n\nexit 0";
+			shellScript = "# shell script goes here\n\nrm chr_data.db empty_db.db\n\n# chr_data.db\nsqlite3 chr_data.db < ../data/database_schema.sql\nDYLD_LIBRARY_PATH=${CONFIGURATION_BUILD_DIR} ./build/tools/learn ../data/chmls/*.chml chr_data.db\n#sqlite3 chr_data.db \"VACUUM;\"\n\n# empty_db.db\nsqlite3 empty_db.db < ../data/database_schema.sql\n\nexit 0";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -526,6 +601,7 @@
 				86369A270CD2A5CF00F5F856 /* internal.cpp in Sources */,
 				86D138E70CF299C3004A0E09 /* character.cpp in Sources */,
 				8665D4140D8A5254002CCF7B /* plat_posix.cpp in Sources */,
+				86B7D3030D8FD17F00D3460B /* plat_win32.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -867,8 +943,17 @@
 		86369A2E0CD2A5F100F5F856 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				COPY_PHASE_STRIP = NO;
 				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/build/Debug\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -878,19 +963,26 @@
 				GCC_PREPROCESSOR_DEFINITIONS = _POSIX;
 				INSTALL_PATH = /usr/lib;
 				OTHER_LDFLAGS = "-lsqlite3";
-				PREBINDING = NO;
 				PRODUCT_NAME = chrasis;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/include;
 				USER_HEADER_SEARCH_PATHS = "\"../include\"";
-				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
 		86369A2F0CD2A5F100F5F856 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				COPY_PHASE_STRIP = YES;
 				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/build/Debug\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
@@ -898,11 +990,9 @@
 				GCC_PREPROCESSOR_DEFINITIONS = _POSIX;
 				INSTALL_PATH = /usr/lib;
 				OTHER_LDFLAGS = "-lsqlite3";
-				PREBINDING = NO;
 				PRODUCT_NAME = chrasis;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/include;
 				USER_HEADER_SEARCH_PATHS = "\"../include\"";
-				ZERO_LINK = NO;
 			};
 			name = Release;
 		};

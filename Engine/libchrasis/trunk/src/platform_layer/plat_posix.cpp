@@ -26,7 +26,7 @@
 # include "config.h"
 #endif
 
-#ifdef _POSIX
+#if defined(_POSIX) || defined(_MACOSX)
 
 #include "chrasis.h"
 #include "chrasis/internal.h"

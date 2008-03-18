@@ -1,0 +1,48 @@
+//
+//  ChrasisDrawingView.h
+//  OVIMChrasis
+//
+//  Created by Palatis on 2008/3/17.
+//  Copyright 2008 __MyCompanyName__. All rights reserved.
+//
+
+#import <Cocoa/Cocoa.h>
+#import <chrasis.h>
+
+@class OVIMChrasisController;
+
+@interface ChrasisDrawingView : NSView {
+	OVIMChrasisController *controller;
+
+	NSPopUpButton *popupCandidateList;
+	NSMenuItem *popupCandidateListItemClear;
+	NSMenuItem *popupCandidateListItemIncorrect;
+
+	CGFloat dash[2];
+	
+	chrasis::Character *character;
+	
+	NSTimer *recognizeTimer;
+	
+	id displayServer;
+}
+
+@property(readwrite, assign) NSPopUpButton *popupCandidateList;
+@property(readwrite, assign) NSMenuItem *popupCandidateListItemClear;
+@property(readwrite, assign) NSMenuItem *popupCandidateListItemIncorrect;
+
+@property(readwrite, assign) OVIMChrasisController *controller;
+@property(readwrite, assign) NSTimer *recognizeTimer;
+@property(readwrite, assign) id displayServer;
+
+- (BOOL)mouseDownCanMoveWindow;
+- (BOOL)isFlipped;
+- (BOOL)acceptsFirstResponder;
+
+- (void)clearCharacterData;
+
+- (void)recognizeTimerTick: (NSTimer *)timer;
+- (void)mouseDown: (NSEvent *)event;
+- (void)mouseUp: (NSEvent *)event;
+
+@end
