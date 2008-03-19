@@ -69,6 +69,8 @@
 	ChrasisDrawingView *viewToBeLearned;
 	
 	id _displayServer;
+	
+	NSDictionary *dict_button_script;
 }
 
 - (void) initializeWritingAreas;

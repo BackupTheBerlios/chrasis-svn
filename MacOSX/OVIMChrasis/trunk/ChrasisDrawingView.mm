@@ -35,13 +35,16 @@
 	delete character;
 	character = new chrasis::Character();
 
-	[self display];
+	[self setNeedsDisplay: true];
 }
 
 - (void)learnCharacter: (NSString *)name {
-	chrasis::Character nc(normalize(*character));
-	nc.set_name([name UTF8String]);
-	chrasis::learn(nc);
+	if ([name UTF8String] != nil)
+	{
+		chrasis::Character nc(normalize(*character));
+		nc.set_name([name UTF8String]);
+		chrasis::learn(nc);
+	}
 }
 
 - (void)updateCandidateList {
@@ -74,23 +77,26 @@
 
 	if ([controller shouldSaveWrittenCharacter])
 	{
-		NSString *filename = [[NSString stringWithCString: getenv("HOME")] stringByAppendingString: @"/.chrasis/OVIMChrasis-saved-characters.chml"];
-		std::ofstream fout([filename UTF8String], std::ios_base::out | std::ios_base::app);
-
-		fout << "<character name=\"" << [[popupCandidateList titleOfSelectedItem] UTF8String]<< "\">" << std::endl;
-		for (chrasis::Character::Stroke::const_iterator si = character->strokes_begin();
-			 si != character->strokes_end();
-			 ++si)
+		if ([[popupCandidateList titleOfSelectedItem] UTF8String] != nil)
 		{
-			fout << "  <stroke>" << std::endl;
-			for (chrasis::Character::Stroke::Point::const_iterator pi = si->points_begin();
-				 pi != si->points_end();
-				 ++pi)
-				fout << "    <point x=\"" << pi->x() << "\" y=\"" << pi->y() << "\"/>" << std::endl;
-			fout << "  </stroke>" << std::endl;
+			NSString *filename = [[NSString stringWithCString: getenv("HOME")] stringByAppendingString: @"/.chrasis/OVIMChrasis-saved-characters.chml"];
+			std::ofstream fout([filename UTF8String], std::ios_base::out | std::ios_base::app);
+
+			fout << "<character name=\"" << [[popupCandidateList titleOfSelectedItem] UTF8String]<< "\">" << std::endl;
+			for (chrasis::Character::Stroke::const_iterator si = character->strokes_begin();
+				 si != character->strokes_end();
+				 ++si)
+			{
+				fout << "  <stroke>" << std::endl;
+				for (chrasis::Character::Stroke::Point::const_iterator pi = si->points_begin();
+					 pi != si->points_end();
+					 ++pi)
+					fout << "    <point x=\"" << pi->x() << "\" y=\"" << pi->y() << "\"/>" << std::endl;
+				fout << "  </stroke>" << std::endl;
+			}
+			fout << "</character>" << std::endl;
+			fout.close();
 		}
-		fout << "</character>" << std::endl;
-		fout.close();
 	}
 
 	[self clearCharacterData];
@@ -103,7 +109,7 @@
 	character->new_stroke();
 	character->add_point(p.x, p.y);
 
-	[self display];
+	[self setNeedsDisplay: true];
 }
 
 - (void)mouseUp: (NSEvent *)event {
@@ -113,7 +119,7 @@
 	// put recognize code here
 	[self updateCandidateList];
 
-	[self display];
+	[self setNeedsDisplay: true];
 
 	[controller registerRecognizeTimer: self];
 }
@@ -122,7 +128,7 @@
 	NSPoint p = [self convertPoint: [event locationInWindow] fromView: nil];
 	character->add_point(p.x, p.y);
 
-	[self display];
+	[self setNeedsDisplay: true];
 }
 
 - (id)initWithFrame: (NSRect)frame {

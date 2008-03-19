@@ -52,22 +52,22 @@
 		ChrasisCandidateListPopUpButton *popup = [popup_candidate_list_array objectAtIndex: i];
 		[popup setFrame: NSMakeRect((writing_area_size + 2) * i + 4, popup_y, writing_area_size, popup_height)];
 		[view setFrame: NSMakeRect((writing_area_size + 2) * i + 4, 5, writing_area_size, writing_area_size)];
+		[view setNeedsDisplay: true];
 	}
 }
 
 - (void)awakeFromNib {
-	_displayServer = [[NSConnection rootProxyForConnectionWithRegisteredName:OVDSPSRVR_NAME host:nil] retain];	
-	if (!_displayServer) {
+	_displayServer = [[NSConnection rootProxyForConnectionWithRegisteredName:OVDSPSRVR_NAME host:nil] retain];
+	if (_displayServer == nil) {
 		NSLog(@"cannot find display server");
 		[[NSApplication sharedApplication] terminate:self];
 	}
-	
-	[_displayServer setProtocolForProxy:@protocol(CVDisplayServerPart)];
+	[_displayServer setProtocolForProxy:@protocol(OVDisplayServer)];
 
 	[panel_writing_pad setCollectionBehavior: NSWindowCollectionBehaviorCanJoinAllSpaces];
-	[panel_writing_pad setLevel: NSScreenSaverWindowLevel];
-	[panel_options setLevel: NSScreenSaverWindowLevel + 1];
-	[panel_learning setLevel: NSScreenSaverWindowLevel + 1];
+	[panel_writing_pad setLevel: NSScreenSaverWindowLevel - 1];
+	[panel_options setLevel: NSScreenSaverWindowLevel];
+	[panel_learning setLevel: NSScreenSaverWindowLevel];
 	
 	[panel_options center];
 	[panel_learning center];
@@ -81,7 +81,15 @@
 	NSPoint winpos = NSMakePoint(
 		[standardUserDefaults floatForKey: @"writing_pad_x"],
 		[standardUserDefaults floatForKey: @"writing_pad_y"]);
-	
+	[textfield_num_writing_areas setIntegerValue: num_writing_areas];
+	[textfield_writing_area_size setIntegerValue: writing_area_size];
+	[textfield_recognize_delay setIntegerValue: recognize_delay];
+	[stepper_num_writing_areas setIntegerValue: num_writing_areas];
+	[stepper_writing_area_size setIntegerValue: writing_area_size];
+	[stepper_recognize_delay setIntegerValue: recognize_delay];
+	[button_save_chml setState: save_chml];
+	[button_learn_recognized setState: learn_recognized];
+
 	// default values
 	if (num_writing_areas == 0)
 		num_writing_areas = 4;
@@ -141,6 +149,21 @@
 		[popup setController: self];
 		[view setDisplayServer: _displayServer];
 	}
+
+	NSString *src =
+		@"tell application \"System Events\"\n"
+		@"    keystroke (ASCII character %@)\n"
+		@"end tell";
+	dict_button_script = [[NSDictionary dictionaryWithObjectsAndKeys:
+		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"8"]],		[button_sendkey_backsp title],
+		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"127"]],	[button_sendkey_del title],
+		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"13"]],	[button_sendkey_enter title],
+		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"32"]],	[button_sendkey_space title],
+		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"9"]],		[button_sendkey_tab title],
+		nil
+	] retain];
+	for (id key in dict_button_script)
+		[[dict_button_script objectForKey: key] compileAndReturnError: nil];
 }
 
 - (void) registerRecognizeTimer: (ChrasisDrawingView *)view {
@@ -162,61 +185,27 @@
 }
 
 - (IBAction) button_sendkey_pressed: (id)sender {
-	// uncomment when we can send special keyevent through OV.
-	// looks like
-	//		CVContext::event() invoked by
-	//		CVKeyReceiver::sendCharacter() invoked by
-	//		CVDisplayServerPart::sendCharacterToCurrentComosingBuffer()
-	// doesn't support this.
-	/*
-	NSString *key;
-	NSString *keyCode;
-
+	#if 0
+	Point p;
 	if (sender == button_sendkey_backsp)
 	{
-		key = @"BackSpace";
-		keyCode = @"\x16";
+		[_displayServer notifyMessage: @"OVIMChrasis" position: p];
+		[_displayServer notifyFade];
 	}
-	else if (sender == button_sendkey_del)
+	if (sender == button_sendkey_del)
+		[_displayServer candidateHide];
+	if (sender == button_sendkey_tab)
 	{
-		key = @"Delete";
-		keyCode = @"\x6b";
+		if ([_displayServer ping])
+			NSLog(@"[displayServer ping] returned: YES.");
+		else
+			NSLog(@"[displayServer ping] returned: NO.");
 	}
-	else if (sender == button_sendkey_tab)
-	{
-		key = @"Tab";
-		keyCode = @"\x17";
-	}
-	else if (sender == button_sendkey_enter)
-	{
-		key = @"Return";
-		keyCode = @"\x6c";
-	}
-	else if (sender == button_sendkey_space)
-	{
-		key = @"Space";
-		keyCode = @"\x20";
-	}
-	else if (sender == button_sendkey_left)
-	{
-		key = @"KP_Left";
-		keyCode = @"\x53";
-	}
-	else if (sender == button_sendkey_right)
-	{
-		key = @"KP_Right";
-		keyCode = @"\x55";
-	}
-	else
-	{
-		key = @"Unknown";
-		NSLog (@"OVIMChrasisController: unknown key!");
-	}
-
-	NSLog (@"OVIMChrasisController: sendkey %@ %@", key, keyCode);
-	
-	[_displayServer sendCharacterToCurrentComposingBuffer: keyCode];
-	*/
+	if (sender == button_sendkey_space)
+		[_displayServer aboutDialog];
+	#else
+	[[dict_button_script objectForKey: [sender title]] executeAndReturnError: nil];
+	#endif
 }
 
 - (IBAction) button_options_pressed: (id)sender {
@@ -238,10 +227,11 @@
 
 	if ([popup selectedItem] == [view popupCandidateListItemIncorrect])
 	{
-		NSLog (@"incorrect character!");
+		[textfield_correct_character setStringValue: @""];
+
 		[self registerRecognizeTimer: viewToBeLearned];
 		viewToBeLearned = view;
-		[self unregisterRecognizeTimer: view];
+		[self unregisterRecognizeTimer: viewToBeLearned];
 
 		[panel_learning center];
 		[panel_learning makeKeyAndOrderFront: nil];
@@ -291,9 +281,7 @@
 
 - (IBAction) learning_panel_confirmed: (id)sender {
 	[panel_learning close];
-	NSString *name = [textfield_correct_character stringValue];
-	if (![name isEqualToString: @""])
-		[viewToBeLearned learnCharacter: name];
+	[viewToBeLearned learnCharacter: [textfield_correct_character stringValue]];
 	[viewToBeLearned updateCandidateList];
 }
 

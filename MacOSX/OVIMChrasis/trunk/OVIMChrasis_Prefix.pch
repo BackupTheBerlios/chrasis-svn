@@ -6,9 +6,4 @@
     #import <Cocoa/Cocoa.h>
 #endif
 
-#define OVDSPSRVR_NAME @"OVDisplayServer-0.8.0"
-
-@protocol CVDisplayServerPart
-- (void)sendStringToCurrentComposingBuffer:(NSString *)string;
-- (void)sendCharacterToCurrentComposingBuffer:(NSString *)string;
-@end
+#import <OVDisplayServer.h>

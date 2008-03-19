@@ -28,6 +28,7 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* OVIMChrasis_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVIMChrasis_Prefix.pch; sourceTree = "<group>"; };
+		860565A10D9176FE00035711 /* OVDisplayServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OVDisplayServer.h; path = "../../../../../OpenVanilla/openvanilla-read-only/Loaders/OSX/CocoaVanilla/OVDisplayServer.h"; sourceTree = SOURCE_ROOT; };
 		868D5B4B0D904F48007DA979 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/MainMenu.nib; sourceTree = "<group>"; };
 		868D5B500D9051EE007DA979 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		868D5B590D905594007DA979 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -115,6 +116,7 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				860565A10D9176FE00035711 /* OVDisplayServer.h */,
 				32CA4F630368D1EE00C91783 /* OVIMChrasis_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 			);
