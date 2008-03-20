@@ -19,7 +19,6 @@
 
 @synthesize controller;
 @synthesize recognizeTimer;
-@synthesize displayServer;
 
 - (BOOL)mouseDownCanMoveWindow { return NO; }
 - (BOOL)acceptsFirstResponder { return YES; }
@@ -65,7 +64,7 @@
 }
 
 - (void) recognizeTimerTick: (NSTimer *)timer {
-	[displayServer sendStringToCurrentComposingBuffer: [popupCandidateList titleOfSelectedItem]];
+	[controller sendStringToOpenVanilla: [popupCandidateList titleOfSelectedItem]];
 	recognizeTimer = nil;
 
 #ifdef OVIMCHRASIS_DEBUG
@@ -143,24 +142,22 @@
 
 - (void)drawRect: (NSRect)rect {
 	// Drawing code here.
-	NSBezierPath *path;
-
-	path = [NSBezierPath bezierPath];
-	[path setLineWidth: 1];
-	[path setLineDash: self->dash count: 2 phase: 0.0];
-	[[NSColor darkGrayColor] set];
-	[path moveToPoint: NSMakePoint(0.0,								rect.size.height / 2)];
-	[path lineToPoint: NSMakePoint(rect.origin.x + rect.size.width,	rect.size.height / 2)];
-	[path stroke];
-	[path moveToPoint: NSMakePoint(rect.size.width / 2,				0.0)];
-	[path lineToPoint: NSMakePoint(rect.size.width / 2,				rect.origin.y + rect.size.height)];
-	[path stroke];
-
-	path = [NSBezierPath bezierPath];
-	[[NSColor whiteColor] set];
-	[path setLineWidth: 2];
+	NSBezierPath *path = [NSBezierPath bezierPath];
 	[path setLineCapStyle: NSRoundLineCapStyle];
 	[path setLineJoinStyle: NSRoundLineJoinStyle];
+
+	[path setLineWidth: 1];
+	[path setLineDash: self->dash count: 2 phase: 0.0];
+	[path moveToPoint: NSMakePoint(0.0,								rect.size.height / 2)];
+	[path lineToPoint: NSMakePoint(rect.origin.x + rect.size.width,	rect.size.height / 2)];
+	[path moveToPoint: NSMakePoint(rect.size.width / 2,				0.0)];
+	[path lineToPoint: NSMakePoint(rect.size.width / 2,				rect.origin.y + rect.size.height)];
+	[[NSColor darkGrayColor] set];
+	[path stroke];
+
+	[path removeAllPoints];
+	[path setLineWidth: 2];
+	[path setLineDash: nil count: 0 phase: 0.0];
 	for (chrasis::Character::Stroke::const_iterator si = character->strokes_begin();
 		 si != character->strokes_end();
 		 ++si)
@@ -171,16 +168,13 @@
 			 ++pi)
 			[path lineToPoint: NSMakePoint(pi->x(), pi->y())];
 	}
+	[[NSColor whiteColor] set];
 	[path stroke];
 
-	path = [NSBezierPath bezierPath];
-	[path setLineDash: nil count: 0 phase: 0.0];
+	[path removeAllPoints];
+	[path setLineWidth: 1];
+	[path appendBezierPathWithRoundedRect: rect xRadius: 6 yRadius: 6];
 	[[NSColor lightGrayColor] set];
-	[path moveToPoint: NSMakePoint(0.0,								0.0)];
-	[path lineToPoint: NSMakePoint(0.0,								rect.origin.y + rect.size.height)];
-	[path lineToPoint: NSMakePoint(rect.origin.x + rect.size.width, rect.origin.y + rect.size.height)];
-	[path lineToPoint: NSMakePoint(rect.origin.x + rect.size.width, 0.0)];
-	[path lineToPoint: NSMakePoint(0.0,								0.0)];
 	[path stroke];
 }
 

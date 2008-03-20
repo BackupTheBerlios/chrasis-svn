@@ -23,8 +23,6 @@
 	chrasis::Character *character;
 	
 	NSTimer *recognizeTimer;
-	
-	id displayServer;
 }
 
 @property(readwrite, assign) NSPopUpButton *popupCandidateList;
@@ -33,7 +31,6 @@
 
 @property(readwrite, assign) OVIMChrasisController *controller;
 @property(readwrite, assign) NSTimer *recognizeTimer;
-@property(readwrite, assign) id displayServer;
 
 - (BOOL)mouseDownCanMoveWindow;
 - (BOOL)isFlipped;

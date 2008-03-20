@@ -44,8 +44,8 @@
 	IBOutlet ChrasisDrawingView *view_writing_area_7;
 	IBOutlet ChrasisDrawingView *view_writing_area_8;
 
-	NSMutableArray *popup_candidate_list_array;
-	NSMutableArray *view_writing_area_array;
+	NSArray *popup_candidate_list_array;
+	NSArray *view_writing_area_array;
 
 	// from panel_options
 	IBOutlet NSTextField *textfield_num_writing_areas;
@@ -68,8 +68,6 @@
 
 	ChrasisDrawingView *viewToBeLearned;
 	
-	id _displayServer;
-	
 	NSDictionary *dict_button_script;
 }
 
@@ -81,6 +79,7 @@
 - (void) unregisterRecognizeTimer: (ChrasisDrawingView *)view;
 - (BOOL) shouldLearnRecognized;
 - (BOOL) shouldSaveWrittenCharacter;
+- (void) sendStringToOpenVanilla: (NSString *)str;
 
 - (IBAction) candidate_list_item_selected: (id)sender;
 
@@ -90,5 +89,7 @@
 - (IBAction) learning_panel_confirmed: (id)sender;
 
 - (void) windowWillClose: (NSNotification *)notification;
+
+- (IBAction) button_aboutov_clicked: (id)sender;
 
 @end

@@ -22,8 +22,8 @@
 }
 
 - (void) initializeWritingAreas {
-	int i;
-	for (i=0;i<8;++i) {
+	[view_keypad setHidden: YES];
+	for (int i=0;i<[view_writing_area_array count];++i) {
 		ChrasisDrawingView *view = [view_writing_area_array objectAtIndex: i];
 		ChrasisCandidateListPopUpButton *popup = [popup_candidate_list_array objectAtIndex: i];
 		[view setHidden: YES];
@@ -31,39 +31,26 @@
 	}
 
 	// resize and put them in position
-	for (i=0;i<num_writing_areas;++i)
-	{
-		ChrasisDrawingView *view = [view_writing_area_array objectAtIndex: i];
-		ChrasisCandidateListPopUpButton *popup = [popup_candidate_list_array objectAtIndex: i];
-		[popup setHidden: NO];
-		[view setHidden: NO];
-	}
 	CGFloat popup_height = [popup_candidate_list_1 frame].size.height;
 	[panel_writing_pad
 		setFrame: NSMakeRect(
-			[panel_writing_pad frame].origin.x,
-			[panel_writing_pad frame].origin.y,
+			[panel_writing_pad frame].origin.x, [panel_writing_pad frame].origin.y,
 			(writing_area_size + 2) * num_writing_areas + 1 + [view_keypad frame].size.width,
 			[self titleBarHeight] + popup_height + writing_area_size + 4)
 		display: YES animate: YES];
 	CGFloat popup_y = [popup_candidate_list_1 frame].origin.y;
-	for (i=0;i<num_writing_areas;++i) {
+	for (int i=0;i<num_writing_areas;++i) {
 		ChrasisDrawingView *view = [view_writing_area_array objectAtIndex: i];
 		ChrasisCandidateListPopUpButton *popup = [popup_candidate_list_array objectAtIndex: i];
 		[popup setFrame: NSMakeRect((writing_area_size + 2) * i + 4, popup_y, writing_area_size, popup_height)];
 		[view setFrame: NSMakeRect((writing_area_size + 2) * i + 4, 5, writing_area_size, writing_area_size)];
-		[view setNeedsDisplay: true];
+		[popup setHidden: NO];
+		[view setHidden: NO];
 	}
+	[view_keypad setHidden: NO];
 }
 
 - (void)awakeFromNib {
-	_displayServer = [[NSConnection rootProxyForConnectionWithRegisteredName:OVDSPSRVR_NAME host:nil] retain];
-	if (_displayServer == nil) {
-		NSLog(@"cannot find display server");
-		[[NSApplication sharedApplication] terminate:self];
-	}
-	[_displayServer setProtocolForProxy:@protocol(OVDisplayServer)];
-
 	[panel_writing_pad setCollectionBehavior: NSWindowCollectionBehaviorCanJoinAllSpaces];
 	[panel_writing_pad setLevel: NSScreenSaverWindowLevel - 1];
 	[panel_options setLevel: NSScreenSaverWindowLevel];
@@ -118,24 +105,18 @@
 	else if (recognize_delay > 60000)
 		recognize_delay = 60000;
 
-	view_writing_area_array = [[NSMutableArray array] retain];
-	[view_writing_area_array addObject: view_writing_area_1];
-	[view_writing_area_array addObject: view_writing_area_2];
-	[view_writing_area_array addObject: view_writing_area_3];
-	[view_writing_area_array addObject: view_writing_area_4];
-	[view_writing_area_array addObject: view_writing_area_5];
-	[view_writing_area_array addObject: view_writing_area_6];
-	[view_writing_area_array addObject: view_writing_area_7];
-	[view_writing_area_array addObject: view_writing_area_8];
-	popup_candidate_list_array = [[NSMutableArray array] retain];
-	[popup_candidate_list_array addObject: popup_candidate_list_1];
-	[popup_candidate_list_array addObject: popup_candidate_list_2];
-	[popup_candidate_list_array addObject: popup_candidate_list_3];
-	[popup_candidate_list_array addObject: popup_candidate_list_4];
-	[popup_candidate_list_array addObject: popup_candidate_list_5];
-	[popup_candidate_list_array addObject: popup_candidate_list_6];
-	[popup_candidate_list_array addObject: popup_candidate_list_7];
-	[popup_candidate_list_array addObject: popup_candidate_list_8];
+	view_writing_area_array = [[NSArray arrayWithObjects:
+		view_writing_area_1, view_writing_area_2,
+		view_writing_area_3, view_writing_area_4,
+		view_writing_area_5, view_writing_area_6,
+		view_writing_area_7, view_writing_area_8,
+		nil] retain];
+	popup_candidate_list_array = [[NSArray arrayWithObjects:
+		popup_candidate_list_1, popup_candidate_list_2,
+		popup_candidate_list_3, popup_candidate_list_4,
+		popup_candidate_list_5, popup_candidate_list_6,
+		popup_candidate_list_7, popup_candidate_list_8,
+		nil] retain];
 
 	[self initializeWritingAreas];
 
@@ -147,7 +128,6 @@
 		[popup setAssociatedDrawingView: view];
 		[view setController: self];
 		[popup setController: self];
-		[view setDisplayServer: _displayServer];
 	}
 
 	NSString *src =
@@ -185,27 +165,7 @@
 }
 
 - (IBAction) button_sendkey_pressed: (id)sender {
-	#if 0
-	Point p;
-	if (sender == button_sendkey_backsp)
-	{
-		[_displayServer notifyMessage: @"OVIMChrasis" position: p];
-		[_displayServer notifyFade];
-	}
-	if (sender == button_sendkey_del)
-		[_displayServer candidateHide];
-	if (sender == button_sendkey_tab)
-	{
-		if ([_displayServer ping])
-			NSLog(@"[displayServer ping] returned: YES.");
-		else
-			NSLog(@"[displayServer ping] returned: NO.");
-	}
-	if (sender == button_sendkey_space)
-		[_displayServer aboutDialog];
-	#else
 	[[dict_button_script objectForKey: [sender title]] executeAndReturnError: nil];
-	#endif
 }
 
 - (IBAction) button_options_pressed: (id)sender {
@@ -234,6 +194,7 @@
 		[self unregisterRecognizeTimer: viewToBeLearned];
 
 		[panel_learning center];
+		[textfield_correct_character selectText: nil];
 		[panel_learning makeKeyAndOrderFront: nil];
 	}
 	else if ([popup selectedItem] == [view popupCandidateListItemClear])
@@ -270,11 +231,15 @@
 	}
 	else if ([notification object] == panel_writing_pad)
 	{
+#ifdef OVIMCHRASIS_DEBUG
 		NSLog(@"OVIMChrasis terminated.");
+#endif
+
 		NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
 		[standardUserDefaults setFloat: [panel_writing_pad frame].origin.x forKey: @"writing_pad_x"];
 		[standardUserDefaults setFloat: [panel_writing_pad frame].origin.y forKey: @"writing_pad_y"];
 		[standardUserDefaults synchronize];
+
 		[[NSApplication sharedApplication] terminate: self];
 	}
 }
@@ -283,6 +248,46 @@
 	[panel_learning close];
 	[viewToBeLearned learnCharacter: [textfield_correct_character stringValue]];
 	[viewToBeLearned updateCandidateList];
+}
+
++ (id) getOVDisplayServer {
+	id stringReceiver = [[NSConnection rootProxyForConnectionWithRegisteredName:OVDSTRSTRRCVR_SRVNAME host:nil] retain];
+	if (stringReceiver == nil)
+	{
+		NSLog(@"connection to %@ failed.", OVDSTRSTRRCVR_SRVNAME);
+		NSRunCriticalAlertPanel(
+			NSLocalizedString(@"Unable to connect, Check OpenVanilla status.", @"no-connection panel title"),
+			[NSString stringWithFormat: 
+				NSLocalizedString(@"Connection to %@ failed.\nCheck OpenVanilla status!", @"no-connection panel message"),
+				OVDSTRSTRRCVR_SRVNAME],
+			NSLocalizedString(@"Too Bad!", @"no-connection panel button text"),
+			nil, nil);
+		return nil;
+	}
+	[stringReceiver setProtocolForProxy:@protocol(OVDistributedStringReceiverProtocol)];
+	return stringReceiver;
+}
+
+- (IBAction) button_aboutov_clicked: (id)sender {
+	id stringReceiver = [OVIMChrasisController getOVDisplayServer];
+	if (stringReceiver == nil)
+		return;
+	
+	[stringReceiver aboutOpenVanillaDialog];
+	[stringReceiver release];
+}
+
+- (void) sendStringToOpenVanilla: (NSString *)str {
+	id stringReceiver = [OVIMChrasisController getOVDisplayServer];
+	if (stringReceiver == nil)
+		return;
+
+#ifdef OVIMCHRASIS_DEBUG
+	NSLog(@"sending string to OpenVanilla: %@, %@", str, [displayServer ping]?@"YES":@"NO");
+#endif
+
+	[stringReceiver sendStringToCurrentComposingBuffer: str];
+	[stringReceiver release];
 }
 
 @end
