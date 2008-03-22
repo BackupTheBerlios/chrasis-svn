@@ -7,221 +7,96 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		863699BF0CD29D8700F5F856 /* tools */ = {
+		863B70260D944904001D70D2 /* Data Generations */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 863699D30CD29DF100F5F856 /* Build configuration list for PBXAggregateTarget "tools" */;
+			buildConfigurationList = 863B702B0D944940001D70D2 /* Build configuration list for PBXAggregateTarget "Data Generations" */;
 			buildPhases = (
-				86369A160CD2A48E00F5F856 /* CopyFiles */,
+				863B70250D944904001D70D2 /* gen_db.sh */,
 			);
 			dependencies = (
-				863699C90CD29D9D00F5F856 /* PBXTargetDependency */,
-				863699C70CD29D9B00F5F856 /* PBXTargetDependency */,
-				863699C50CD29D9900F5F856 /* PBXTargetDependency */,
-				863699C30CD29D9700F5F856 /* PBXTargetDependency */,
-				863699C10CD29D9500F5F856 /* PBXTargetDependency */,
+				863B702A0D944921001D70D2 /* PBXTargetDependency */,
 			);
-			name = tools;
-			productName = all;
+			name = "Data Generations";
+			productName = "Generate Databases";
 		};
-		863699CA0CD29DB100F5F856 /* all */ = {
+		86BFEC9D0D948406007E84F7 /* Config Generation */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 863699D60CD29DF100F5F856 /* Build configuration list for PBXAggregateTarget "all" */;
+			buildConfigurationList = 86BFECA00D948424007E84F7 /* Build configuration list for PBXAggregateTarget "Config Generation" */;
 			buildPhases = (
+				86BFEC9C0D948406007E84F7 /* ShellScript */,
 			);
 			dependencies = (
-				86369A4E0CD2A7AC00F5F856 /* PBXTargetDependency */,
-				863699F10CD2A09700F5F856 /* PBXTargetDependency */,
 			);
-			name = all;
-			productName = all;
-		};
-		863699E70CD2A01C00F5F856 /* chr_data.db */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 863699EA0CD2A04A00F5F856 /* Build configuration list for PBXAggregateTarget "chr_data.db" */;
-			buildPhases = (
-				863699E60CD2A01C00F5F856 /* ShellScript */,
-			);
-			dependencies = (
-				86369A4C0CD2A79900F5F856 /* PBXTargetDependency */,
-			);
-			name = chr_data.db;
-			productName = chr_data.db;
+			name = "Config Generation";
+			productName = "Config Generation";
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		8636997B0CD299FD00F5F856 /* char_size.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699790CD299FD00F5F856 /* char_size.cpp */; };
-		8636997C0CD299FD00F5F856 /* chmlcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8636997A0CD299FD00F5F856 /* chmlcodec.cpp */; };
-		863699B10CD29CE800F5F856 /* chmlcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8636997A0CD299FD00F5F856 /* chmlcodec.cpp */; };
-		863699B20CD29CF500F5F856 /* join_chml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699AD0CD29CCF00F5F856 /* join_chml.cpp */; };
-		863699B30CD29D0300F5F856 /* chmlcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8636997A0CD299FD00F5F856 /* chmlcodec.cpp */; };
-		863699B40CD29D0900F5F856 /* chmlcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8636997A0CD299FD00F5F856 /* chmlcodec.cpp */; };
 		863699B50CD29D0C00F5F856 /* chmlcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8636997A0CD299FD00F5F856 /* chmlcodec.cpp */; };
 		863699B60CD29D1200F5F856 /* learn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699AE0CD29CCF00F5F856 /* learn.cpp */; };
-		863699B70CD29D1A00F5F856 /* probability_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699AF0CD29CCF00F5F856 /* probability_test.cpp */; };
-		863699B80CD29D1E00F5F856 /* recognize.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699B00CD29CCF00F5F856 /* recognize.cpp */; };
-		86369A180CD2A4B100F5F856 /* char_size in CopyFiles */ = {isa = PBXBuildFile; fileRef = 863699740CD299A400F5F856 /* char_size */; };
-		86369A1E0CD2A5A900F5F856 /* libchrasis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */; };
-		86369A1F0CD2A5A900F5F856 /* libchrasis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */; };
-		86369A200CD2A5AA00F5F856 /* libchrasis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */; };
-		86369A210CD2A5AB00F5F856 /* libchrasis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */; };
-		86369A220CD2A5AB00F5F856 /* libchrasis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */; };
-		86369A250CD2A5CF00F5F856 /* chrasisio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699430CD2951B00F5F856 /* chrasisio.cpp */; };
-		86369A260CD2A5CF00F5F856 /* database.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699440CD2951B00F5F856 /* database.cpp */; };
-		86369A270CD2A5CF00F5F856 /* internal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699450CD2951B00F5F856 /* internal.cpp */; };
-		86369A3D0CD2A68500F5F856 /* join_chml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8636998B0CD29B8200F5F856 /* join_chml */; };
-		86369A3E0CD2A6B300F5F856 /* learn in CopyFiles */ = {isa = PBXBuildFile; fileRef = 863699950CD29BB300F5F856 /* learn */; };
-		86369A3F0CD2A6B700F5F856 /* probability_test in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8636999A0CD29BE200F5F856 /* probability_test */; };
-		86369A400CD2A6BA00F5F856 /* recognize in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8636999F0CD29BED00F5F856 /* recognize */; };
-		8665D4140D8A5254002CCF7B /* plat_posix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8665D4130D8A5254002CCF7B /* plat_posix.cpp */; };
-		86B7D3030D8FD17F00D3460B /* plat_win32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86B7D3020D8FD17F00D3460B /* plat_win32.cpp */; };
-		86B7D4A40D9009E400D3460B /* internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D3420D8FD65500D3460B /* internal.h */; };
-		86B7D4A50D9009E400D3460B /* global.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D3410D8FD65500D3460B /* global.h */; };
-		86B7D4A60D9009E400D3460B /* database.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D3400D8FD65500D3460B /* database.h */; };
-		86B7D4A70D9009E400D3460B /* chrasis.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D33D0D8FD61D00D3460B /* chrasis.h */; };
-		86B7D4A80D9009E400D3460B /* character.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D33F0D8FD65500D3460B /* character.h */; };
-		86B7D4A90D9009F800D3460B /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D3430D8FD65500D3460B /* platform.h */; };
-		86D138E70CF299C3004A0E09 /* character.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86D138E60CF299C3004A0E09 /* character.cpp */; };
+		863B6FE80D94459B001D70D2 /* chr_data.db in Resources */ = {isa = PBXBuildFile; fileRef = 86B7D4B20D900A7F00D3460B /* chr_data.db */; };
+		863B6FEA0D94459E001D70D2 /* empty_db.db in Resources */ = {isa = PBXBuildFile; fileRef = 86B7D4B30D900AA600D3460B /* empty_db.db */; };
+		863B70060D9446CA001D70D2 /* internal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699450CD2951B00F5F856 /* internal.cpp */; };
+		863B70070D9446CA001D70D2 /* database.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699440CD2951B00F5F856 /* database.cpp */; };
+		863B70080D9446CA001D70D2 /* chrasisio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699430CD2951B00F5F856 /* chrasisio.cpp */; };
+		863B70090D9446CA001D70D2 /* character.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86D138E60CF299C3004A0E09 /* character.cpp */; };
+		863B700B0D9446CF001D70D2 /* plat_win32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86B7D3020D8FD17F00D3460B /* plat_win32.cpp */; };
+		863B700C0D9446CF001D70D2 /* plat_posix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8665D4130D8A5254002CCF7B /* plat_posix.cpp */; };
+		864A67CB0D943EB6002EB761 /* chrasisio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699430CD2951B00F5F856 /* chrasisio.cpp */; };
+		864A67CC0D943EB6002EB761 /* database.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699440CD2951B00F5F856 /* database.cpp */; };
+		864A67CD0D943EB6002EB761 /* internal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 863699450CD2951B00F5F856 /* internal.cpp */; };
+		864A67CE0D943EB6002EB761 /* character.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86D138E60CF299C3004A0E09 /* character.cpp */; };
+		864A67CF0D943EB6002EB761 /* plat_posix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8665D4130D8A5254002CCF7B /* plat_posix.cpp */; };
+		864A67D00D943EB6002EB761 /* plat_win32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86B7D3020D8FD17F00D3460B /* plat_win32.cpp */; };
+		864A67D10D943EDE002EB761 /* character.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D33F0D8FD65500D3460B /* character.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		864A67D20D943EDE002EB761 /* chrasis.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D33D0D8FD61D00D3460B /* chrasis.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		864A67D30D943EDE002EB761 /* database.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D3400D8FD65500D3460B /* database.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		864A67D40D943EDE002EB761 /* global.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D3410D8FD65500D3460B /* global.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		864A67D50D943EDE002EB761 /* internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D3420D8FD65500D3460B /* internal.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		864A67D60D943EDE002EB761 /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 86B7D3430D8FD65500D3460B /* platform.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		86BFECB20D948581007E84F7 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 86BFECB10D948581007E84F7 /* config.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		863699C00CD29D9500F5F856 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 8636999E0CD29BED00F5F856;
-			remoteInfo = recognize;
-		};
-		863699C20CD29D9700F5F856 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 863699990CD29BE200F5F856;
-			remoteInfo = probability_test;
-		};
-		863699C40CD29D9900F5F856 /* PBXContainerItemProxy */ = {
+		863B70290D944921001D70D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 863699940CD29BB300F5F856;
 			remoteInfo = learn;
 		};
-		863699C60CD29D9B00F5F856 /* PBXContainerItemProxy */ = {
+		863B70450D9450B1001D70D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 8636998A0CD29B8200F5F856;
-			remoteInfo = join_chml;
+			remoteGlobalIDString = 863B70260D944904001D70D2;
+			remoteInfo = "Generate Databases";
 		};
-		863699C80CD29D9D00F5F856 /* PBXContainerItemProxy */ = {
+		86BFECA90D948525007E84F7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 863699730CD299A400F5F856;
-			remoteInfo = char_size;
+			remoteGlobalIDString = 86BFEC9D0D948406007E84F7 /* Config Generation */;
+			remoteInfo = "Config Generation";
 		};
-		863699F00CD2A09700F5F856 /* PBXContainerItemProxy */ = {
+		86BFECAB0D948528007E84F7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 863699E70CD2A01C00F5F856;
-			remoteInfo = chr_data.db;
-		};
-		86369A300CD2A61900F5F856 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856;
-			remoteInfo = "libchrasis-osx";
-		};
-		86369A320CD2A61C00F5F856 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856;
-			remoteInfo = "libchrasis-osx";
-		};
-		86369A340CD2A61E00F5F856 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856;
-			remoteInfo = "libchrasis-osx";
-		};
-		86369A360CD2A62100F5F856 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856;
-			remoteInfo = "libchrasis-osx";
-		};
-		86369A380CD2A62500F5F856 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 86369A1C0CD2A54E00F5F856;
-			remoteInfo = "libchrasis-osx";
-		};
-		86369A4B0CD2A79900F5F856 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 863699BF0CD29D8700F5F856;
-			remoteInfo = tools;
-		};
-		86369A4D0CD2A7AC00F5F856 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 863699310CD2946C00F5F856 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 863699BF0CD29D8700F5F856;
-			remoteInfo = tools;
+			remoteGlobalIDString = 86BFEC9D0D948406007E84F7 /* Config Generation */;
+			remoteInfo = "Config Generation";
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		86369A160CD2A48E00F5F856 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = ../tools;
-			dstSubfolderSpec = 16;
-			files = (
-				86369A180CD2A4B100F5F856 /* char_size in CopyFiles */,
-				86369A3D0CD2A68500F5F856 /* join_chml in CopyFiles */,
-				86369A3E0CD2A6B300F5F856 /* learn in CopyFiles */,
-				86369A3F0CD2A6B700F5F856 /* probability_test in CopyFiles */,
-				86369A400CD2A6BA00F5F856 /* recognize in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		86369A650CD2ACD000F5F856 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = ../tools;
-			dstSubfolderSpec = 16;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		863699430CD2951B00F5F856 /* chrasisio.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = chrasisio.cpp; path = ../src/chrasisio.cpp; sourceTree = SOURCE_ROOT; };
 		863699440CD2951B00F5F856 /* database.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = database.cpp; path = ../src/database.cpp; sourceTree = SOURCE_ROOT; };
 		863699450CD2951B00F5F856 /* internal.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = internal.cpp; path = ../src/internal.cpp; sourceTree = SOURCE_ROOT; };
-		8636995F0CD295A500F5F856 /* libchrasis-osx-config.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libchrasis-osx-config.pch"; sourceTree = "<group>"; };
-		863699740CD299A400F5F856 /* char_size */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = char_size; sourceTree = BUILT_PRODUCTS_DIR; };
-		863699790CD299FD00F5F856 /* char_size.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = char_size.cpp; path = ../src/tools/char_size.cpp; sourceTree = SOURCE_ROOT; };
 		8636997A0CD299FD00F5F856 /* chmlcodec.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = chmlcodec.cpp; path = ../src/tools/chmlcodec.cpp; sourceTree = SOURCE_ROOT; };
-		8636998B0CD29B8200F5F856 /* join_chml */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = join_chml; sourceTree = BUILT_PRODUCTS_DIR; };
 		863699950CD29BB300F5F856 /* learn */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = learn; sourceTree = BUILT_PRODUCTS_DIR; };
-		8636999A0CD29BE200F5F856 /* probability_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = probability_test; sourceTree = BUILT_PRODUCTS_DIR; };
-		8636999F0CD29BED00F5F856 /* recognize */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = recognize; sourceTree = BUILT_PRODUCTS_DIR; };
-		863699AC0CD29CCF00F5F856 /* compact_db.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = compact_db.cpp; path = ../src/tools/compact_db.cpp; sourceTree = SOURCE_ROOT; };
-		863699AD0CD29CCF00F5F856 /* join_chml.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = join_chml.cpp; path = ../src/tools/join_chml.cpp; sourceTree = SOURCE_ROOT; };
 		863699AE0CD29CCF00F5F856 /* learn.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = learn.cpp; path = ../src/tools/learn.cpp; sourceTree = SOURCE_ROOT; };
-		863699AF0CD29CCF00F5F856 /* probability_test.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = probability_test.cpp; path = ../src/tools/probability_test.cpp; sourceTree = SOURCE_ROOT; };
-		863699B00CD29CCF00F5F856 /* recognize.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = recognize.cpp; path = ../src/tools/recognize.cpp; sourceTree = SOURCE_ROOT; };
-		86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libchrasis.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		864A67C60D943E21002EB761 /* Chrasis.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Chrasis.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8665D4130D8A5254002CCF7B /* plat_posix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = plat_posix.cpp; path = ../src/platform_layer/plat_posix.cpp; sourceTree = SOURCE_ROOT; };
 		86B7D3020D8FD17F00D3460B /* plat_win32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = plat_win32.cpp; path = ../src/platform_layer/plat_win32.cpp; sourceTree = SOURCE_ROOT; };
 		86B7D31A0D8FD44900D3460B /* Chrasis-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Chrasis-Info.plist"; sourceTree = "<group>"; };
@@ -233,51 +108,19 @@
 		86B7D3430D8FD65500D3460B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platform.h; path = ../include/chrasis/platform.h; sourceTree = SOURCE_ROOT; };
 		86B7D4B20D900A7F00D3460B /* chr_data.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = chr_data.db; sourceTree = "<group>"; };
 		86B7D4B30D900AA600D3460B /* empty_db.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = empty_db.db; sourceTree = "<group>"; };
+		86BFECB10D948581007E84F7 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		86D138E60CF299C3004A0E09 /* character.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; name = character.cpp; path = ../src/character.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		863699720CD299A400F5F856 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				86369A220CD2A5AB00F5F856 /* libchrasis.dylib in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		863699890CD29B8200F5F856 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				86369A210CD2A5AB00F5F856 /* libchrasis.dylib in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		863699930CD29BB300F5F856 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				86369A200CD2A5AA00F5F856 /* libchrasis.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		863699980CD29BE200F5F856 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				86369A1F0CD2A5A900F5F856 /* libchrasis.dylib in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8636999D0CD29BED00F5F856 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				86369A1E0CD2A5A900F5F856 /* libchrasis.dylib in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		86369A1B0CD2A54E00F5F856 /* Frameworks */ = {
+		864A67C40D943E21002EB761 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -293,7 +136,7 @@
 				86B7D3350D8FD59200D3460B /* Sources */,
 				86B7D2FE0D8FD10D00D3460B /* Headers */,
 				8636993F0CD294A700F5F856 /* Products */,
-				8636995F0CD295A500F5F856 /* libchrasis-osx-config.pch */,
+				86BFECB10D948581007E84F7 /* config.h */,
 				86B7D31A0D8FD44900D3460B /* Chrasis-Info.plist */,
 			);
 			sourceTree = "<group>";
@@ -301,14 +144,10 @@
 		8636993F0CD294A700F5F856 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				863699950CD29BB300F5F856 /* learn */,
 				86B7D4B30D900AA600D3460B /* empty_db.db */,
 				86B7D4B20D900A7F00D3460B /* chr_data.db */,
-				863699740CD299A400F5F856 /* char_size */,
-				8636998B0CD29B8200F5F856 /* join_chml */,
-				863699950CD29BB300F5F856 /* learn */,
-				8636999A0CD29BE200F5F856 /* probability_test */,
-				8636999F0CD29BED00F5F856 /* recognize */,
-				86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */,
+				864A67C60D943E21002EB761 /* Chrasis.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -337,13 +176,8 @@
 		86B7D3000D8FD13F00D3460B /* tools */ = {
 			isa = PBXGroup;
 			children = (
-				863699790CD299FD00F5F856 /* char_size.cpp */,
-				863699AC0CD29CCF00F5F856 /* compact_db.cpp */,
 				8636997A0CD299FD00F5F856 /* chmlcodec.cpp */,
-				863699AD0CD29CCF00F5F856 /* join_chml.cpp */,
 				863699AE0CD29CCF00F5F856 /* learn.cpp */,
-				863699B00CD29CCF00F5F856 /* recognize.cpp */,
-				863699AF0CD29CCF00F5F856 /* probability_test.cpp */,
 			);
 			name = tools;
 			sourceTree = "<group>";
@@ -381,56 +215,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		86369A190CD2A54E00F5F856 /* Headers */ = {
+		864A67C10D943E21002EB761 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				86B7D4A40D9009E400D3460B /* internal.h in Headers */,
-				86B7D4A50D9009E400D3460B /* global.h in Headers */,
-				86B7D4A60D9009E400D3460B /* database.h in Headers */,
-				86B7D4A70D9009E400D3460B /* chrasis.h in Headers */,
-				86B7D4A80D9009E400D3460B /* character.h in Headers */,
-				86B7D4A90D9009F800D3460B /* platform.h in Headers */,
+				864A67D10D943EDE002EB761 /* character.h in Headers */,
+				864A67D20D943EDE002EB761 /* chrasis.h in Headers */,
+				864A67D30D943EDE002EB761 /* database.h in Headers */,
+				864A67D40D943EDE002EB761 /* global.h in Headers */,
+				864A67D50D943EDE002EB761 /* internal.h in Headers */,
+				864A67D60D943EDE002EB761 /* platform.h in Headers */,
+				86BFECB20D948581007E84F7 /* config.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		863699730CD299A400F5F856 /* char_size */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 863699760CD299F800F5F856 /* Build configuration list for PBXNativeTarget "char_size" */;
-			buildPhases = (
-				863699710CD299A400F5F856 /* Sources */,
-				863699720CD299A400F5F856 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				86369A310CD2A61900F5F856 /* PBXTargetDependency */,
-			);
-			name = char_size;
-			productName = char_size;
-			productReference = 863699740CD299A400F5F856 /* char_size */;
-			productType = "com.apple.product-type.tool";
-		};
-		8636998A0CD29B8200F5F856 /* join_chml */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8636998F0CD29B8E00F5F856 /* Build configuration list for PBXNativeTarget "join_chml" */;
-			buildPhases = (
-				863699880CD29B8200F5F856 /* Sources */,
-				863699890CD29B8200F5F856 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				86369A330CD2A61C00F5F856 /* PBXTargetDependency */,
-			);
-			name = join_chml;
-			productName = Untitled;
-			productReference = 8636998B0CD29B8200F5F856 /* join_chml */;
-			productType = "com.apple.product-type.tool";
-		};
 		863699940CD29BB300F5F856 /* learn */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 863699A30CD29C9400F5F856 /* Build configuration list for PBXNativeTarget "learn" */;
@@ -441,64 +242,32 @@
 			buildRules = (
 			);
 			dependencies = (
-				86369A350CD2A61E00F5F856 /* PBXTargetDependency */,
+				86BFECAA0D948525007E84F7 /* PBXTargetDependency */,
 			);
 			name = learn;
 			productName = learn;
 			productReference = 863699950CD29BB300F5F856 /* learn */;
 			productType = "com.apple.product-type.tool";
 		};
-		863699990CD29BE200F5F856 /* probability_test */ = {
+		864A67C50D943E21002EB761 /* Chrasis */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 863699A60CD29C9400F5F856 /* Build configuration list for PBXNativeTarget "probability_test" */;
+			buildConfigurationList = 864A67CA0D943E43002EB761 /* Build configuration list for PBXNativeTarget "Chrasis" */;
 			buildPhases = (
-				863699970CD29BE200F5F856 /* Sources */,
-				863699980CD29BE200F5F856 /* Frameworks */,
+				864A67C10D943E21002EB761 /* Headers */,
+				864A67C20D943E21002EB761 /* Resources */,
+				864A67C30D943E21002EB761 /* Sources */,
+				864A67C40D943E21002EB761 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				86369A370CD2A62100F5F856 /* PBXTargetDependency */,
+				86BFECAC0D948528007E84F7 /* PBXTargetDependency */,
+				863B70460D9450B1001D70D2 /* PBXTargetDependency */,
 			);
-			name = probability_test;
-			productName = probability_test;
-			productReference = 8636999A0CD29BE200F5F856 /* probability_test */;
-			productType = "com.apple.product-type.tool";
-		};
-		8636999E0CD29BED00F5F856 /* recognize */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 863699A90CD29C9400F5F856 /* Build configuration list for PBXNativeTarget "recognize" */;
-			buildPhases = (
-				8636999C0CD29BED00F5F856 /* Sources */,
-				8636999D0CD29BED00F5F856 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				86369A390CD2A62500F5F856 /* PBXTargetDependency */,
-			);
-			name = recognize;
-			productName = recognize;
-			productReference = 8636999F0CD29BED00F5F856 /* recognize */;
-			productType = "com.apple.product-type.tool";
-		};
-		86369A1C0CD2A54E00F5F856 /* libchrasis-osx */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 86369A2D0CD2A5F100F5F856 /* Build configuration list for PBXNativeTarget "libchrasis-osx" */;
-			buildPhases = (
-				86369A190CD2A54E00F5F856 /* Headers */,
-				86369A1A0CD2A54E00F5F856 /* Sources */,
-				86369A1B0CD2A54E00F5F856 /* Frameworks */,
-				86369A650CD2ACD000F5F856 /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "libchrasis-osx";
-			productName = "libchrasis-osx";
-			productReference = 86369A1D0CD2A54E00F5F856 /* libchrasis.dylib */;
-			productType = "com.apple.product-type.library.dynamic";
+			name = Chrasis;
+			productName = Chrasis;
+			productReference = 864A67C60D943E21002EB761 /* Chrasis.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
@@ -513,165 +282,111 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				86369A1C0CD2A54E00F5F856 /* libchrasis-osx */,
-				863699730CD299A400F5F856 /* char_size */,
-				8636998A0CD29B8200F5F856 /* join_chml */,
+				86BFEC9D0D948406007E84F7 /* Config Generation */,
 				863699940CD29BB300F5F856 /* learn */,
-				863699990CD29BE200F5F856 /* probability_test */,
-				8636999E0CD29BED00F5F856 /* recognize */,
-				863699E70CD2A01C00F5F856 /* chr_data.db */,
-				863699BF0CD29D8700F5F856 /* tools */,
-				863699CA0CD29DB100F5F856 /* all */,
+				863B70260D944904001D70D2 /* Data Generations */,
+				864A67C50D943E21002EB761 /* Chrasis */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		864A67C20D943E21002EB761 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				863B6FEA0D94459E001D70D2 /* empty_db.db in Resources */,
+				863B6FE80D94459B001D70D2 /* chr_data.db in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXShellScriptBuildPhase section */
-		863699E60CD2A01C00F5F856 /* ShellScript */ = {
+		863B70250D944904001D70D2 /* gen_db.sh */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/data/chmls/*.chml",
-				"$(SRCROOT)/data/database_schema.sql",
+				"$(SRCROOT)/../data/chmls/*.chml",
+				"$(SRCROOT)/../data/database_schema.sql",
 			);
+			name = gen_db.sh;
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/chr_data.db",
-				"$(DERIVED_FILE_DIR)/empty_db.db",
+				"$(SRCROOT)/chr_data.db",
+				"$(SRCROOT)/empty_db.db",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "# shell script goes here\n\nrm chr_data.db empty_db.db\n\n# chr_data.db\nsqlite3 chr_data.db < ../data/database_schema.sql\nDYLD_LIBRARY_PATH=${CONFIGURATION_BUILD_DIR} ./build/tools/learn ../data/chmls/*.chml chr_data.db\n#sqlite3 chr_data.db \"VACUUM;\"\n\n# empty_db.db\nsqlite3 empty_db.db < ../data/database_schema.sql\n\nexit 0";
+			shellPath = /bin/sh;
+			shellScript = "# shell script goes here\n\ngen_chrdatadb()\n{\n\tdbfile=${SRCROOT}/chr_data.db\n\n\tif [ -e \"${dbfile}\" ]\n\tthen\n\t\t# if no newer files found\n\t\tif [ x\"`find ../data/chmls/ ../data/database_schema.sql -newer ${dbfile}`\" == x\"\" ]\n\t\tthen\n\t\t\techo \"${dbfile}\" up-to-date!\n\t\t\treturn\n\t\tfi\n\t\trm chr_data.db\n\tfi\n\n\tsqlite3 \"${dbfile}\" < ../data/database_schema.sql\n\t${CONFIGURATION_BUILD_DIR}/learn ../data/chmls/*.chml \"${dbfile}\"\n\t#sqlite3 \"${dbfile}\" \"VACUUM;\"\n\techo \"${dbfile}\" generated.\n}\n\ngen_emptydb()\n{\n\tdbfile=${SRCROOT}/empty_db.db\n\n\tif [ -e \"${dbfile}\" ]\n\tthen\n\t\t# if no newer files found\n\t\tif [ x\"`find ../data/database_schema.sql -newer ${dbfile}`\" == x\"\" ]\n\t\tthen\n\t\t\techo \"${dbfile}\" up-to-date!\n\t\t\treturn\n\t\tfi\n\t\trm \"${dbfile}\"\n\tfi\n\n\tsqlite3 \"${dbfile}\" < ../data/database_schema.sql\n\techo \"${dbfile}\" generated.\n}\n\ngen_chrdatadb\ngen_emptydb\n\nexit 0";
+		};
+		86BFEC9C0D948406007E84F7 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# yeah yeah i know i should've used a config.h.in.\n\necho \\#define CHRASIS_DATADIR \\\"${INSTALL_PATH}/${CONTENTS_FOLDER_PATH}/Resources\\\" > ${SRCROOT}/config.h\n\nexit 0";
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		863699710CD299A400F5F856 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8636997B0CD299FD00F5F856 /* char_size.cpp in Sources */,
-				8636997C0CD299FD00F5F856 /* chmlcodec.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		863699880CD29B8200F5F856 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				863699B20CD29CF500F5F856 /* join_chml.cpp in Sources */,
-				863699B10CD29CE800F5F856 /* chmlcodec.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		863699920CD29BB300F5F856 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				863B700B0D9446CF001D70D2 /* plat_win32.cpp in Sources */,
+				863B700C0D9446CF001D70D2 /* plat_posix.cpp in Sources */,
+				863B70060D9446CA001D70D2 /* internal.cpp in Sources */,
+				863B70070D9446CA001D70D2 /* database.cpp in Sources */,
+				863B70080D9446CA001D70D2 /* chrasisio.cpp in Sources */,
+				863B70090D9446CA001D70D2 /* character.cpp in Sources */,
 				863699B60CD29D1200F5F856 /* learn.cpp in Sources */,
 				863699B50CD29D0C00F5F856 /* chmlcodec.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		863699970CD29BE200F5F856 /* Sources */ = {
+		864A67C30D943E21002EB761 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				863699B70CD29D1A00F5F856 /* probability_test.cpp in Sources */,
-				863699B40CD29D0900F5F856 /* chmlcodec.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8636999C0CD29BED00F5F856 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				863699B80CD29D1E00F5F856 /* recognize.cpp in Sources */,
-				863699B30CD29D0300F5F856 /* chmlcodec.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		86369A1A0CD2A54E00F5F856 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				86369A250CD2A5CF00F5F856 /* chrasisio.cpp in Sources */,
-				86369A260CD2A5CF00F5F856 /* database.cpp in Sources */,
-				86369A270CD2A5CF00F5F856 /* internal.cpp in Sources */,
-				86D138E70CF299C3004A0E09 /* character.cpp in Sources */,
-				8665D4140D8A5254002CCF7B /* plat_posix.cpp in Sources */,
-				86B7D3030D8FD17F00D3460B /* plat_win32.cpp in Sources */,
+				864A67CB0D943EB6002EB761 /* chrasisio.cpp in Sources */,
+				864A67CC0D943EB6002EB761 /* database.cpp in Sources */,
+				864A67CD0D943EB6002EB761 /* internal.cpp in Sources */,
+				864A67CE0D943EB6002EB761 /* character.cpp in Sources */,
+				864A67CF0D943EB6002EB761 /* plat_posix.cpp in Sources */,
+				864A67D00D943EB6002EB761 /* plat_win32.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		863699C10CD29D9500F5F856 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 8636999E0CD29BED00F5F856 /* recognize */;
-			targetProxy = 863699C00CD29D9500F5F856 /* PBXContainerItemProxy */;
-		};
-		863699C30CD29D9700F5F856 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 863699990CD29BE200F5F856 /* probability_test */;
-			targetProxy = 863699C20CD29D9700F5F856 /* PBXContainerItemProxy */;
-		};
-		863699C50CD29D9900F5F856 /* PBXTargetDependency */ = {
+		863B702A0D944921001D70D2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 863699940CD29BB300F5F856 /* learn */;
-			targetProxy = 863699C40CD29D9900F5F856 /* PBXContainerItemProxy */;
+			targetProxy = 863B70290D944921001D70D2 /* PBXContainerItemProxy */;
 		};
-		863699C70CD29D9B00F5F856 /* PBXTargetDependency */ = {
+		863B70460D9450B1001D70D2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8636998A0CD29B8200F5F856 /* join_chml */;
-			targetProxy = 863699C60CD29D9B00F5F856 /* PBXContainerItemProxy */;
+			target = 863B70260D944904001D70D2 /* Data Generations */;
+			targetProxy = 863B70450D9450B1001D70D2 /* PBXContainerItemProxy */;
 		};
-		863699C90CD29D9D00F5F856 /* PBXTargetDependency */ = {
+		86BFECAA0D948525007E84F7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 863699730CD299A400F5F856 /* char_size */;
-			targetProxy = 863699C80CD29D9D00F5F856 /* PBXContainerItemProxy */;
+			target = 86BFEC9D0D948406007E84F7 /* Config Generation */;
+			targetProxy = 86BFECA90D948525007E84F7 /* PBXContainerItemProxy */;
 		};
-		863699F10CD2A09700F5F856 /* PBXTargetDependency */ = {
+		86BFECAC0D948528007E84F7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 863699E70CD2A01C00F5F856 /* chr_data.db */;
-			targetProxy = 863699F00CD2A09700F5F856 /* PBXContainerItemProxy */;
-		};
-		86369A310CD2A61900F5F856 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 86369A1C0CD2A54E00F5F856 /* libchrasis-osx */;
-			targetProxy = 86369A300CD2A61900F5F856 /* PBXContainerItemProxy */;
-		};
-		86369A330CD2A61C00F5F856 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 86369A1C0CD2A54E00F5F856 /* libchrasis-osx */;
-			targetProxy = 86369A320CD2A61C00F5F856 /* PBXContainerItemProxy */;
-		};
-		86369A350CD2A61E00F5F856 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 86369A1C0CD2A54E00F5F856 /* libchrasis-osx */;
-			targetProxy = 86369A340CD2A61E00F5F856 /* PBXContainerItemProxy */;
-		};
-		86369A370CD2A62100F5F856 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 86369A1C0CD2A54E00F5F856 /* libchrasis-osx */;
-			targetProxy = 86369A360CD2A62100F5F856 /* PBXContainerItemProxy */;
-		};
-		86369A390CD2A62500F5F856 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 86369A1C0CD2A54E00F5F856 /* libchrasis-osx */;
-			targetProxy = 86369A380CD2A62500F5F856 /* PBXContainerItemProxy */;
-		};
-		86369A4C0CD2A79900F5F856 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 863699BF0CD29D8700F5F856 /* tools */;
-			targetProxy = 86369A4B0CD2A79900F5F856 /* PBXContainerItemProxy */;
-		};
-		86369A4E0CD2A7AC00F5F856 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 863699BF0CD29D8700F5F856 /* tools */;
-			targetProxy = 86369A4D0CD2A7AC00F5F856 /* PBXContainerItemProxy */;
+			target = 86BFEC9D0D948406007E84F7 /* Config Generation */;
+			targetProxy = 86BFECAB0D948528007E84F7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -680,6 +395,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DSTROOT = /;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_CONFIG_H,
+					_POSIX,
+				);
 			};
 			name = Debug;
 		};
@@ -687,78 +407,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
-			};
-			name = Release;
-		};
-		863699770CD299F800F5F856 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = "\"/usr/include/libxml2\"";
-				INSTALL_PATH = "$(HOME)/bin";
-				OTHER_LDFLAGS = "-lxml2";
-				PREBINDING = NO;
-				PRODUCT_NAME = char_size;
-				USER_HEADER_SEARCH_PATHS = "\"../include\"";
-				ZERO_LINK = NO;
-			};
-			name = Debug;
-		};
-		863699780CD299F800F5F856 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				HEADER_SEARCH_PATHS = "\"/usr/include/libxml2\"";
-				INSTALL_PATH = "$(HOME)/bin";
-				OTHER_LDFLAGS = "-lxml2";
-				PREBINDING = NO;
-				PRODUCT_NAME = char_size;
-				USER_HEADER_SEARCH_PATHS = "\"../include\"";
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		863699900CD29B8E00F5F856 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = "\"/usr/include/libxml2\"";
-				INSTALL_PATH = "$(HOME)/bin";
-				OTHER_LDFLAGS = "-lxml2";
-				PREBINDING = NO;
-				PRODUCT_NAME = join_chml;
-				USER_HEADER_SEARCH_PATHS = "\"../include\"";
-				ZERO_LINK = NO;
-			};
-			name = Debug;
-		};
-		863699910CD29B8E00F5F856 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				HEADER_SEARCH_PATHS = "\"/usr/include/libxml2\"";
-				INSTALL_PATH = "$(HOME)/bin";
-				OTHER_LDFLAGS = "-lxml2";
-				PREBINDING = NO;
-				PRODUCT_NAME = join_chml;
-				USER_HEADER_SEARCH_PATHS = "\"../include\"";
-				ZERO_LINK = NO;
+				DSTROOT = /;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_CONFIG_H,
+					_POSIX,
+				);
 			};
 			name = Release;
 		};
@@ -775,9 +428,13 @@
 				HEADER_SEARCH_PATHS = "\"/usr/include/libxml2\"";
 				INSTALL_PATH = "$(HOME)/bin";
 				MACH_O_TYPE = mh_execute;
-				OTHER_LDFLAGS = "-lxml2";
+				OTHER_LDFLAGS = (
+					"-lsqlite3",
+					"-lxml2",
+				);
 				PREBINDING = NO;
 				PRODUCT_NAME = learn;
+				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "\"../include\"";
 				ZERO_LINK = YES;
 			};
@@ -794,205 +451,117 @@
 				HEADER_SEARCH_PATHS = "\"/usr/include/libxml2\"";
 				INSTALL_PATH = "$(HOME)/bin";
 				MACH_O_TYPE = mh_execute;
-				OTHER_LDFLAGS = "-lxml2";
+				OTHER_LDFLAGS = (
+					"-lsqlite3",
+					"-lxml2",
+				);
 				PREBINDING = NO;
 				PRODUCT_NAME = learn;
+				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "\"../include\"";
 				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
-		863699A70CD29C9400F5F856 /* Debug */ = {
+		863B70270D944904001D70D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CONTENTS_FOLDER_PATH = Chrasis.frameworks/Versions/A/;
 				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /Library/Frameworks;
+				PRODUCT_NAME = "Generate Databases";
+			};
+			name = Debug;
+		};
+		863B70280D944904001D70D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CONTENTS_FOLDER_PATH = Chrasis.frameworks/Versions/A/;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				INSTALL_PATH = /Library/Frameworks;
+				PRODUCT_NAME = "Generate Databases";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		864A67C80D943E21002EB761 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = "\"/usr/include/libxml2\"";
-				INSTALL_PATH = "$(HOME)/bin";
-				OTHER_LDFLAGS = "-lxml2";
-				PREBINDING = NO;
-				PRODUCT_NAME = probability_test;
-				USER_HEADER_SEARCH_PATHS = "\"../include\"";
-				ZERO_LINK = YES;
-			};
-			name = Debug;
-		};
-		863699A80CD29C9400F5F856 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				HEADER_SEARCH_PATHS = "\"/usr/include/libxml2\"";
-				INSTALL_PATH = "$(HOME)/bin";
-				OTHER_LDFLAGS = "-lxml2";
-				PREBINDING = NO;
-				PRODUCT_NAME = probability_test;
-				USER_HEADER_SEARCH_PATHS = "\"../include\"";
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		863699AA0CD29C9400F5F856 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = "\"/usr/include/libxml2\"";
-				INSTALL_PATH = "$(HOME)/bin";
-				OTHER_LDFLAGS = "-lxml2";
-				PREBINDING = NO;
-				PRODUCT_NAME = recognize;
-				USER_HEADER_SEARCH_PATHS = "\"../include\"";
-				ZERO_LINK = NO;
-			};
-			name = Debug;
-		};
-		863699AB0CD29C9400F5F856 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				HEADER_SEARCH_PATHS = "\"/usr/include/libxml2\"";
-				INSTALL_PATH = "$(HOME)/bin";
-				OTHER_LDFLAGS = "-lxml2";
-				PREBINDING = NO;
-				PRODUCT_NAME = recognize;
-				USER_HEADER_SEARCH_PATHS = "\"../include\"";
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		863699D40CD29DF100F5F856 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = all;
-			};
-			name = Debug;
-		};
-		863699D50CD29DF100F5F856 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				PRODUCT_NAME = all;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		863699D70CD29DF100F5F856 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = all;
-			};
-			name = Debug;
-		};
-		863699D80CD29DF100F5F856 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				PRODUCT_NAME = all;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		863699EB0CD2A04A00F5F856 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = chr_data.db;
-			};
-			name = Debug;
-		};
-		863699EC0CD2A04A00F5F856 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				PRODUCT_NAME = chr_data.db;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		86369A2E0CD2A5F100F5F856 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_PREFIX = lib;
-				FRAMEWORK_SEARCH_PATHS = (
+				INFOPLIST_FILE = "Chrasis-Info.plist";
+				INSTALL_PATH = "$(HOME)/Library/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/build/Debug\"";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREFIX_HEADER = "libchrasis-osx-config.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = _POSIX;
-				INSTALL_PATH = /usr/lib;
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(DEVELOPER_DIR)/SDKs/MacOSX10.4u.sdk/usr/lib\"";
 				OTHER_LDFLAGS = "-lsqlite3";
-				PRODUCT_NAME = chrasis;
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/include;
-				USER_HEADER_SEARCH_PATHS = "\"../include\"";
+				PREBINDING = NO;
+				PRODUCT_NAME = Chrasis;
 			};
 			name = Debug;
 		};
-		86369A2F0CD2A5F100F5F856 /* Release */ = {
+		864A67C90D943E21002EB761 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				COPY_PHASE_STRIP = YES;
-				EXECUTABLE_PREFIX = lib;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/build/Debug\"";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
-				GCC_PREFIX_HEADER = "libchrasis-osx-config.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = _POSIX;
-				INSTALL_PATH = /usr/lib;
+				INFOPLIST_FILE = "Chrasis-Info.plist";
+				INSTALL_PATH = /Library/Frameworks;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(DEVELOPER_DIR)/SDKs/MacOSX10.4u.sdk/usr/lib\"";
 				OTHER_LDFLAGS = "-lsqlite3";
-				PRODUCT_NAME = chrasis;
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/include;
-				USER_HEADER_SEARCH_PATHS = "\"../include\"";
+				PREBINDING = NO;
+				PRODUCT_NAME = Chrasis;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		86BFEC9E0D948406007E84F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CONTENTS_FOLDER_PATH = Chrasis.framework/Versions/A;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = "$(USER_HOME)/Library/Frameworks";
+				PRODUCT_NAME = "Config Generation";
+			};
+			name = Debug;
+		};
+		86BFEC9F0D948406007E84F7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CONTENTS_FOLDER_PATH = Chrasis.framework/Versions/A;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				INSTALL_PATH = /Library/Frameworks;
+				PRODUCT_NAME = "Config Generation";
+				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
@@ -1008,24 +577,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		863699760CD299F800F5F856 /* Build configuration list for PBXNativeTarget "char_size" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				863699770CD299F800F5F856 /* Debug */,
-				863699780CD299F800F5F856 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		8636998F0CD29B8E00F5F856 /* Build configuration list for PBXNativeTarget "join_chml" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				863699900CD29B8E00F5F856 /* Debug */,
-				863699910CD29B8E00F5F856 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		863699A30CD29C9400F5F856 /* Build configuration list for PBXNativeTarget "learn" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1035,56 +586,29 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		863699A60CD29C9400F5F856 /* Build configuration list for PBXNativeTarget "probability_test" */ = {
+		863B702B0D944940001D70D2 /* Build configuration list for PBXAggregateTarget "Data Generations" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				863699A70CD29C9400F5F856 /* Debug */,
-				863699A80CD29C9400F5F856 /* Release */,
+				863B70270D944904001D70D2 /* Debug */,
+				863B70280D944904001D70D2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		863699A90CD29C9400F5F856 /* Build configuration list for PBXNativeTarget "recognize" */ = {
+		864A67CA0D943E43002EB761 /* Build configuration list for PBXNativeTarget "Chrasis" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				863699AA0CD29C9400F5F856 /* Debug */,
-				863699AB0CD29C9400F5F856 /* Release */,
+				864A67C80D943E21002EB761 /* Debug */,
+				864A67C90D943E21002EB761 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		863699D30CD29DF100F5F856 /* Build configuration list for PBXAggregateTarget "tools" */ = {
+		86BFECA00D948424007E84F7 /* Build configuration list for PBXAggregateTarget "Config Generation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				863699D40CD29DF100F5F856 /* Debug */,
-				863699D50CD29DF100F5F856 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		863699D60CD29DF100F5F856 /* Build configuration list for PBXAggregateTarget "all" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				863699D70CD29DF100F5F856 /* Debug */,
-				863699D80CD29DF100F5F856 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		863699EA0CD2A04A00F5F856 /* Build configuration list for PBXAggregateTarget "chr_data.db" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				863699EB0CD2A04A00F5F856 /* Debug */,
-				863699EC0CD2A04A00F5F856 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		86369A2D0CD2A5F100F5F856 /* Build configuration list for PBXNativeTarget "libchrasis-osx" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				86369A2E0CD2A5F100F5F856 /* Debug */,
-				86369A2F0CD2A5F100F5F856 /* Release */,
+				86BFEC9E0D948406007E84F7 /* Debug */,
+				86BFEC9F0D948406007E84F7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
