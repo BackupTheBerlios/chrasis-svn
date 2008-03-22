@@ -33,6 +33,18 @@
 #include "OVKPStringReceiverProtocol.h"
 #include <strings.h>
 
+void testConnection()
+{
+	// test connection, so connect to myself
+	id stringReceiver = [[NSConnection rootProxyForConnectionWithRegisteredName:OVDSTRSTRRCVR_SRVNAME host:nil] retain];
+	if (stringReceiver == nil)
+	{
+		NSLog(@"connection to %@ failed.", OVDSTRSTRRCVR_SRVNAME);
+		return;
+	}
+	[stringReceiver setProtocolForProxy:@protocol(OVDistributedStringReceiverProtocol)];
+	NSLog(@"    pining myself... %@", [stringReceiver ping]?@"YES":@"NO");
+}
 
 const char *
 OVKPStringReceiver::localizedName(const char *locale)
@@ -44,50 +56,63 @@ OVKPStringReceiver::localizedName(const char *locale)
 	return OVKPSR_NAME;
 }
 
-void
-OVKPStringReceiverContext::start(OVBuffer* b, OVCandidate* c, OVService* s)
-{
-	if (!_M_receiver)
-		_M_receiver = [OVDistributedStringReceiver new];
-	[_M_receiver setBuffer: b];
+OVDistributedStringReceiver *OVKPStringReceiverContextSingleton::_M_receiver = nil;
+NSConnection *OVKPStringReceiverContextSingleton::_M_connection = nil;
 
-	if (!_M_connection)
-	{
-		_M_connection = [[NSConnection defaultConnection] retain];
-		[_M_connection setRootObject: _M_receiver];
-    
-		if (![_M_connection registerName: OVDSTRSTRRCVR_SRVNAME]) {
-			NSLog(@"Cannot register distant object service under the name %@", OVDSTRSTRRCVR_SRVNAME);
-			return;
-		} else {
-			NSLog(@"Distant object service registered");
-		}
+OVKPStringReceiverContextSingleton::OVKPStringReceiverContextSingleton()
+{
+	NSLog(@"OVKPStringReceiverContextSingleton::OVKPStringReceiverContextSingleton()");
+	_M_receiver = [OVDistributedStringReceiver new];
+	_M_connection = [[NSConnection defaultConnection] retain];
+	[_M_connection setRootObject: _M_receiver];
+
+	if (![_M_connection registerName: OVDSTRSTRRCVR_SRVNAME]) {
+		NSLog(@"   Cannot register distant object, name: %@", OVDSTRSTRRCVR_SRVNAME);
+		return;
+	} else {
+		NSLog(@"   Distant object service registered.");
 	}
+	
+	testConnection();
+}
+
+OVKPStringReceiverContextSingleton::~OVKPStringReceiverContextSingleton()
+{
+	NSLog(@"OVKPStringReceiverContextSingleton::~OVKPStringReceiverContext():");
+	testConnection();
+	[_M_connection invalidate];
+	[_M_connection release];
+	[_M_receiver release];
 }
 
 void
-OVKPStringReceiverContext::clear()
+OVKPStringReceiverContextSingleton::start(OVBuffer* b, OVCandidate* c, OVService* s)
 {
-	// what should i do here?
-	// feel free to modify..... PLEASE!!!
-	//[_M_receiver setBuffer: NULL];
+	NSLog(@"OVKPStringReceiverContextSingleton::start()");
+	id rootobj = [_M_connection rootObject];
+	NSLog(@"    rootObj: %@", rootobj);
+	NSLog(@"    _M_receiver: %@", _M_receiver);
+	NSLog(@"    rootObj == _M_receiver: %@", (rootobj == _M_receiver)?@"YES":@"NO");
+	//if (_M_receiver)
+		[_M_receiver setBuffer: b];\
+
+	testConnection();
 }
 
 void
-OVKPStringReceiverContext::end()
+OVKPStringReceiverContextSingleton::wakeup(OVBuffer* b, OVCandidate* c, OVService* s)
 {
-	// what should i do? stop server?
-	// feel free to modify..... PLEASE!!!
-	if (_M_receiver)
-		[_M_receiver setBuffer: NULL];
-}
-
-int
-OVKPStringReceiverContext::keyEvent(OVKeyCode*, OVBuffer* b, OVCandidate*, OVService*)
-{
-	// too bad, we cannot do this elsewhere = =
-	// OpenVanilla doesn't have a buffer-changed notification.
-	if ([_M_receiver buffer] != NULL)
+	NSLog(@"OVKPStringReceiverContextSingleton::wakeup()");
+	//if (_M_receiver)
 		[_M_receiver setBuffer: b];
-	return 0;
+	testConnection();
+}
+
+void
+OVKPStringReceiverContextSingleton::end()
+{
+	NSLog(@"OVKPStringReceiverContextSingleton::end()");
+	//if (_M_receiver)
+		[_M_receiver setBuffer: NULL];
+	testConnection();
 }

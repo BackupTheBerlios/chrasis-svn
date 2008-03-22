@@ -1,0 +1,9 @@
+//
+// Prefix header for all source files of the 'LeopardChrasis' target in the 'LeopardChrasis' project
+//
+
+#ifdef __OBJC__
+	#import <Cocoa/Cocoa.h>
+	#import <InputMethodKit/InputMethodKit.h>
+	#import <Chrasis/chrasis.h>
+#endif

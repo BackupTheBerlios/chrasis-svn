@@ -47,21 +47,34 @@
 #define OVKPSR_NAME_ZHTW	"\xe5\xad\x97\xe4\xb8\xb2\xe6\x8e\xa5\xe6\x94\xb6\xe5\x99\xa8" // "字串接收器"
 //#define OVKPSR_NAME_ZHCN	"@o@"
 
-class OVKPStringReceiver;
+class OVKPStringReceiverContextSingleton {
+public:
+	static OVKPStringReceiverContextSingleton &instance() {
+		static OVKPStringReceiverContextSingleton singleton;
+		return singleton;
+	}
+
+	~OVKPStringReceiverContextSingleton();
+	void start(OVBuffer*, OVCandidate*, OVService*);
+	void wakeup(OVBuffer*, OVCandidate*, OVService*);
+	void end();
+
+private:
+	OVKPStringReceiverContextSingleton();
+	static OVDistributedStringReceiver *_M_receiver;
+	static NSConnection *_M_connection;
+};
 
 class OVKPStringReceiverContext : public OVInputMethodContext {
 public:
-	OVKPStringReceiverContext():
-		_M_receiver(nil), _M_connection(nil)
-	{ }
-	virtual void start(OVBuffer*, OVCandidate*, OVService*);
-	virtual void clear();
-	virtual void end();
-	virtual int keyEvent(OVKeyCode*, OVBuffer*, OVCandidate*, OVService*);
-
-private:
-	OVDistributedStringReceiver *_M_receiver;
-	NSConnection *_M_connection;
+	virtual void start(OVBuffer *b, OVCandidate *c, OVService *s)
+	{ OVKPStringReceiverContextSingleton::instance().start(b, c, s); }
+	virtual void wakeup(OVBuffer *b, OVCandidate *c, OVService *s)
+	{ OVKPStringReceiverContextSingleton::instance().wakeup(b, c, s); }
+	virtual void clear() {};
+	virtual void end()
+	{ OVKPStringReceiverContextSingleton::instance().end(); }
+	virtual int keyEvent(OVKeyCode*, OVBuffer*, OVCandidate*, OVService*) { return 0; }
 };
 
 class OVKPStringReceiver: public OVInputMethod {
@@ -75,7 +88,7 @@ public:
 	// === end from OVModule ===
 
 	// === from OVInputMethod ===
-	virtual OVInputMethodContext* newContext() { return new OVKPStringReceiverContext; }
+	virtual OVInputMethodContext* newContext() { return new OVKPStringReceiverContext(); }
 	// === end from OVInputMethod ===
 };
 #endif

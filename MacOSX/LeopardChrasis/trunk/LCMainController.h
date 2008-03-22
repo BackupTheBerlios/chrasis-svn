@@ -8,13 +8,13 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "ChrasisDrawingView.h"
-#import "ChrasisCandidateListPopUpButton.h"
+#import "LCDrawingView.h"
+#import "LCCandidateListPopUpButton.h"
 
-#import "ChrasisWritingPanel.h"
+#import "LCWritingPanel.h"
 
-@interface OVIMChrasisController : NSObject {
-	IBOutlet ChrasisWritingPanel *panel_writing_pad;
+@interface LCMainController : NSObject {
+	IBOutlet LCWritingPanel *panel_writing_pad;
 	IBOutlet NSPanel *panel_options;
 	IBOutlet NSPanel *panel_learning;
 
@@ -27,22 +27,22 @@
 	IBOutlet NSButton *button_sendkey_space;
 	IBOutlet NSButton *button_sendkey_left;
 	IBOutlet NSButton *button_sendkey_right;
-	IBOutlet ChrasisCandidateListPopUpButton *popup_candidate_list_1;
-	IBOutlet ChrasisCandidateListPopUpButton *popup_candidate_list_2;
-	IBOutlet ChrasisCandidateListPopUpButton *popup_candidate_list_3;
-	IBOutlet ChrasisCandidateListPopUpButton *popup_candidate_list_4;
-	IBOutlet ChrasisCandidateListPopUpButton *popup_candidate_list_5;
-	IBOutlet ChrasisCandidateListPopUpButton *popup_candidate_list_6;
-	IBOutlet ChrasisCandidateListPopUpButton *popup_candidate_list_7;
-	IBOutlet ChrasisCandidateListPopUpButton *popup_candidate_list_8;
-	IBOutlet ChrasisDrawingView *view_writing_area_1;
-	IBOutlet ChrasisDrawingView *view_writing_area_2;
-	IBOutlet ChrasisDrawingView *view_writing_area_3;
-	IBOutlet ChrasisDrawingView *view_writing_area_4;
-	IBOutlet ChrasisDrawingView *view_writing_area_5;
-	IBOutlet ChrasisDrawingView *view_writing_area_6;
-	IBOutlet ChrasisDrawingView *view_writing_area_7;
-	IBOutlet ChrasisDrawingView *view_writing_area_8;
+	IBOutlet LCCandidateListPopUpButton *popup_candidate_list_1;
+	IBOutlet LCCandidateListPopUpButton *popup_candidate_list_2;
+	IBOutlet LCCandidateListPopUpButton *popup_candidate_list_3;
+	IBOutlet LCCandidateListPopUpButton *popup_candidate_list_4;
+	IBOutlet LCCandidateListPopUpButton *popup_candidate_list_5;
+	IBOutlet LCCandidateListPopUpButton *popup_candidate_list_6;
+	IBOutlet LCCandidateListPopUpButton *popup_candidate_list_7;
+	IBOutlet LCCandidateListPopUpButton *popup_candidate_list_8;
+	IBOutlet LCDrawingView *view_writing_area_1;
+	IBOutlet LCDrawingView *view_writing_area_2;
+	IBOutlet LCDrawingView *view_writing_area_3;
+	IBOutlet LCDrawingView *view_writing_area_4;
+	IBOutlet LCDrawingView *view_writing_area_5;
+	IBOutlet LCDrawingView *view_writing_area_6;
+	IBOutlet LCDrawingView *view_writing_area_7;
+	IBOutlet LCDrawingView *view_writing_area_8;
 
 	NSArray *popup_candidate_list_array;
 	NSArray *view_writing_area_array;
@@ -67,7 +67,7 @@
 	BOOL save_chml;
 	BOOL learn_recognized;
 
-	ChrasisDrawingView *viewToBeLearned;
+	LCDrawingView *viewToBeLearned;
 	
 	NSDictionary *dict_button_script;
 }
@@ -76,11 +76,10 @@
 
 - (void) awakeFromNib;
 
-- (void) registerRecognizeTimer: (ChrasisDrawingView *)view;
-- (void) unregisterRecognizeTimer: (ChrasisDrawingView *)view;
+- (void) registerRecognizeTimer: (LCDrawingView *)view;
+- (void) unregisterRecognizeTimer: (LCDrawingView *)view;
 - (BOOL) shouldLearnRecognized;
 - (BOOL) shouldSaveWrittenCharacter;
-- (void) sendStringToOpenVanilla: (NSString *)str;
 
 - (IBAction) candidate_list_item_selected: (id)sender;
 

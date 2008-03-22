@@ -6,10 +6,10 @@
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
-#import "OVIMChrasisController.h"
-#import "chrasis.h"
+#import "LCMainController.h"
+#import <Chrasis/chrasis.h>
 
-@implementation OVIMChrasisController
+@implementation LCMainController
 
 - (BOOL) shouldLearnRecognized { return learn_recognized; }
 - (BOOL) shouldSaveWrittenCharacter { return save_chml; }
@@ -24,8 +24,8 @@
 - (void) initializeWritingAreas {
 	[view_keypad setHidden: YES];
 	for (int i=0;i<[view_writing_area_array count];++i) {
-		ChrasisDrawingView *view = [view_writing_area_array objectAtIndex: i];
-		ChrasisCandidateListPopUpButton *popup = [popup_candidate_list_array objectAtIndex: i];
+		LCDrawingView *view = [view_writing_area_array objectAtIndex: i];
+		LCCandidateListPopUpButton *popup = [popup_candidate_list_array objectAtIndex: i];
 		[view setHidden: YES];
 		[popup setHidden: YES];
 	}
@@ -40,8 +40,8 @@
 		display: YES animate: YES];
 	CGFloat popup_y = [popup_candidate_list_1 frame].origin.y;
 	for (int i=0;i<num_writing_areas;++i) {
-		ChrasisDrawingView *view = [view_writing_area_array objectAtIndex: i];
-		ChrasisCandidateListPopUpButton *popup = [popup_candidate_list_array objectAtIndex: i];
+		LCDrawingView *view = [view_writing_area_array objectAtIndex: i];
+		LCCandidateListPopUpButton *popup = [popup_candidate_list_array objectAtIndex: i];
 		[popup setFrame: NSMakeRect((writing_area_size + 2) * i + 4, popup_y, writing_area_size, popup_height)];
 		[view setFrame: NSMakeRect((writing_area_size + 2) * i + 4, 5, writing_area_size, writing_area_size)];
 		[popup setHidden: NO];
@@ -122,8 +122,8 @@
 
 	int i;
 	for (i=0;i<8;++i) {
-		ChrasisDrawingView *view = [view_writing_area_array objectAtIndex: i];
-		ChrasisCandidateListPopUpButton *popup = [popup_candidate_list_array objectAtIndex: i];
+		LCDrawingView *view = [view_writing_area_array objectAtIndex: i];
+		LCCandidateListPopUpButton *popup = [popup_candidate_list_array objectAtIndex: i];
 		[view setPopupCandidateList: popup];
 		[popup setAssociatedDrawingView: view];
 		[view setController: self];
@@ -151,7 +151,7 @@
 		NSLocalizedString(
 			@"Chrasis Informations:\n"
 			@"System Database Path:\n\t%@\n"
-			@"User Database Path:\n\t%@\n",
+			@"User Database Path:\n\t%@",
 			@"Chrasis information in about tab of option panel."
 			@"this string has two parameters, the return values from"
 			@"    system_database_path()"
@@ -162,7 +162,7 @@
 	]];
 }
 
-- (void) registerRecognizeTimer: (ChrasisDrawingView *)view {
+- (void) registerRecognizeTimer: (LCDrawingView *)view {
 	[self unregisterRecognizeTimer: view];
 	[view setRecognizeTimer: [NSTimer
 		scheduledTimerWithTimeInterval: (recognize_delay / 1000.0)
@@ -172,7 +172,7 @@
 		repeats: NO]];
 }
 
-- (void) unregisterRecognizeTimer: (ChrasisDrawingView *)view {
+- (void) unregisterRecognizeTimer: (LCDrawingView *)view {
 	if ([view recognizeTimer] != nil)
 	{
 		[[view recognizeTimer] invalidate];
@@ -198,8 +198,8 @@
 }
 
 - (IBAction) candidate_list_item_selected: (id)sender {
-	ChrasisCandidateListPopUpButton *popup = sender;
-	ChrasisDrawingView *view = [popup associatedDrawingView];
+	LCCandidateListPopUpButton *popup = sender;
+	LCDrawingView *view = [popup associatedDrawingView];
 
 	if ([popup selectedItem] == [view popupCandidateListItemIncorrect])
 	{
@@ -251,8 +251,6 @@
 		[standardUserDefaults setFloat: [panel_writing_pad frame].origin.x forKey: @"writing_pad_x"];
 		[standardUserDefaults setFloat: [panel_writing_pad frame].origin.y forKey: @"writing_pad_y"];
 		[standardUserDefaults synchronize];
-
-		[[NSApplication sharedApplication] terminate: self];
 	}
 }
 
@@ -262,35 +260,9 @@
 	[viewToBeLearned updateCandidateList];
 }
 
-+ (id) getOVDisplayServer {
-	id stringReceiver = [[NSConnection rootProxyForConnectionWithRegisteredName:OVDSTRSTRRCVR_SRVNAME host:nil] retain];
-	if (stringReceiver == nil)
-	{
-		NSLog(@"connection to %@ failed.", OVDSTRSTRRCVR_SRVNAME);
-		NSRunCriticalAlertPanel(
-			NSLocalizedString(@"Unable to connect, Check OpenVanilla status.", @"no-connection panel title"),
-			[NSString stringWithFormat: 
-				NSLocalizedString(@"Connection to %@ failed.\nCheck OpenVanilla status!", @"no-connection panel message"),
-				OVDSTRSTRRCVR_SRVNAME],
-			NSLocalizedString(@"Too Bad!", @"no-connection panel button text"),
-			nil, nil);
-		return nil;
-	}
-	[stringReceiver setProtocolForProxy:@protocol(OVDistributedStringReceiverProtocol)];
-	return stringReceiver;
-}
-
-- (void) sendStringToOpenVanilla: (NSString *)str {
-	id stringReceiver = [OVIMChrasisController getOVDisplayServer];
-	if (stringReceiver == nil)
-		return;
-
-#ifdef OVIMCHRASIS_DEBUG
-//	NSLog(@"sending string to OpenVanilla: %@, %@", str, [stringReceiver ping]?@"YES":@"NO");
-#endif
-
-	[stringReceiver sendStringToCurrentComposingBuffer: str];
-	[stringReceiver release];
+- (void)showWritingPad: (id)sender {
+	NSLog(@"LCMainController: show writing pad called.");
+	[panel_writing_pad orderFront: nil];
 }
 
 @end

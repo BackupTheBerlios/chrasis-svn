@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		863B708C0D9459EA001D70D2 /* Chrasis.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 863B708B0D9459EA001D70D2 /* Chrasis.framework */; settings = {ATTRIBUTES = (strong, ); }; };
 		868D5B5C0D90559B007DA979 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 868D5B5B0D90559B007DA979 /* Localizable.strings */; };
 		86B7CE620D8DCB1D00D3460B /* ChrasisDrawingView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86B7CE610D8DCB1D00D3460B /* ChrasisDrawingView.mm */; };
 		86B7D1AD0D8FA26800D3460B /* ChrasisWritingPanel.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86B7D1AC0D8FA26800D3460B /* ChrasisWritingPanel.mm */; };
 		86B7D1D70D8FA82100D3460B /* ChrasisCandidateListPopUpButton.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86B7D1D60D8FA82100D3460B /* ChrasisCandidateListPopUpButton.mm */; };
-		86B7D74C0D902AE500D3460B /* libchrasis.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 86B7D74B0D902AE500D3460B /* libchrasis.dylib */; };
 		86BC4D500D8D1B8E0054FBC6 /* OVIMChrasisController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86BC4D4F0D8D1B8E0054FBC6 /* OVIMChrasisController.mm */; };
 		8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 29B97318FDCFA39411CA2CEA /* MainMenu.nib */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
@@ -28,10 +28,17 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* OVIMChrasis_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVIMChrasis_Prefix.pch; sourceTree = "<group>"; };
+		863B708B0D9459EA001D70D2 /* Chrasis.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Chrasis.framework; path = /Library/Frameworks/Chrasis.framework; sourceTree = "<absolute>"; };
+		863B70B60D945B19001D70D2 /* character.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = character.h; sourceTree = "<group>"; };
+		863B70B70D945B19001D70D2 /* database.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = database.h; sourceTree = "<group>"; };
+		863B70B80D945B19001D70D2 /* global.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = global.h; sourceTree = "<group>"; };
+		863B70B90D945B19001D70D2 /* internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = internal.h; sourceTree = "<group>"; };
+		863B70BA0D945B19001D70D2 /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
+		863B70BB0D945B19001D70D2 /* chrasis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chrasis.h; sourceTree = "<group>"; };
 		866A7B180D93004C0006D86E /* OVKPStringReceiverProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OVKPStringReceiverProtocol.h; path = ../../OVKPStringReceiver/trunk/OVKPStringReceiverProtocol.h; sourceTree = SOURCE_ROOT; };
 		868D5B4B0D904F48007DA979 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/MainMenu.nib; sourceTree = "<group>"; };
 		868D5B500D9051EE007DA979 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		868D5B590D905594007DA979 /* English */ = {isa = PBXFileReference; fileEncoding = 4294967295; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
+		868D5B590D905594007DA979 /* English */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
 		868D5B5D0D9055A3007DA979 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/Localizable.strings; sourceTree = "<group>"; };
 		86B7CE600D8DCB1D00D3460B /* ChrasisDrawingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChrasisDrawingView.h; sourceTree = "<group>"; };
 		86B7CE610D8DCB1D00D3460B /* ChrasisDrawingView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ChrasisDrawingView.mm; sourceTree = "<group>"; };
@@ -39,7 +46,6 @@
 		86B7D1AC0D8FA26800D3460B /* ChrasisWritingPanel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ChrasisWritingPanel.mm; sourceTree = "<group>"; };
 		86B7D1D50D8FA82100D3460B /* ChrasisCandidateListPopUpButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChrasisCandidateListPopUpButton.h; sourceTree = "<group>"; };
 		86B7D1D60D8FA82100D3460B /* ChrasisCandidateListPopUpButton.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ChrasisCandidateListPopUpButton.mm; sourceTree = "<group>"; };
-		86B7D74B0D902AE500D3460B /* libchrasis.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libchrasis.dylib; path = /usr/local/lib/libchrasis.dylib; sourceTree = "<absolute>"; };
 		86BC4D4E0D8D1B8E0054FBC6 /* OVIMChrasisController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVIMChrasisController.h; sourceTree = "<group>"; };
 		86BC4D4F0D8D1B8E0054FBC6 /* OVIMChrasisController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OVIMChrasisController.mm; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -52,7 +58,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
-				86B7D74C0D902AE500D3460B /* libchrasis.dylib in Frameworks */,
+				863B708C0D9459EA001D70D2 /* Chrasis.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,6 +83,7 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				863B708B0D9459EA001D70D2 /* Chrasis.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 			);
 			name = "Linked Frameworks";
@@ -103,7 +110,7 @@
 		29B97314FDCFA39411CA2CEA /* OVIMChrasis */ = {
 			isa = PBXGroup;
 			children = (
-				86B7D74B0D902AE500D3460B /* libchrasis.dylib */,
+				863B70B40D945B19001D70D2 /* Headers */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -141,6 +148,28 @@
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		863B70B40D945B19001D70D2 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				863B70B50D945B19001D70D2 /* chrasis */,
+				863B70BB0D945B19001D70D2 /* chrasis.h */,
+			);
+			name = Headers;
+			path = ../../../Engine/libchrasis/trunk/include;
+			sourceTree = SOURCE_ROOT;
+		};
+		863B70B50D945B19001D70D2 /* chrasis */ = {
+			isa = PBXGroup;
+			children = (
+				863B70B60D945B19001D70D2 /* character.h */,
+				863B70B70D945B19001D70D2 /* database.h */,
+				863B70B80D945B19001D70D2 /* global.h */,
+				863B70B90D945B19001D70D2 /* internal.h */,
+				863B70BA0D945B19001D70D2 /* platform.h */,
+			);
+			path = chrasis;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -294,6 +323,7 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_PREPROCESSOR_DEFINITIONS = OVIMCHRASIS_DEBUG;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -309,6 +339,7 @@
 					ppc,
 					i386,
 				);
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "/usr/local/include/chrasis-0.2.0";

@@ -182,8 +182,8 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = OVKPStringReceiver_Prefix.pch;
-				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = OVKPStringReceiver;
+				SKIP_INSTALL = NO;
 			};
 			name = Debug;
 		};
@@ -197,8 +197,8 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = OVKPStringReceiver_Prefix.pch;
-				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = OVKPStringReceiver;
+				SKIP_INSTALL = NO;
 			};
 			name = Release;
 		};
@@ -207,9 +207,11 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DSTROOT = /;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = /Library/OpenVanilla/0.8/Modules;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
@@ -221,8 +223,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DSTROOT = /;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = /Library/OpenVanilla/0.8/Modules;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
 			};

@@ -8,9 +8,9 @@
 		<string key="IBDocument.HIToolboxVersion">352.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="1077"/>
-			<integer value="1009"/>
-			<integer value="376"/>
+			<integer value="375"/>
+			<integer value="1080"/>
+			<integer value="1008"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -708,9 +708,9 @@
 				<int key="NSWindowStyleMask">8339</int>
 				<int key="NSWindowBacking">2</int>
 				<string key="NSWindowRect">{{22, 34}, {667, 125}}</string>
-				<int key="NSWTFlags">603982848</int>
+				<int key="NSWTFlags">1677724672</int>
 				<string key="NSWindowTitle">Chrasis Writing Pad</string>
-				<string key="NSWindowClass">ChrasisWritingPanel</string>
+				<string key="NSWindowClass">LCWritingPanel</string>
 				<nil key="NSViewClass"/>
 				<object class="NSView" key="NSWindowView" id="400368692">
 					<reference key="NSNextResponder"/>
@@ -1171,56 +1171,56 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<int key="NSvFlags">8460</int>
 							<string key="NSFrame">{{4, 5}, {61, 91}}</string>
 							<reference key="NSSuperview" ref="400368692"/>
-							<string key="NSClassName">ChrasisDrawingView</string>
+							<string key="NSClassName">LCDrawingView</string>
 						</object>
 						<object class="NSCustomView" id="1041041120">
 							<reference key="NSNextResponder" ref="400368692"/>
 							<int key="NSvFlags">8460</int>
 							<string key="NSFrame">{{69, 5}, {61, 91}}</string>
 							<reference key="NSSuperview" ref="400368692"/>
-							<string key="NSClassName">ChrasisDrawingView</string>
+							<string key="NSClassName">LCDrawingView</string>
 						</object>
 						<object class="NSCustomView" id="817775236">
 							<reference key="NSNextResponder" ref="400368692"/>
 							<int key="NSvFlags">8460</int>
 							<string key="NSFrame">{{134, 5}, {61, 91}}</string>
 							<reference key="NSSuperview" ref="400368692"/>
-							<string key="NSClassName">ChrasisDrawingView</string>
+							<string key="NSClassName">LCDrawingView</string>
 						</object>
 						<object class="NSCustomView" id="173978942">
 							<reference key="NSNextResponder" ref="400368692"/>
 							<int key="NSvFlags">8460</int>
 							<string key="NSFrame">{{199, 5}, {61, 91}}</string>
 							<reference key="NSSuperview" ref="400368692"/>
-							<string key="NSClassName">ChrasisDrawingView</string>
+							<string key="NSClassName">LCDrawingView</string>
 						</object>
 						<object class="NSCustomView" id="75700257">
 							<reference key="NSNextResponder" ref="400368692"/>
 							<int key="NSvFlags">8460</int>
 							<string key="NSFrame">{{264, 5}, {61, 91}}</string>
 							<reference key="NSSuperview" ref="400368692"/>
-							<string key="NSClassName">ChrasisDrawingView</string>
+							<string key="NSClassName">LCDrawingView</string>
 						</object>
 						<object class="NSCustomView" id="620220636">
 							<reference key="NSNextResponder" ref="400368692"/>
 							<int key="NSvFlags">8460</int>
 							<string key="NSFrame">{{329, 5}, {61, 91}}</string>
 							<reference key="NSSuperview" ref="400368692"/>
-							<string key="NSClassName">ChrasisDrawingView</string>
+							<string key="NSClassName">LCDrawingView</string>
 						</object>
 						<object class="NSCustomView" id="714571667">
 							<reference key="NSNextResponder" ref="400368692"/>
 							<int key="NSvFlags">8460</int>
 							<string key="NSFrame">{{394, 5}, {61, 91}}</string>
 							<reference key="NSSuperview" ref="400368692"/>
-							<string key="NSClassName">ChrasisDrawingView</string>
+							<string key="NSClassName">LCDrawingView</string>
 						</object>
 						<object class="NSCustomView" id="697345667">
 							<reference key="NSNextResponder" ref="400368692"/>
 							<int key="NSvFlags">8460</int>
 							<string key="NSFrame">{{459, 5}, {61, 91}}</string>
 							<reference key="NSSuperview" ref="400368692"/>
-							<string key="NSClassName">ChrasisDrawingView</string>
+							<string key="NSClassName">LCDrawingView</string>
 						</object>
 					</object>
 					<string key="NSFrameSize">{667, 125}</string>
@@ -1229,7 +1229,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 				<string key="NSScreenRect">{{0, 0}, {1280, 778}}</string>
 			</object>
 			<object class="NSCustomObject" id="723971717">
-				<string key="NSClassName">OVIMChrasisController</string>
+				<string key="NSClassName">LCMainController</string>
 			</object>
 			<object class="NSNumberFormatter" id="889253657">
 				<object class="NSMutableDictionary" key="NS.attributes">
@@ -1396,14 +1396,6 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<reference key="destination" ref="513391605"/>
 					</object>
 					<int key="connectionID">639</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">panel_writing_pad</string>
-						<reference key="source" ref="723971717"/>
-						<reference key="destination" ref="1071833987"/>
-					</object>
-					<int key="connectionID">640</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -2012,6 +2004,22 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<reference key="destination" ref="123661436"/>
 					</object>
 					<int key="connectionID">1085</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="1050"/>
+						<reference key="destination" ref="723971717"/>
+					</object>
+					<int key="connectionID">1089</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">panel_writing_pad</string>
+						<reference key="source" ref="723971717"/>
+						<reference key="destination" ref="1071833987"/>
+					</object>
+					<int key="connectionID">1090</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -3052,7 +3060,7 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>ChrasisCandidateListPopUpButton</string>
+					<string>LCCandidateListPopUpButton</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3079,14 +3087,14 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>ChrasisCandidateListPopUpButton</string>
+					<string>LCCandidateListPopUpButton</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>{{77, 152}, {113, 4}}</string>
-					<string>ChrasisCandidateListPopUpButton</string>
+					<string>LCCandidateListPopUpButton</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>ChrasisCandidateListPopUpButton</string>
+					<string>LCCandidateListPopUpButton</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3094,13 +3102,13 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>{{207, 152}, {113, 4}}</string>
-					<string>ChrasisCandidateListPopUpButton</string>
+					<string>LCCandidateListPopUpButton</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>ChrasisCandidateListPopUpButton</string>
+					<string>LCCandidateListPopUpButton</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>ChrasisCandidateListPopUpButton</string>
+					<string>LCCandidateListPopUpButton</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>ChrasisCandidateListPopUpButton</string>
+					<string>LCCandidateListPopUpButton</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3146,37 +3154,29 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">1085</int>
+			<int key="maxID">1090</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<bool key="EncodedWithXMLCoder">YES</bool>
 				<object class="IBPartialClassDescription">
-					<string key="className">ChrasisCandidateListPopUpButton</string>
+					<string key="className">LCCandidateListPopUpButton</string>
 					<string key="superclassName">NSPopUpButton</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">ChrasisCandidateListPopUpButton.h</string>
+						<string key="minorKey">LCCandidateListPopUpButton.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">ChrasisDrawingView</string>
+					<string key="className">LCDrawingView</string>
 					<string key="superclassName">NSView</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">ChrasisDrawingView.h</string>
+						<string key="minorKey">LCDrawingView.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">ChrasisWritingPanel</string>
-					<string key="superclassName">NSPanel</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">ChrasisWritingPanel.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">OVIMChrasisController</string>
+					<string key="className">LCMainController</string>
 					<string key="superclassName">NSObject</string>
 					<object class="NSMutableDictionary" key="actions">
 						<bool key="EncodedWithXMLCoder">YES</bool>
@@ -3250,15 +3250,15 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<string>NSButton</string>
 							<string>NSPanel</string>
 							<string>NSPanel</string>
-							<string>ChrasisWritingPanel</string>
-							<string>ChrasisCandidateListPopUpButton</string>
-							<string>ChrasisCandidateListPopUpButton</string>
-							<string>ChrasisCandidateListPopUpButton</string>
-							<string>ChrasisCandidateListPopUpButton</string>
-							<string>ChrasisCandidateListPopUpButton</string>
-							<string>ChrasisCandidateListPopUpButton</string>
-							<string>ChrasisCandidateListPopUpButton</string>
-							<string>ChrasisCandidateListPopUpButton</string>
+							<string>LCWritingPanel</string>
+							<string>LCCandidateListPopUpButton</string>
+							<string>LCCandidateListPopUpButton</string>
+							<string>LCCandidateListPopUpButton</string>
+							<string>LCCandidateListPopUpButton</string>
+							<string>LCCandidateListPopUpButton</string>
+							<string>LCCandidateListPopUpButton</string>
+							<string>LCCandidateListPopUpButton</string>
+							<string>LCCandidateListPopUpButton</string>
 							<string>NSStepper</string>
 							<string>NSStepper</string>
 							<string>NSStepper</string>
@@ -3268,25 +3268,33 @@ ARcABAAAAAEAAAACARwAAwAAAAEAAQAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<string>NSTextField</string>
 							<string>NSTextField</string>
 							<string>NSView</string>
-							<string>ChrasisDrawingView</string>
-							<string>ChrasisDrawingView</string>
-							<string>ChrasisDrawingView</string>
-							<string>ChrasisDrawingView</string>
-							<string>ChrasisDrawingView</string>
-							<string>ChrasisDrawingView</string>
-							<string>ChrasisDrawingView</string>
-							<string>ChrasisDrawingView</string>
+							<string>LCDrawingView</string>
+							<string>LCDrawingView</string>
+							<string>LCDrawingView</string>
+							<string>LCDrawingView</string>
+							<string>LCDrawingView</string>
+							<string>LCDrawingView</string>
+							<string>LCDrawingView</string>
+							<string>LCDrawingView</string>
 						</object>
 					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">OVIMChrasisController.h</string>
+						<string key="minorKey">LCMainController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">LCWritingPanel</string>
+					<string key="superclassName">NSPanel</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">LCWritingPanel.h</string>
 					</object>
 				</object>
 			</object>
 		</object>
 		<int key="IBDocument.localizationMode">0</int>
-		<string key="IBDocument.LastKnownRelativeProjectPath">../OVIMChrasis.xcodeproj</string>
+		<string key="IBDocument.LastKnownRelativeProjectPath">../LeopardChrasis.xcodeproj</string>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 	</data>
 </archive>

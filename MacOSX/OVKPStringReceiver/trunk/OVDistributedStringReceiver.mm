@@ -15,13 +15,22 @@
 
 @synthesize buffer;
 
-- (BOOL) ping { return YES; }
+- (BOOL) shouldMakeNewConnection {
+	NSLog(@"OVDistributedStringReceiver: Connection from client!");
+	return YES;
+}
+
+- (BOOL) ping {
+	NSLog(@"OVDistributedStringReceiver: pong!");
+	return YES;
+}
 
 - (void) aboutOpenVanillaDialog {
 	//we can't show the dialog yet.
 }
 
 - (void) sendStringToCurrentComposingBuffer: (NSString *)str {
+	NSLog(@"OVDistributedStringReceiver: send string: %@", str);
 	if (buffer)
 		buffer->append([str UTF8String])->update()->send();
 }

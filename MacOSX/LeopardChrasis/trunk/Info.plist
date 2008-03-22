@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>zh_TW</string>
+	<key>CFBundleExecutable</key>
+	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleIconFile</key>
+	<string>LeopardChrasis</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.chrasis.inputmethod.leopardchrasis</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>${PRODUCT_NAME}</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>CRAS</string>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+	<key>InputMethodConnectionName</key>
+	<string>LeopardChrasis_1_Connection</string>
+	<key>InputMethodServerControllerClass</key>
+	<string>LCInputController</string>
+	<key>LSBackgroundOnly</key>
+	<string>0</string>
+	<key>LSHasLocalizedDisplayName</key>
+	<true/>
+	<key>LSUIElement</key>
+	<string>1</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>TSInputSourceID</key>
+	<string>org.chrasis.inputmethod.leopardchrasis</string>
+	<key>tsInputMethodCharacterRepertoireKey</key>
+	<array>
+		<string>Hant</string>
+		<string>Hans</string>
+	</array>
+	<key>tsInputMethodIconFileKey</key>
+	<string>LeopardChrasis.icns</string>
+</dict>
+</plist>
