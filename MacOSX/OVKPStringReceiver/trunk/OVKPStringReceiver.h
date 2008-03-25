@@ -1,6 +1,6 @@
-// OVKPPhraseTools.h: Phrase management tool
+// OVKPStringReceiver.h: Distributed String Receiver
 //
-// Copyright (c) 2004-2006 The OpenVanilla Project (http://openvanilla.org)
+// Copyright (c) 2008 The Chrasis Project (http://chrasis.blogspot.com)
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <deque>
+
 #import "OVDistributedStringReceiver.h"
 
 #define OVKPSR_NAME			"OVKPStringReceiver"
@@ -56,22 +58,20 @@ public:
 
 	~OVKPStringReceiverContextSingleton();
 	void start(OVBuffer*, OVCandidate*, OVService*);
-	void wakeup(OVBuffer*, OVCandidate*, OVService*);
 	void end();
 
 private:
 	OVKPStringReceiverContextSingleton();
-	static OVDistributedStringReceiver *_M_receiver;
-	static NSConnection *_M_connection;
+
+	OVDistributedStringReceiver *_M_receiver;
+	NSConnection *_M_connection;
 };
 
 class OVKPStringReceiverContext : public OVInputMethodContext {
 public:
 	virtual void start(OVBuffer *b, OVCandidate *c, OVService *s)
 	{ OVKPStringReceiverContextSingleton::instance().start(b, c, s); }
-	virtual void wakeup(OVBuffer *b, OVCandidate *c, OVService *s)
-	{ OVKPStringReceiverContextSingleton::instance().wakeup(b, c, s); }
-	virtual void clear() {};
+	virtual void clear() {}
 	virtual void end()
 	{ OVKPStringReceiverContextSingleton::instance().end(); }
 	virtual int keyEvent(OVKeyCode*, OVBuffer*, OVCandidate*, OVService*) { return 0; }

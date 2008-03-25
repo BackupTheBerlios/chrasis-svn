@@ -35,7 +35,7 @@
 		863B70B90D945B19001D70D2 /* internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = internal.h; sourceTree = "<group>"; };
 		863B70BA0D945B19001D70D2 /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
 		863B70BB0D945B19001D70D2 /* chrasis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chrasis.h; sourceTree = "<group>"; };
-		866A7B180D93004C0006D86E /* OVKPStringReceiverProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OVKPStringReceiverProtocol.h; path = ../../OVKPStringReceiver/trunk/OVKPStringReceiverProtocol.h; sourceTree = SOURCE_ROOT; };
+		866A7B180D93004C0006D86E /* OVKPDistributedStringReceiverProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OVKPDistributedStringReceiverProtocol.h; path = ../../OVKPStringReceiver/trunk/OVKPDistributedStringReceiverProtocol.h; sourceTree = SOURCE_ROOT; };
 		868D5B4B0D904F48007DA979 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/MainMenu.nib; sourceTree = "<group>"; };
 		868D5B500D9051EE007DA979 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		868D5B590D905594007DA979 /* English */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -123,7 +123,7 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
-				866A7B180D93004C0006D86E /* OVKPStringReceiverProtocol.h */,
+				866A7B180D93004C0006D86E /* OVKPDistributedStringReceiverProtocol.h */,
 				32CA4F630368D1EE00C91783 /* OVIMChrasis_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 			);

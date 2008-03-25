@@ -7,28 +7,60 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		86D8DC280D92F108002BF04D /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86D8DC220D92F108002BF04D /* main.mm */; };
+		867DB4180D96B442001624A3 /* OVMDBufferManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 867DB4170D96B442001624A3 /* OVMDBufferManager.mm */; };
+		86CD801E0D95DB62004ECE55 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 86CD801D0D95DB62004ECE55 /* MainMenu.nib */; };
+		86CD802B0D95DBEB004ECE55 /* OVModuleDebugger.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86CD802A0D95DBEB004ECE55 /* OVModuleDebugger.mm */; };
+		86CD80410D95DCD7004ECE55 /* OVMDController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86CD80400D95DCD7004ECE55 /* OVMDController.mm */; };
+		86CD81E40D95FFA3004ECE55 /* FakeOVObjects.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86CD81E30D95FFA3004ECE55 /* FakeOVObjects.mm */; };
+		86D8DC280D92F108002BF04D /* OVKPStringReceiverMain.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86D8DC220D92F108002BF04D /* OVKPStringReceiverMain.mm */; };
 		86D8DC2A0D92F108002BF04D /* OVDistributedStringReceiver.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86D8DC240D92F108002BF04D /* OVDistributedStringReceiver.mm */; };
 		86D8DC2C0D92F108002BF04D /* OVKPStringReceiver.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86D8DC260D92F108002BF04D /* OVKPStringReceiver.mm */; };
 		D2AAC0CC05546C4400DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		863095B30D977CB600D9E76C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC0C605546C1D00DB518D;
+			remoteInfo = OVKPStringReceiver;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* OVKPStringReceiver_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVKPStringReceiver_Prefix.pch; sourceTree = "<group>"; };
-		86D8DC220D92F108002BF04D /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
+		867DB4160D96B442001624A3 /* OVMDBufferManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVMDBufferManager.h; sourceTree = "<group>"; };
+		867DB4170D96B442001624A3 /* OVMDBufferManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OVMDBufferManager.mm; sourceTree = "<group>"; };
+		86CD80120D95DAC9004ECE55 /* OVModuleDebugger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OVModuleDebugger.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		86CD80140D95DAC9004ECE55 /* OVModuleTester-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OVModuleTester-Info.plist"; sourceTree = "<group>"; };
+		86CD801D0D95DB62004ECE55 /* MainMenu.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = MainMenu.nib; sourceTree = "<group>"; };
+		86CD802A0D95DBEB004ECE55 /* OVModuleDebugger.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OVModuleDebugger.mm; sourceTree = "<group>"; };
+		86CD803F0D95DCD7004ECE55 /* OVMDController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVMDController.h; sourceTree = "<group>"; };
+		86CD80400D95DCD7004ECE55 /* OVMDController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OVMDController.mm; sourceTree = "<group>"; };
+		86CD80A60D95EA58004ECE55 /* FakeOVObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FakeOVObjects.h; sourceTree = "<group>"; };
+		86CD81E30D95FFA3004ECE55 /* FakeOVObjects.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FakeOVObjects.mm; sourceTree = "<group>"; };
+		86D8DC220D92F108002BF04D /* OVKPStringReceiverMain.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OVKPStringReceiverMain.mm; sourceTree = "<group>"; };
 		86D8DC230D92F108002BF04D /* OVDistributedStringReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVDistributedStringReceiver.h; sourceTree = "<group>"; };
 		86D8DC240D92F108002BF04D /* OVDistributedStringReceiver.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OVDistributedStringReceiver.mm; sourceTree = "<group>"; };
 		86D8DC250D92F108002BF04D /* OVKPStringReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVKPStringReceiver.h; sourceTree = "<group>"; };
 		86D8DC260D92F108002BF04D /* OVKPStringReceiver.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OVKPStringReceiver.mm; sourceTree = "<group>"; };
-		86D8DC270D92F108002BF04D /* OVKPStringReceiverProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVKPStringReceiverProtocol.h; sourceTree = "<group>"; };
+		86D8DC270D92F108002BF04D /* OVKPDistributedStringReceiverProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OVKPDistributedStringReceiverProtocol.h; sourceTree = "<group>"; };
 		D2A6134D07B89F6200DD23D3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		D2AAC0C705546C1D00DB518D /* OVKPStringReceiver.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = OVKPStringReceiver.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		86CD80100D95DAC9004ECE55 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC0C505546C1D00DB518D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -44,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				D2AAC0C705546C1D00DB518D /* OVKPStringReceiver.dylib */,
+				86CD80120D95DAC9004ECE55 /* OVModuleDebugger.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -51,10 +84,10 @@
 		0867D691FE84028FC02AAC07 /* OVKPStringReceiver */ = {
 			isa = PBXGroup;
 			children = (
-				08FB77AEFE84172EC02AAC07 /* Classes */,
-				32C88DFF0371C24200C91783 /* Other Sources */,
+				86CD801B0D95DB0C004ECE55 /* Sources */,
 				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
 				034768DFFF38A50411DB9C8B /* Products */,
+				86CD80140D95DAC9004ECE55 /* OVModuleTester-Info.plist */,
 			);
 			name = OVKPStringReceiver;
 			sourceTree = "<group>";
@@ -66,18 +99,6 @@
 				1058C7B2FEA5585E11CA2CBB /* Other Frameworks */,
 			);
 			name = "External Frameworks and Libraries";
-			sourceTree = "<group>";
-		};
-		08FB77AEFE84172EC02AAC07 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				86D8DC230D92F108002BF04D /* OVDistributedStringReceiver.h */,
-				86D8DC240D92F108002BF04D /* OVDistributedStringReceiver.mm */,
-				86D8DC250D92F108002BF04D /* OVKPStringReceiver.h */,
-				86D8DC260D92F108002BF04D /* OVKPStringReceiver.mm */,
-				86D8DC270D92F108002BF04D /* OVKPStringReceiverProtocol.h */,
-			);
-			name = Classes;
 			sourceTree = "<group>";
 		};
 		1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */ = {
@@ -102,9 +123,46 @@
 			isa = PBXGroup;
 			children = (
 				32DBCF5E0370ADEE00C91783 /* OVKPStringReceiver_Prefix.pch */,
-				86D8DC220D92F108002BF04D /* main.mm */,
 			);
 			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		86CD801A0D95DAF5004ECE55 /* OVKPStringReceiver */ = {
+			isa = PBXGroup;
+			children = (
+				86D8DC220D92F108002BF04D /* OVKPStringReceiverMain.mm */,
+				86D8DC230D92F108002BF04D /* OVDistributedStringReceiver.h */,
+				86D8DC240D92F108002BF04D /* OVDistributedStringReceiver.mm */,
+				86D8DC250D92F108002BF04D /* OVKPStringReceiver.h */,
+				86D8DC260D92F108002BF04D /* OVKPStringReceiver.mm */,
+				86D8DC270D92F108002BF04D /* OVKPDistributedStringReceiverProtocol.h */,
+			);
+			name = OVKPStringReceiver;
+			sourceTree = "<group>";
+		};
+		86CD801B0D95DB0C004ECE55 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				86CD801A0D95DAF5004ECE55 /* OVKPStringReceiver */,
+				86CD801C0D95DB13004ECE55 /* OVModuleDebugger */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		86CD801C0D95DB13004ECE55 /* OVModuleDebugger */ = {
+			isa = PBXGroup;
+			children = (
+				86CD801D0D95DB62004ECE55 /* MainMenu.nib */,
+				86CD802A0D95DBEB004ECE55 /* OVModuleDebugger.mm */,
+				86CD803F0D95DCD7004ECE55 /* OVMDController.h */,
+				86CD80400D95DCD7004ECE55 /* OVMDController.mm */,
+				86CD80A60D95EA58004ECE55 /* FakeOVObjects.h */,
+				86CD81E30D95FFA3004ECE55 /* FakeOVObjects.mm */,
+				867DB4160D96B442001624A3 /* OVMDBufferManager.h */,
+				867DB4170D96B442001624A3 /* OVMDBufferManager.mm */,
+			);
+			name = OVModuleDebugger;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -120,6 +178,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		86CD80110D95DAC9004ECE55 /* OVModuleDebugger */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 86CD80170D95DAC9004ECE55 /* Build configuration list for PBXNativeTarget "OVModuleDebugger" */;
+			buildPhases = (
+				86CD800E0D95DAC9004ECE55 /* Resources */,
+				86CD800F0D95DAC9004ECE55 /* Sources */,
+				86CD80100D95DAC9004ECE55 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				863095B40D977CB600D9E76C /* PBXTargetDependency */,
+			);
+			name = OVModuleDebugger;
+			productName = OVModuleTester;
+			productReference = 86CD80120D95DAC9004ECE55 /* OVModuleDebugger.app */;
+			productType = "com.apple.product-type.application";
+		};
 		D2AAC0C605546C1D00DB518D /* OVKPStringReceiver */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB917D08733D990010E9CD /* Build configuration list for PBXNativeTarget "OVKPStringReceiver" */;
@@ -151,22 +227,53 @@
 			projectRoot = "";
 			targets = (
 				D2AAC0C605546C1D00DB518D /* OVKPStringReceiver */,
+				86CD80110D95DAC9004ECE55 /* OVModuleDebugger */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		86CD800E0D95DAC9004ECE55 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				86CD801E0D95DB62004ECE55 /* MainMenu.nib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		86CD800F0D95DAC9004ECE55 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				86CD80410D95DCD7004ECE55 /* OVMDController.mm in Sources */,
+				86CD81E40D95FFA3004ECE55 /* FakeOVObjects.mm in Sources */,
+				86CD802B0D95DBEB004ECE55 /* OVModuleDebugger.mm in Sources */,
+				867DB4180D96B442001624A3 /* OVMDBufferManager.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC0C405546C1D00DB518D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				86D8DC280D92F108002BF04D /* main.mm in Sources */,
+				86D8DC280D92F108002BF04D /* OVKPStringReceiverMain.mm in Sources */,
 				86D8DC2A0D92F108002BF04D /* OVDistributedStringReceiver.mm in Sources */,
 				86D8DC2C0D92F108002BF04D /* OVKPStringReceiver.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		863095B40D977CB600D9E76C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2AAC0C605546C1D00DB518D /* OVKPStringReceiver */;
+			targetProxy = 863095B30D977CB600D9E76C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1DEB917E08733D990010E9CD /* Debug */ = {
@@ -209,6 +316,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DSTROOT = /;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = OV_DEBUG;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INSTALL_PATH = /Library/OpenVanilla/0.8/Modules;
@@ -224,11 +332,64 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DSTROOT = /;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INSTALL_PATH = /Library/OpenVanilla/0.8/Modules;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
+			};
+			name = Release;
+		};
+		86CD80150D95DAC9004ECE55 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "OVModuleTester-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVModuleDebugger;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		86CD80160D95DAC9004ECE55 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "OVModuleTester-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = OVModuleDebugger;
+				SKIP_INSTALL = YES;
+				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
@@ -249,6 +410,15 @@
 			buildConfigurations = (
 				1DEB918208733D990010E9CD /* Debug */,
 				1DEB918308733D990010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		86CD80170D95DAC9004ECE55 /* Build configuration list for PBXNativeTarget "OVModuleDebugger" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				86CD80150D95DAC9004ECE55 /* Debug */,
+				86CD80160D95DAC9004ECE55 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

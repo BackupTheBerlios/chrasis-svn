@@ -1,4 +1,4 @@
-// OVDistributedStringReceiver.mm: Distributed String Receiver
+// OVMDController.h: OpenVanilla Module Debugger
 //
 // Copyright (c) 2008 The Chrasis Project (http://chrasis.blogspot.com)
 // All rights reserved.
@@ -30,18 +30,48 @@
 
 #import <Cocoa/Cocoa.h>
 #import <OpenVanilla/OpenVanilla.h>
+#import <OpenVanilla/OVLibrary.h>
+#import <OpenVanilla/OVUtility.h>
 
-#include <queue>
-#include <set>
+#include <vector>
 
-#import "OVKPDistributedStringReceiverProtocol.h"
+#import "OVMDBufferManager.h"
+#import "FakeOVObjects.h"
 
-@interface OVDistributedStringReceiver : NSObject <OVKPDistributedStringReceiverProtocol> {
-	std::set< OVBuffer * > *_bufSet;
-	std::deque< OVBuffer * > *_bufQueue;
+@interface OVMDController : NSObject <FakeOVCandidateDelegate, FakeOVServiceDelegate> {
+	// Module tab
+	IBOutlet NSTextField *textModuleFile;
+	IBOutlet NSTextField *textDataDirectory;
+	IBOutlet NSTextField *textConfigFile;
+	IBOutlet NSTextView *textViewModuleInformation;
+	IBOutlet NSTextView *textViewConfigFileContent;
+	
+	// Debugger Tab
+	IBOutlet NSTextField *textOutput;
+	IBOutlet NSTextField *textCandidates;
+	IBOutlet NSComboBox *comboSelectedBuffer;
+	IBOutlet NSTextField *textKeyCode;
+
+	// Other objects
+	IBOutlet OVMDBufferPoolManager *bufferPoolManager;
+
+	// non-nib objects
+	NSMutableDictionary *configData;
+	std::vector< OVInputMethodContext * > *inputMethodContextPool;
+	
+	FakeOVService *service;
+	FakeOVCandidate *candidate;
 }
 
-- (void)pushBuffer: (OVBuffer *)buffer;
-- (void)popBuffer;
+// Module tab
+- (IBAction)textPathChanged: (id)sender;
+- (IBAction)buttonChooseFilePressed: (id)sender;
+- (IBAction)buttonLoadModulePressed: (id)sender;
+
+// Debugger tab
+- (IBAction)textCandidatesChanged: (id)sender;
+- (IBAction)buttonNewBufferPressed: (id)sender;
+- (IBAction)comboSelectedBufferChanged: (id)sender;
+- (IBAction)buttonBroadcastEventPressed: (id)sender;
 
 @end

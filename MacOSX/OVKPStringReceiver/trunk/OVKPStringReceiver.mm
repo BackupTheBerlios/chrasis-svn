@@ -1,6 +1,6 @@
 // OVKPStringReceiver.mm: Distributed String Receiver
 //
-// Copyright (c) 2004-2006 The OpenVanilla Project (http://openvanilla.org)
+// Copyright (c) 2008 The Chrasis Project (http://chrasis.blogspot.com)
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,23 +28,15 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+#import <OpenVanilla/OpenVanilla.h>
+#import <OpenVanilla/OVLibrary.h>
+#import <OpenVanilla/OVUtility.h>
+
 #include "OVKPStringReceiver.h"
 #include "OVDistributedStringReceiver.h"
-#include "OVKPStringReceiverProtocol.h"
+#include "OVKPDistributedStringReceiverProtocol.h"
 #include <strings.h>
 
-void testConnection()
-{
-	// test connection, so connect to myself
-	id stringReceiver = [[NSConnection rootProxyForConnectionWithRegisteredName:OVDSTRSTRRCVR_SRVNAME host:nil] retain];
-	if (stringReceiver == nil)
-	{
-		NSLog(@"connection to %@ failed.", OVDSTRSTRRCVR_SRVNAME);
-		return;
-	}
-	[stringReceiver setProtocolForProxy:@protocol(OVDistributedStringReceiverProtocol)];
-	NSLog(@"    pining myself... %@", [stringReceiver ping]?@"YES":@"NO");
-}
 
 const char *
 OVKPStringReceiver::localizedName(const char *locale)
@@ -52,67 +44,45 @@ OVKPStringReceiver::localizedName(const char *locale)
 	if (!strcasecmp(locale, "zh_TW"))
 		return OVKPSR_NAME_ZHTW;
 	//if (!strcasecmp(locale, "zh_CN"))
-	//	return cininfo.scname.c_str();
+	//	return OVKPSR_NAME_ZHCN;
 	return OVKPSR_NAME;
 }
 
-OVDistributedStringReceiver *OVKPStringReceiverContextSingleton::_M_receiver = nil;
-NSConnection *OVKPStringReceiverContextSingleton::_M_connection = nil;
-
 OVKPStringReceiverContextSingleton::OVKPStringReceiverContextSingleton()
 {
-	NSLog(@"OVKPStringReceiverContextSingleton::OVKPStringReceiverContextSingleton()");
-	_M_receiver = [OVDistributedStringReceiver new];
-	_M_connection = [[NSConnection defaultConnection] retain];
+	murmur("OVKPStringReceiverContextSingleton::OVKPStringReceiverContextSingleton()");
+	_M_receiver = [[OVDistributedStringReceiver alloc] init];
+	
+	NSMachPort *port = [NSMachPort new];
+	_M_connection = [[NSConnection connectionWithReceivePort: port sendPort: port] retain];
 	[_M_connection setRootObject: _M_receiver];
 
 	if (![_M_connection registerName: OVDSTRSTRRCVR_SRVNAME]) {
-		NSLog(@"   Cannot register distant object, name: %@", OVDSTRSTRRCVR_SRVNAME);
+		murmur("    CANNOT register DO, name: %@.", [OVDSTRSTRRCVR_SRVNAME UTF8String]);
 		return;
-	} else {
-		NSLog(@"   Distant object service registered.");
 	}
-	
-	testConnection();
+	murmur("    DO service %@ registered.", [OVDSTRSTRRCVR_SRVNAME UTF8String]);
 }
 
 OVKPStringReceiverContextSingleton::~OVKPStringReceiverContextSingleton()
 {
-	NSLog(@"OVKPStringReceiverContextSingleton::~OVKPStringReceiverContext():");
-	testConnection();
+	[[NSPortNameServer systemDefaultPortNameServer] removePortForName: OVDSTRSTRRCVR_SRVNAME];
 	[_M_connection invalidate];
 	[_M_connection release];
 	[_M_receiver release];
+	murmur("OVKPStringReceiverContextSingleton::~OVKPStringReceiverContext()");
 }
 
 void
 OVKPStringReceiverContextSingleton::start(OVBuffer* b, OVCandidate* c, OVService* s)
 {
-	NSLog(@"OVKPStringReceiverContextSingleton::start()");
-	id rootobj = [_M_connection rootObject];
-	NSLog(@"    rootObj: %@", rootobj);
-	NSLog(@"    _M_receiver: %@", _M_receiver);
-	NSLog(@"    rootObj == _M_receiver: %@", (rootobj == _M_receiver)?@"YES":@"NO");
-	//if (_M_receiver)
-		[_M_receiver setBuffer: b];\
-
-	testConnection();
-}
-
-void
-OVKPStringReceiverContextSingleton::wakeup(OVBuffer* b, OVCandidate* c, OVService* s)
-{
-	NSLog(@"OVKPStringReceiverContextSingleton::wakeup()");
-	//if (_M_receiver)
-		[_M_receiver setBuffer: b];
-	testConnection();
+	murmur("OVKPStringReceiverContextSingleton::start(0x%08x, 0x%08x, 0x%08x)", b, c, s);
+	[_M_receiver pushBuffer: b];
 }
 
 void
 OVKPStringReceiverContextSingleton::end()
 {
-	NSLog(@"OVKPStringReceiverContextSingleton::end()");
-	//if (_M_receiver)
-		[_M_receiver setBuffer: NULL];
-	testConnection();
+	murmur("OVKPStringReceiverContextSingleton::end()");
+	[_M_receiver popBuffer];
 }

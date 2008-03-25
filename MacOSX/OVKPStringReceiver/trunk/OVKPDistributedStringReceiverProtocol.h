@@ -1,4 +1,4 @@
-// OVDistributedStringReceiver.mm: Distributed String Receiver
+// OVKPDistributedStringReceiverProtocol.h: Distributed String Receiver
 //
 // Copyright (c) 2008 The Chrasis Project (http://chrasis.blogspot.com)
 // All rights reserved.
@@ -28,20 +28,15 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#import <Cocoa/Cocoa.h>
-#import <OpenVanilla/OpenVanilla.h>
+#define OVDSTRSTRRCVR_SRVNAME @"OVKPStringReceiver"
 
-#include <queue>
-#include <set>
+// because of the module nature, we can't send character.
 
-#import "OVKPDistributedStringReceiverProtocol.h"
-
-@interface OVDistributedStringReceiver : NSObject <OVKPDistributedStringReceiverProtocol> {
-	std::set< OVBuffer * > *_bufSet;
-	std::deque< OVBuffer * > *_bufQueue;
-}
-
-- (void)pushBuffer: (OVBuffer *)buffer;
-- (void)popBuffer;
-
+@protocol OVKPDistributedStringReceiverProtocol
+- (BOOL) ping;
+- (void) sendStringToCurrentComposingBuffer: (NSString *)str;
+- (void) lowLevelBufferAppend: (NSString *)str;
+- (void) lowLevelBufferUpdate;
+- (void) lowLevelBufferUpdateWithPos: (NSInteger)cursorPos markFrom: (NSInteger)fromPos markTo: (NSInteger)toPos;
+- (void) lowLevelBufferSend;
 @end

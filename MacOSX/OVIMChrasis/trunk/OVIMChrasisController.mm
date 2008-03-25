@@ -1,13 +1,30 @@
-//
-//  OVIMChrasisController.m
-//  OVIMChrasis
-//
-//  Created by Palatis on 2008/3/16.
-//  Copyright 2008 __MyCompanyName__. All rights reserved.
-//
+/*
+ * OVIMChrasis - Chrasis OpenVanilla binding for MacOSX
+ *
+ * Copyright (c) 2006 Victor Tseng <palatis@gmail.com>
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA  02111-1307  USA
+ *
+ * $Id: character.h 53 2007-10-27 23:33:29Z palatis $
+ */
 
 #import "OVIMChrasisController.h"
 #import "chrasis.h"
+#import "OVKPDistributedStringReceiverProtocol.h"
 
 @implementation OVIMChrasisController
 
@@ -106,17 +123,13 @@
 		recognize_delay = 60000;
 
 	view_writing_area_array = [[NSArray arrayWithObjects:
-		view_writing_area_1, view_writing_area_2,
-		view_writing_area_3, view_writing_area_4,
-		view_writing_area_5, view_writing_area_6,
-		view_writing_area_7, view_writing_area_8,
-		nil] retain];
+		view_writing_area_1, view_writing_area_2, view_writing_area_3,
+		view_writing_area_4, view_writing_area_5, view_writing_area_6,
+		view_writing_area_7, view_writing_area_8, nil] retain];
 	popup_candidate_list_array = [[NSArray arrayWithObjects:
-		popup_candidate_list_1, popup_candidate_list_2,
-		popup_candidate_list_3, popup_candidate_list_4,
-		popup_candidate_list_5, popup_candidate_list_6,
-		popup_candidate_list_7, popup_candidate_list_8,
-		nil] retain];
+		popup_candidate_list_1, popup_candidate_list_2, popup_candidate_list_3,
+		popup_candidate_list_4, popup_candidate_list_5, popup_candidate_list_6,
+		popup_candidate_list_7, popup_candidate_list_8, nil] retain];
 
 	[self initializeWritingAreas];
 
@@ -130,20 +143,16 @@
 		[popup setController: self];
 	}
 
-	NSString *src =
-		@"tell application \"System Events\"\n"
-		@"    keystroke (ASCII character %@)\n"
-		@"end tell";
+	NSString *src =	@"tell application \"System Events\"\nkeystroke (ASCII character %@)\nend tell";
 	dict_button_script = [[NSDictionary dictionaryWithObjectsAndKeys:
 		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"8"]],		[button_sendkey_backsp title],
 		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"127"]],	[button_sendkey_del title],
 		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"13"]],	[button_sendkey_enter title],
 		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"32"]],	[button_sendkey_space title],
 		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"9"]],		[button_sendkey_tab title],
-//		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"123"]],		[button_sendkey_left title],
-//		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"124"]],		[button_sendkey_right title],
-		nil
-	] retain];
+		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"28"]],	[button_sendkey_left title],
+		[[NSAppleScript alloc] initWithSource: [NSString stringWithFormat: src, @"29"]],	[button_sendkey_right title],
+		nil] retain];
 	for (id key in dict_button_script)
 		[[dict_button_script objectForKey: key] compileAndReturnError: nil];
 
@@ -262,32 +271,20 @@
 	[viewToBeLearned updateCandidateList];
 }
 
-+ (id) getOVDisplayServer {
-	id stringReceiver = [[NSConnection rootProxyForConnectionWithRegisteredName:OVDSTRSTRRCVR_SRVNAME host:nil] retain];
-	if (stringReceiver == nil)
-	{
-		NSLog(@"connection to %@ failed.", OVDSTRSTRRCVR_SRVNAME);
+- (void) sendStringToOpenVanilla: (NSString *)str {
+	id stringReceiver = [[NSConnection rootProxyForConnectionWithRegisteredName: OVDSTRSTRRCVR_SRVNAME host: nil] retain];
+	if (stringReceiver == nil) {
 		NSRunCriticalAlertPanel(
 			NSLocalizedString(@"Unable to connect, Check OpenVanilla status.", @"no-connection panel title"),
 			[NSString stringWithFormat: 
 				NSLocalizedString(@"Connection to %@ failed.\nCheck OpenVanilla status!", @"no-connection panel message"),
 				OVDSTRSTRRCVR_SRVNAME],
-			NSLocalizedString(@"Too Bad!", @"no-connection panel button text"),
+				NSLocalizedString(@"Too Bad!", @"no-connection panel button text"),
 			nil, nil);
-		return nil;
-	}
-	[stringReceiver setProtocolForProxy:@protocol(OVDistributedStringReceiverProtocol)];
-	return stringReceiver;
-}
-
-- (void) sendStringToOpenVanilla: (NSString *)str {
-	id stringReceiver = [OVIMChrasisController getOVDisplayServer];
-	if (stringReceiver == nil)
 		return;
-
-#ifdef OVIMCHRASIS_DEBUG
-//	NSLog(@"sending string to OpenVanilla: %@, %@", str, [stringReceiver ping]?@"YES":@"NO");
-#endif
+	}
+	[stringReceiver retain];
+	[stringReceiver setProtocolForProxy:@protocol(OVKPDistributedStringReceiverProtocol)];
 
 	[stringReceiver sendStringToCurrentComposingBuffer: str];
 	[stringReceiver release];

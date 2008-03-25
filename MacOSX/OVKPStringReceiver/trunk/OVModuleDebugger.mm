@@ -1,4 +1,4 @@
-// OVDistributedStringReceiver.mm: Distributed String Receiver
+// OVModuleDebugger.mm: OpenVanilla Module Debugger
 //
 // Copyright (c) 2008 The Chrasis Project (http://chrasis.blogspot.com)
 // All rights reserved.
@@ -29,19 +29,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <OpenVanilla/OpenVanilla.h>
 
-#include <queue>
-#include <set>
-
-#import "OVKPDistributedStringReceiverProtocol.h"
-
-@interface OVDistributedStringReceiver : NSObject <OVKPDistributedStringReceiverProtocol> {
-	std::set< OVBuffer * > *_bufSet;
-	std::deque< OVBuffer * > *_bufQueue;
+int main(int argc, char *argv[])
+{
+    return NSApplicationMain(argc,  (const char **) argv);
 }
-
-- (void)pushBuffer: (OVBuffer *)buffer;
-- (void)popBuffer;
-
-@end

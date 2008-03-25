@@ -1,4 +1,4 @@
-// OVDistributedStringReceiver.mm: Distributed String Receiver
+// OVMDBufferManager.h: OpenVanilla Module Debugger
 //
 // Copyright (c) 2008 The Chrasis Project (http://chrasis.blogspot.com)
 // All rights reserved.
@@ -29,19 +29,29 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 #import <Cocoa/Cocoa.h>
-#import <OpenVanilla/OpenVanilla.h>
+#include <vector>
 
-#include <queue>
-#include <set>
+#import "FakeOVObjects.h"
 
-#import "OVKPDistributedStringReceiverProtocol.h"
+@interface OVMDBufferPoolManager : NSObject <FakeOVBufferDelegate> {
+	IBOutlet NSComboBox *comboSelectedBuffer;
+	IBOutlet NSTextField *textOutput;
 
-@interface OVDistributedStringReceiver : NSObject <OVKPDistributedStringReceiverProtocol> {
-	std::set< OVBuffer * > *_bufSet;
-	std::deque< OVBuffer * > *_bufQueue;
+	std::vector< FakeOVBuffer * > *pool;
+	NSInteger activeBufferIndex;
 }
 
-- (void)pushBuffer: (OVBuffer *)buffer;
-- (void)popBuffer;
+@property(readwrite) NSInteger activeBufferIndex;
+
+- (void)newBuffer;
+- (void)drainPool;
+- (FakeOVBuffer *)bufferAtIndex: (NSInteger)idx;
+- (NSUInteger)bufferCount;
+- (void)setActiveBufferIndex: (NSInteger)idx;
+- (FakeOVBuffer *)activeBuffer;
+
+// protocol FakeOVBufferDelegate
+- (void)bufferContentUpdated;
+- (void)bufferContentCommitted: (FakeOVBuffer *)buffer;
 
 @end
