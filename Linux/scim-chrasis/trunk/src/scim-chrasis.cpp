@@ -257,6 +257,53 @@ drawingarea_expose_callback (GtkWidget *drawingarea, GdkEventExpose *event, gpoi
 {
 	chrasis::Character *c = static_cast<chrasis::Character *>(user_data);
 
+#ifdef __GDK_CAIRO_H__
+	cairo_t *cr = gdk_cairo_create (drawingarea->window);
+	cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+	cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND);
+	cairo_set_line_width(cr, 1);
+
+	cairo_set_source_rgb(cr, 1, 1, 1);
+	cairo_rectangle (cr, 0, 0, drawingarea_size, drawingarea_size);
+	cairo_fill (cr);
+
+	double dash_pattern[] = {3.0};
+	cairo_set_source_rgb (cr, 0.75, 0.75, 0.75);
+	cairo_set_dash (cr, dash_pattern, 1, 0);
+	cairo_move_to (cr, drawingarea_size/2, 0);
+	cairo_line_to (cr, drawingarea_size/2, drawingarea_size);
+	cairo_move_to (cr, 0, drawingarea_size/2);
+	cairo_line_to (cr, drawingarea_size, drawingarea_size/2);
+	cairo_stroke (cr);
+
+	cairo_set_source_rgb (cr, 0, 0, 0);
+	cairo_set_dash (cr, NULL, 0, 0);
+	cairo_rectangle (cr, 0, 0, drawingarea_size-1, drawingarea_size-1);
+	cairo_stroke (cr);
+
+	cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
+	cairo_set_line_width(cr, LINE_WIDTH);
+	if (g_object_get_data (G_OBJECT (drawingarea), "draw_character") == (gpointer) 1)
+	{
+		for (chrasis::Stroke::iterator si = c->strokes_begin();
+		     si != c->strokes_end();
+		     ++si)
+		{
+			if (si->points_begin() != si->points_end())
+			{
+				cairo_move_to (cr, si->points_begin()->x(), si->points_begin()->y());
+				cairo_line_to (cr, si->points_begin()->x(), si->points_begin()->y());
+			}
+			for (chrasis::Point::iterator pi = si->points_begin() + 1;
+			     pi != si->points_end();
+			     ++pi)
+				cairo_line_to (cr, pi->x(), pi->y());
+		}
+	}
+	cairo_stroke (cr);
+
+	cairo_destroy (cr);
+#else
 	GdkColor black, white, silver, grey;
 	black.red = black.green = black.blue = 0x0000;
 	white.red = white.green = white.blue = 0xffff;
@@ -295,71 +342,9 @@ drawingarea_expose_callback (GtkWidget *drawingarea, GdkEventExpose *event, gpoi
 	}
 
 	g_object_unref(G_OBJECT(gc));
+#endif
 }
 
-double last_x, last_y;
-
-static gboolean
-drawingarea_mousemotion_callback(GtkWidget *drawingarea, GdkEventMotion *event, gpointer user_data)
-{
-	if (event->state & GDK_BUTTON1_MASK)
-	{
-		chrasis::Character *c = static_cast<chrasis::Character *>(user_data);
-
-		c->add_point(event->x, event->y);
-
-		GdkColor grey;
-		grey.red = grey.green = grey.blue = 0x5555;
-
-		GdkGC *gc = gdk_gc_new(drawingarea->window);
-		gdk_gc_set_rgb_fg_color(gc, &grey);
-		gdk_gc_set_line_attributes(gc, LINE_WIDTH, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
-		gdk_draw_line(drawingarea->window, gc,
-			static_cast<gint>(last_x), static_cast<gint>(last_y),
-			static_cast<gint>(event->x), static_cast<gint>(event->y));
-		g_object_unref(G_OBJECT(gc));
-
-		last_x = event->x;
-		last_y = event->y;
-
-		return TRUE;
-	}
-	return FALSE;
-}
-
-static gboolean
-drawingarea_mousedown_callback (GtkWidget *drawingarea, GdkEventButton *event, gpointer user_data)
-{
-	if (event->button == 1)
-	{
-		chrasis::Character *c = static_cast<chrasis::Character *>(user_data);
-
-		c->new_stroke();
-		c->add_point(event->x, event->y);
-		last_x = event->x;
-		last_y = event->y;
-
-		GdkColor grey;
-		grey.red = grey.green = grey.blue = 0x5555;
-
-		GdkGC *gc = gdk_gc_new(drawingarea->window);
-		gdk_gc_set_rgb_fg_color(gc, &grey);
-		gdk_gc_set_line_attributes(gc, 3, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
-		gdk_draw_line(drawingarea->window, gc,
-			static_cast<gint>(event->x), static_cast<gint>(event->y),
-			static_cast<gint>(event->x), static_cast<gint>(event->y));
-		g_object_unref(G_OBJECT(gc));
-
-		GtkWidget *button = GTK_WIDGET (g_object_get_data (G_OBJECT (drawingarea), "button_candidate_list"));
-		GtkWidget *menu = GTK_WIDGET (g_object_get_data (G_OBJECT (button), "menu_candidate_list"));
-
-		guint id = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (menu), "recognize_timeout_id"));
-		g_source_remove (id);
-
-		return TRUE;
-	}
-	return FALSE;
-}
 
 static void
 menu_cleaner (GtkWidget *child, gpointer)
@@ -412,6 +397,98 @@ _populate_candidate_list(GtkMenu *menu, GtkButton *button, chrasis::Character co
 	gtk_widget_show(item);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 	g_object_set_data (G_OBJECT (menu), "menu_item_incorrect", (gpointer) item);
+}
+
+double last_x, last_y;
+
+static gboolean
+drawingarea_mousemotion_callback(GtkWidget *drawingarea, GdkEventMotion *event, gpointer user_data)
+{
+	if (event->state & GDK_BUTTON1_MASK)
+	{
+		chrasis::Character *c = static_cast<chrasis::Character *>(user_data);
+
+		c->add_point(event->x, event->y);
+
+#ifdef __GDK_CAIRO_H__
+		cairo_t *cr = gdk_cairo_create (drawingarea->window);
+		cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
+		cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+		cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND);
+		cairo_set_line_width(cr, LINE_WIDTH);
+
+		cairo_move_to(cr, last_x, last_y);
+		cairo_line_to(cr, event->x, event->y);
+		cairo_stroke(cr);
+
+		cairo_destroy (cr);
+#else
+		GdkColor grey;
+		grey.red = grey.green = grey.blue = 0x5555;
+
+		GdkGC *gc = gdk_gc_new(drawingarea->window);
+		gdk_gc_set_rgb_fg_color(gc, &grey);
+		gdk_gc_set_line_attributes(gc, LINE_WIDTH, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
+		gdk_draw_line(drawingarea->window, gc,
+			static_cast<gint>(last_x), static_cast<gint>(last_y),
+			static_cast<gint>(event->x), static_cast<gint>(event->y));
+		g_object_unref(G_OBJECT(gc));
+#endif
+
+		last_x = event->x;
+		last_y = event->y;
+
+		return TRUE;
+	}
+	return FALSE;
+}
+
+static gboolean
+drawingarea_mousedown_callback (GtkWidget *drawingarea, GdkEventButton *event, gpointer user_data)
+{
+	if (event->button == 1)
+	{
+		chrasis::Character *c = static_cast<chrasis::Character *>(user_data);
+
+		c->new_stroke();
+		c->add_point(event->x, event->y);
+		last_x = event->x;
+		last_y = event->y;
+
+#ifdef __GDK_CAIRO_H__
+		cairo_t *cr = gdk_cairo_create (drawingarea->window);
+		cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
+		cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+		cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND);
+		cairo_set_line_width(cr, LINE_WIDTH);
+
+		cairo_move_to(cr, event->x, event->y);
+		cairo_line_to(cr, event->x, event->y);
+		cairo_stroke(cr);
+
+		cairo_destroy (cr);
+#else
+		GdkColor grey;
+		grey.red = grey.green = grey.blue = 0x5555;
+
+		GdkGC *gc = gdk_gc_new(drawingarea->window);
+		gdk_gc_set_rgb_fg_color(gc, &grey);
+		gdk_gc_set_line_attributes(gc, 2, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND);
+		gdk_draw_line(drawingarea->window, gc,
+			static_cast<gint>(event->x), static_cast<gint>(event->y),
+			static_cast<gint>(event->x), static_cast<gint>(event->y));
+		g_object_unref(G_OBJECT(gc));
+#endif
+
+		GtkWidget *button = GTK_WIDGET (g_object_get_data (G_OBJECT (drawingarea), "button_candidate_list"));
+		GtkWidget *menu = GTK_WIDGET (g_object_get_data (G_OBJECT (button), "menu_candidate_list"));
+
+		guint id = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (menu), "recognize_timeout_id"));
+		g_source_remove (id);
+
+		return TRUE;
+	}
+	return FALSE;
 }
 
 static gboolean
