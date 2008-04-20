@@ -32,6 +32,9 @@
 
 #include <wctype.h>
 #include <gtk/gtk.h>
+#ifdef __GDK_CAIRO_H__
+# include <gdk/gdkx.h>
+#endif
 
 #define Uses_SCIM_UTILITY
 #define Uses_SCIM_OBJECT
@@ -71,9 +74,10 @@ using namespace scim;
 #define SCIM_CONFIG_HELPER_CHRASIS_SAVE_CHML		"/Helper/Chrasis/SaveCHML"
 #define SCIM_CONFIG_HELPER_CHRASIS_LEARN_CHARACTER	"/Helper/Chrasis/LearnCharacter"
 
-#define SCIM_CHRASIS_UUID	"bf0a3c4d-244e-467f-b44e-27d74c840c30"
-#define SCIM_CHRASIS_ICON	(SCIM_ICONDIR "/scim-chrasis.png")
-#define SCIM_CHRASIS_CHML_FILE	"/.scim/scim-chrasis-saved-characters.chml"
+#define SCIM_CHRASIS_UUID			"bf0a3c4d-244e-467f-b44e-27d74c840c30"
+#define SCIM_CHRASIS_ICON			(SCIM_ICONDIR "/scim-chrasis.png")
+#define SCIM_CHRASIS_CHML_FILE_RECOGNIZED	"/.scim/scim-chrasis-saved-characters.chml"
+#define SCIM_CHRASIS_CHML_FILE_FAILED		"/.scim/scim-chrasis-saved-characters-unrecognized.chml"
 
 static void	send_key_event(GtkButton *button);
 static gboolean	main_window_delete_callback (GtkWidget *widget, GdkEvent *event, gpointer data);
@@ -290,11 +294,8 @@ drawingarea_expose_callback (GtkWidget *drawingarea, GdkEventExpose *event, gpoi
 		     ++si)
 		{
 			if (si->points_begin() != si->points_end())
-			{
 				cairo_move_to (cr, si->points_begin()->x(), si->points_begin()->y());
-				cairo_line_to (cr, si->points_begin()->x(), si->points_begin()->y());
-			}
-			for (chrasis::Point::iterator pi = si->points_begin() + 1;
+			for (chrasis::Point::iterator pi = si->points_begin();
 			     pi != si->points_end();
 			     ++pi)
 				cairo_line_to (cr, pi->x(), pi->y());
@@ -304,7 +305,7 @@ drawingarea_expose_callback (GtkWidget *drawingarea, GdkEventExpose *event, gpoi
 
 	cairo_destroy (cr);
 #else
-	GdkColor black, white, silver, grey;
+	static GdkColor black, white, silver, grey;
 	black.red = black.green = black.blue = 0x0000;
 	white.red = white.green = white.blue = 0xffff;
 	silver.red = silver.green = silver.blue = 0xc000;
@@ -362,7 +363,7 @@ _populate_candidate_list(GtkMenu *menu, GtkButton *button, chrasis::Character co
 
 	// set new candidate list menu
 	chrasis::ItemPossibilityList likely(recognize(normalize(c)));
-	likely.sort(chrasis::ItemPossibilityList::SORTING_POSSIBILITY);
+
 	GtkWidget *item;
 	if (!likely.empty())
 	{
@@ -674,7 +675,11 @@ button_repeat_timeout (gpointer data)
 static inline void
 _write_char_to_file (chrasis::Character const & c)
 {
-	String fn = scim_get_home_dir() + String(SCIM_CHRASIS_CHML_FILE);
+	String fn;
+	if (c.get_name() != "")
+		fn = scim_get_home_dir() + String(SCIM_CHRASIS_CHML_FILE_RECOGNIZED);
+	else
+		fn = scim_get_home_dir() + String(SCIM_CHRASIS_CHML_FILE_FAILED);
 	std::ofstream fout(fn.c_str(), std::ios_base::out | std::ios_base::app);
 
 	if (fout)
@@ -712,14 +717,14 @@ recognize_timeout (gpointer user_data)
 		if (s_text != " ")
 		{
 			c->set_name(s_text);
-			if (save_chml)
-				_write_char_to_file (*c);
 			if (learn_character)
 				learn(normalize(*c));
 
 			helper_agent.commit_string(-1, "", scim::utf8_mbstowcs(text));
 		}
 	}
+	if (save_chml)
+		_write_char_to_file (*c);
 
 	// clear menu
 	gtk_button_set_label(GTK_BUTTON(button), " ");
@@ -997,6 +1002,300 @@ create_main_window()
 	gtk_widget_show (main_window);
 }
 
+// fullscreen functions needs cairo support (or somebody
+// please tell me how to draw alpha colors with gdk...)
+#ifdef __GDK_CAIRO_H__
+
+#define FULLSCREEN_EVENTS	( GDK_BUTTON_MOTION_MASK | \
+				  GDK_BUTTON_PRESS_MASK | \
+				  GDK_BUTTON_RELEASE_MASK )
+
+GdkDisplay *display;
+GdkScreen *screen;
+GdkWindow *root;
+gint root_width;
+gint root_height;
+GtkWidget *fs_win;
+chrasis::Character fs_char;
+guint fs_hotkey_keycode;
+
+guint fs_recognize_timeout_id = 0;
+
+static const int FULLSCREEN_LINE_WIDTH = 20;
+
+static gboolean	fs_mousedown_cb (GtkWidget *, GdkEventButton *, gpointer);
+static gboolean	fs_mouseup_cb (GtkWidget *, GdkEventButton *, gpointer);
+static gboolean fs_mousemotion_cb (GtkWidget *, GdkEventMotion *, gpointer);
+static gboolean	fs_expose_cb (GtkWidget *, GdkEventExpose *, gpointer);
+static void	fs_main_do_event (GdkEventAny *, gpointer);
+static gboolean	fs_recognize_timeout (gpointer);
+
+static gboolean
+fs_recognize_timeout (gpointer user_data)
+{
+	chrasis::platform::initialize_userdir();
+
+	// recognize and send text
+	chrasis::ItemPossibilityList likely(recognize(normalize(fs_char)));
+	if (!likely.empty())
+	{
+		fs_char.set_name(likely.begin()->name);
+		if (learn_character)
+			learn(normalize(fs_char));
+		helper_agent.commit_string(-1, "", scim::utf8_mbstowcs(likely.begin()->name.c_str()));
+	}
+	if (save_chml)
+		_write_char_to_file (fs_char);
+
+	// clear character buffer and screen
+	fs_char = chrasis::Character();
+	fs_expose_cb (fs_win, NULL, NULL);
+
+	return FALSE;
+}
+
+static double fs_last_x, fs_last_y;
+
+static gboolean
+fs_mousedown_cb (GtkWidget *widget, GdkEventButton *event, gpointer user_data)
+{
+	if (event->button != 1)
+		return FALSE;
+
+	int line_width = FULLSCREEN_LINE_WIDTH / 2;
+	if (event->device->num_axes > 2)
+	{
+		double pressure = 0.5, min_pressure = 0, max_pressure = 1;
+		gdk_device_get_axis (event->device, event->axes, GDK_AXIS_PRESSURE, &pressure);
+		for (int i = 0 ; i < event->device->num_axes ; ++i)
+			if (event->device->axes[i].use == GDK_AXIS_PRESSURE)
+			{
+				min_pressure = event->device->axes[i].min;
+				max_pressure = event->device->axes[i].max;
+				break;
+			}
+		line_width = FULLSCREEN_LINE_WIDTH * ((pressure - min_pressure) / max_pressure);
+	}
+
+	cairo_t *cr = gdk_cairo_create (widget->window);
+
+	cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.75);
+	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
+	cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
+	cairo_set_line_width (cr, line_width);
+
+	cairo_move_to (cr, event->x, event->y);
+	cairo_line_to (cr, event->x, event->y);
+	cairo_stroke (cr);
+
+	cairo_destroy (cr);
+
+	fs_char.new_stroke();
+	fs_char.add_point(event->x, event->y);
+
+	fs_last_x = event->x;
+	fs_last_y = event->y;
+
+	g_source_remove (fs_recognize_timeout_id);
+
+	return TRUE;
+}
+
+static gboolean
+fs_mouseup_cb (GtkWidget *widget, GdkEventButton *event, gpointer user_data)
+{
+	if (event->button != 1)
+		return FALSE;
+
+	fs_recognize_timeout_id = g_timeout_add(recognize_delay, fs_recognize_timeout, NULL);
+	return TRUE;
+}
+
+static gboolean
+fs_mousemotion_cb (GtkWidget *widget, GdkEventMotion *event, gpointer user_data)
+{
+	if (!(event->state & GDK_BUTTON1_MASK))
+		return FALSE;
+
+	int line_width = FULLSCREEN_LINE_WIDTH / 2;
+	if (event->device->num_axes > 2)
+	{
+		double pressure = 0.5, min_pressure = 0, max_pressure = 1;
+		gdk_device_get_axis (event->device, event->axes, GDK_AXIS_PRESSURE, &pressure);
+		for (int i = 0 ; i < event->device->num_axes ; ++i)
+			if (event->device->axes[i].use == GDK_AXIS_PRESSURE)
+			{
+				min_pressure = event->device->axes[i].min;
+				max_pressure = event->device->axes[i].max;
+				break;
+			}
+		line_width = FULLSCREEN_LINE_WIDTH * ((pressure - min_pressure) / max_pressure);
+	}
+
+	cairo_t *cr = gdk_cairo_create (widget->window);
+
+	cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.75);
+	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
+	cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
+	cairo_set_line_width (cr, line_width);
+
+	cairo_move_to (cr, fs_last_x, fs_last_y);
+	cairo_line_to (cr, event->x, event->y);
+	cairo_stroke (cr);
+
+	cairo_destroy (cr);
+
+	fs_char.add_point(event->x, event->y);
+
+	fs_last_x = event->x;
+	fs_last_y = event->y;
+
+	return TRUE;
+}
+
+static gboolean
+fs_expose_cb (GtkWidget *widget, GdkEventExpose *event, gpointer user_data)
+{
+	cairo_t *cr = gdk_cairo_create (widget->window);
+
+	cairo_select_font_face (cr, "Serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+	cairo_set_font_size (cr, 0.025 * (root_width + root_height));
+
+	static cairo_text_extents_t *te(NULL);
+	static int text_x, text_y;
+	if (te == NULL)
+	{
+		te = new cairo_text_extents_t;
+		cairo_text_extents (cr, "Fullscreen writing enabled...", te);
+		text_x = 0.5 * root_width - te->width / 2 - te->x_bearing;
+		text_y = 0.5 * root_height - te->height / 2 - te->y_bearing;
+	}
+
+	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+
+	cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 0.0);
+	if (event)
+		cairo_rectangle(cr, event->area.x, event->area.y, event->area.width, event->area.height);
+	else
+		cairo_rectangle(cr, 0, 0, root_width, root_height);
+	cairo_fill (cr);
+
+	cairo_set_source_rgba (cr, 0.75, 0.75, 0.75, 0.75);
+	cairo_move_to (cr, text_x, text_y);
+	cairo_show_text (cr, "Fullscreen writing enabled...");
+
+	cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.75);
+	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
+	cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
+	cairo_set_line_width (cr, FULLSCREEN_LINE_WIDTH/2);
+
+	for (chrasis::Stroke::iterator si = fs_char.strokes_begin();
+	     si != fs_char.strokes_end();
+	     ++si)
+	{
+		if (si->points_begin() != si->points_end())
+			cairo_move_to (cr, si->points_begin()->x(), si->points_begin()->y());
+		for (chrasis::Point::iterator pi = si->points_begin();
+		     pi != si->points_end();
+		     ++pi)
+			cairo_line_to (cr, pi->x(), pi->y());
+	}
+	cairo_stroke (cr);
+
+	cairo_destroy (cr);
+	return FALSE;
+}
+
+static void
+fs_main_do_event (GdkEventAny *event, gpointer user_data)
+{
+	if (event->window == root &&
+	    ((GdkEventKey *) event)->hardware_keycode == fs_hotkey_keycode)
+	{
+		static GdkEventType last_event_type = GDK_NOTHING;
+		if (event->type == GDK_KEY_PRESS && last_event_type != event->type)
+		{
+			last_event_type = event->type;
+			if (GTK_WIDGET_VISIBLE (fs_win))
+				gtk_widget_hide (fs_win);
+			else
+				gtk_widget_show_all (fs_win);
+		}
+		else
+			last_event_type = GDK_NOTHING;
+	}
+	gtk_main_do_event ((GdkEvent *) event);
+}
+
+void
+create_fs_window()
+{
+	display = gdk_display_get_default ();
+	screen = gdk_display_get_default_screen (display);
+	root = gdk_screen_get_root_window (screen);
+	root_width = gdk_screen_get_width (screen);
+	root_height = gdk_screen_get_height (screen);
+
+	// setup devices
+	for (GList *devices = gdk_display_list_devices (display);
+	     devices;
+	     devices = devices->next)
+	{
+		GdkDevice *device = static_cast<GdkDevice *> (devices->data);
+		if (device->num_axes > 2)
+			gdk_device_set_mode (device, GDK_MODE_SCREEN);
+	}
+
+	// create window
+	fs_win = gtk_window_new (GTK_WINDOW_POPUP);
+	gtk_window_set_accept_focus (GTK_WINDOW (fs_win), FALSE);
+	gtk_window_set_keep_above (GTK_WINDOW (fs_win), TRUE);
+	gtk_window_stick (GTK_WINDOW (fs_win));
+	gtk_widget_set_size_request (GTK_WIDGET (fs_win), root_width, root_height);
+	gtk_window_set_position (GTK_WINDOW (fs_win), GTK_WIN_POS_CENTER_ALWAYS);
+	gtk_widget_set_colormap (fs_win, gdk_screen_get_rgba_colormap (gtk_widget_get_screen(fs_win)));
+	gtk_widget_set_app_paintable (fs_win, TRUE);
+	gtk_widget_add_events(fs_win, FULLSCREEN_EVENTS);
+	gtk_widget_set_extension_events (fs_win, GDK_EXTENSION_EVENTS_ALL);
+
+	g_signal_connect (G_OBJECT (fs_win), "button-press-event", G_CALLBACK(fs_mousedown_cb), NULL);
+	g_signal_connect (G_OBJECT (fs_win), "button-release-event", G_CALLBACK(fs_mouseup_cb), NULL);
+	g_signal_connect (G_OBJECT (fs_win), "motion-notify-event", G_CALLBACK(fs_mousemotion_cb), NULL);
+	g_signal_connect (G_OBJECT (fs_win), "expose_event", G_CALLBACK(fs_expose_cb), NULL);
+
+	// register key-event
+	GdkKeymap *keymap = gdk_keymap_get_for_display (display);
+	guint keyval = gdk_keyval_from_name ("F12");
+	GdkKeymapKey *keys;
+	gint n_keys;
+	if (!keyval || !gdk_keymap_get_entries_for_keyval (keymap, keyval, &keys, &n_keys))
+		g_object_unref (G_OBJECT (fs_win));
+	else
+	{
+		gdk_error_trap_push ();
+		XGrabKey (GDK_DISPLAY_XDISPLAY (display),
+			  fs_hotkey_keycode = keys[0].keycode,
+			  AnyModifier,
+			  GDK_WINDOW_XWINDOW (root),
+			  TRUE,
+			  GrabModeAsync,
+			  GrabModeAsync);
+		gdk_flush ();
+		if (gdk_error_trap_pop ())
+			g_object_unref (G_OBJECT (fs_win));
+		else
+			gdk_event_handler_set ((GdkEventFunc) fs_main_do_event, NULL, NULL);
+	}
+}
+
+#else
+
+void create_fs_window() { };
+
+#endif
+
 void
 run (const String &display)
 {
@@ -1012,6 +1311,7 @@ run (const String &display)
 
 	gtk_init(&argc, &argv);
 
+	create_fs_window();
 	create_main_window();
 
 	helper_agent.signal_connect_exit (slot (slot_exit));
